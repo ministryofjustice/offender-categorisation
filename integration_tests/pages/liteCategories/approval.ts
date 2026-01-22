@@ -93,5 +93,8 @@ export default class LiteCategoriesApprovalPage extends Page {
         const matchingOption = expected.find(o => o.value === value && o.text === text)
         expect(matchingOption).to.exist
       })
+
+    this.getApprovedCategory().find('option[value="Q"]').should('not.exist')
+    this.getApprovedCategory().find('option[value="R"]').should('not.exist')
   }
 }

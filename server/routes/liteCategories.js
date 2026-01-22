@@ -184,7 +184,8 @@ module.exports = function Index({ formService, offendersService, userService, au
         offendersService.getAgencies(res.locals),
       ])
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
-      const cats = getCatList(isInWomensEstate, rawAssessmentData.category)
+      const existingCategory = details?.categoryCode
+      const cats = getCatList(isInWomensEstate, rawAssessmentData.category, existingCategory)
       const category = cats.find(c => c.value === rawAssessmentData.category)
       const categoryDisplay = category && category.value !== '' ? category.text : rawAssessmentData.category
 
@@ -326,7 +327,6 @@ module.exports = function Index({ formService, offendersService, userService, au
   router.post(
     '/approve/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      // do i need to add the new options here?
       const { bookingId } = req.params
       const originalApprovedDate = req.body.approvedDate
       req.body.approvedDate = formatDateForValidation(req.body.approvedDate)
@@ -342,8 +342,11 @@ module.exports = function Index({ formService, offendersService, userService, au
         offendersService.getAgencies(res.locals),
       ])
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
+      const existingCategory = details?.categoryCode
       const tomorrow = moment().add(1, 'd').format('M/D/YYYY')
       const today = moment().format('M/D/YYYY')
+
+      const catListForValidation = getCatList(isInWomensEstate, undefined, existingCategory)
 
       const fieldOptions = {
         approvedDate: joi.date().format('D/M/YYYY').max(today).required().messages({
@@ -353,7 +356,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         }),
         supervisorCategory: joi
           .string()
-          .valid(...getCatList(isInWomensEstate).map(c => c.value))
+          .valid(...catListForValidation.map(c => c.value))
           .required()
           .messages({ 'any.required': 'Select a category' }),
         approvedCommittee: joi
