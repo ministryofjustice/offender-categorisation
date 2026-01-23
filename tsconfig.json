@@ -19,7 +19,6 @@
   "exclude": [
     "node_modules",
     "assets",
-    "integration-tests",
     "integration_tests",
     "dist",
     "coverage",
@@ -27,8 +26,5 @@
     "./cypress.config.ts",
     "cypress"
   ],
-  "include": [
-    "**/*.js",
-    "**/*.ts"
-  ]
+  "include": ["**/*.js", "**/*.ts"]
 }

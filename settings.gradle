@@ -1,2 +1,0 @@
-rootProject.name = 'offender-categorisation'
-include 'integration-tests'
