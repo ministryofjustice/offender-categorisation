@@ -126,5 +126,8 @@ export default class LiteCategoriesPage extends Page {
         const matchingOption = expected.find(o => o.value === value && o.text === text)
         expect(matchingOption).to.exist
       })
+
+    this.getCategory().find('option[value="Q"]').should('not.exist')
+    this.getCategory().find('option[value="R"]').should('not.exist')
   }
 }

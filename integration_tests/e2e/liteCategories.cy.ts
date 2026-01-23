@@ -80,6 +80,46 @@ describe('Lite Categories', () => {
       liteCategoriesPage.validateAvailableCategoryOptions()
     })
 
+    it('should show Female Closed option when existing category is Q for womens estate', () => {
+      cy.task('stubGetOffenderDetailsWomen', {
+        bookingId,
+        offenderNo: 'B2345YZ',
+        category: 'Q',
+      })
+
+      cy.stubLogin({ user: CATEGORISER_USER })
+      cy.signIn()
+
+      cy.visit(`/${bookingId}`)
+
+      categoriserLandingPage = CategoriserLandingPage.createForBookingId(bookingId)
+      categoriserLandingPage.liteCategoriesButton().click()
+
+      liteCategoriesPage = LiteCategoriesPage.createForBookingId(bookingId)
+      liteCategoriesPage.getCategory().find('option[value="R"]').should('contain.text', 'Female Closed')
+    })
+
+    it('should show YOI Closed option when existing category is V for YOI offender', () => {
+      cy.task('stubGetOffenderDetails', {
+        bookingId,
+        offenderNo: 'B2345YZ',
+        youngOffender: true,
+        indeterminateSentence: false,
+        category: 'V',
+      })
+
+      cy.stubLogin({ user: CATEGORISER_USER })
+      cy.signIn()
+
+      cy.visit(`/${bookingId}`)
+
+      categoriserLandingPage = CategoriserLandingPage.createForBookingId(bookingId)
+      categoriserLandingPage.liteCategoriesButton().click()
+
+      liteCategoriesPage = LiteCategoriesPage.createForBookingId(bookingId)
+      liteCategoriesPage.getCategory().find('option[value="I"]').should('contain.text', 'YOI Closed')
+    })
+
     it('error validation', () => {
       liteCategoriesPage.submitButton().click()
       liteCategoriesPage.validateErrorSummaryMessages([
@@ -334,6 +374,54 @@ describe('Lite Categories', () => {
 
     it('should have the expected lite categorisation approved category options', () => {
       liteApprovalPage.validateAvailableApprovedCategoryOptions()
+    })
+
+    it('should show Female Closed option when existing category is Q for womens estate', () => {
+      cy.task('stubGetOffenderDetailsWomen', {
+        bookingId,
+        offenderNo: 'B2345YZ',
+        category: 'Q',
+      })
+
+      cy.stubLogin({
+        user: SUPERVISOR_USER,
+      })
+      cy.signIn()
+
+      supervisorDashboardHomePage = Page.verifyOnPage(SupervisorDashboardHomePage)
+      supervisorDashboardHomePage.otherCategoriesTabLink().click()
+
+      cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
+
+      supervisorDashboardHomePage.approveOtherCategoriesApprovalButton({ bookingId }).click()
+
+      liteApprovalPage = LiteCategoriesApprovalPage.createForBookingId(bookingId)
+      liteApprovalPage.getApprovedCategory().find('option[value="R"]').should('contain.text', 'Female Closed')
+    })
+
+    it('should show YOI Closed option when existing category is V for YOI offender', () => {
+      cy.task('stubGetOffenderDetails', {
+        bookingId,
+        offenderNo: 'B2345YZ',
+        youngOffender: true,
+        indeterminateSentence: false,
+        category: 'V',
+      })
+
+      cy.stubLogin({
+        user: SUPERVISOR_USER,
+      })
+      cy.signIn()
+
+      supervisorDashboardHomePage = Page.verifyOnPage(SupervisorDashboardHomePage)
+      supervisorDashboardHomePage.otherCategoriesTabLink().click()
+
+      cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
+
+      supervisorDashboardHomePage.approveOtherCategoriesApprovalButton({ bookingId }).click()
+
+      liteApprovalPage = LiteCategoriesApprovalPage.createForBookingId(bookingId)
+      liteApprovalPage.getApprovedCategory().find('option[value="I"]').should('contain.text', 'YOI Closed')
     })
 
     describe('field validations', () => {
