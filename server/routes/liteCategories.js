@@ -64,9 +64,9 @@ const getCommitteeList = current => {
   return committeeList
 }
 
-const getCatList = (isWomensEstatePrisoner, current) => {
+const getCatList = (isWomensEstatePrisoner, currentlySelected, existingCategory) => {
   const categories = []
-  if (!current) {
+  if (!currentlySelected) {
     categories.push({
       value: '',
       text: 'Choose category',
@@ -74,23 +74,36 @@ const getCatList = (isWomensEstatePrisoner, current) => {
       selected: true,
     })
   }
-  categories.push({ value: 'U', text: 'Unsentenced', selected: current === 'U' })
+
+  categories.push({ value: 'U', text: 'Unsentenced', selected: currentlySelected === 'U' })
+
   if (!isWomensEstatePrisoner) {
-    categories.push({ value: 'Z', text: 'Unclass', selected: current === 'Z' })
+    categories.push({ value: 'Z', text: 'Unclass', selected: currentlySelected === 'Z' })
   }
-  categories.push({ value: 'V', text: 'YOI Restricted', selected: current === 'V' })
+
+  categories.push({ value: 'V', text: 'YOI Restricted', selected: currentlySelected === 'V' })
+
+  if (existingCategory === 'V') {
+    categories.push({ value: 'I', text: 'YOI Closed', selected: currentlySelected === 'I' })
+  }
+
   if (isWomensEstatePrisoner) {
-    categories.push({ value: 'Q', text: 'Restricted', selected: current === 'Q' })
+    categories.push({ value: 'Q', text: 'Restricted', selected: currentlySelected === 'Q' })
+
+    if (existingCategory === 'Q') {
+      categories.push({ value: 'R', text: 'Female Closed', selected: currentlySelected === 'R' })
+    }
   } else {
     categories.push(
-      { value: 'A', text: 'Cat A', selected: current === 'A' },
-      { value: 'E', text: 'Cat A Ex', selected: current === 'E' },
-      { value: 'H', text: 'Cat A Hi', selected: current === 'H' },
-      { value: 'P', text: 'Prov A', selected: current === 'P' },
-      { value: 'B', text: 'Downgrade A to B', selected: current === 'B' },
-      { value: 'D', text: 'Indeterminate Cat D', selected: current === 'D' },
+      { value: 'A', text: 'Cat A', selected: currentlySelected === 'A' },
+      { value: 'E', text: 'Cat A Ex', selected: currentlySelected === 'E' },
+      { value: 'H', text: 'Cat A Hi', selected: currentlySelected === 'H' },
+      { value: 'P', text: 'Prov A', selected: currentlySelected === 'P' },
+      { value: 'B', text: 'Downgrade A to B', selected: currentlySelected === 'B' },
+      { value: 'D', text: 'Indeterminate Cat D', selected: currentlySelected === 'D' },
     )
   }
+
   return categories
 }
 
@@ -128,12 +141,14 @@ module.exports = function Index({ formService, offendersService, userService, au
         formService.getLiteCategorisation(bookingId, transactionalDbClient),
         offendersService.getAgencies(res.locals),
       ])
+
+      const existingCategory = details?.categoryCode
       const liteInProgress = existingData.bookingId && !existingData.approvedDate
 
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
       const prisonList = getPrisonList(prisonListFromApi, isInWomensEstate)
       const committees = getCommitteeList()
-      const cats = getCatList(isInWomensEstate)
+      const cats = getCatList(isInWomensEstate, undefined, existingCategory)
 
       res.render(`pages/liteCategories`, {
         bookingId,
@@ -169,7 +184,8 @@ module.exports = function Index({ formService, offendersService, userService, au
         offendersService.getAgencies(res.locals),
       ])
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
-      const cats = getCatList(isInWomensEstate, rawAssessmentData.category)
+      const existingCategory = details?.categoryCode
+      const cats = getCatList(isInWomensEstate, rawAssessmentData.category, existingCategory)
       const category = cats.find(c => c.value === rawAssessmentData.category)
       const categoryDisplay = category && category.value !== '' ? category.text : rawAssessmentData.category
 
@@ -230,16 +246,18 @@ module.exports = function Index({ formService, offendersService, userService, au
       const originalDateInput = req.body.nextReviewDate
       req.body.nextReviewDate = formatDateForValidation(req.body.nextReviewDate)
       const details = await offendersService.getOffenderDetails(res.locals, bookingIdInt)
+      const existingCategory = details?.categoryCode
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
       const prisonListFromApi = await offendersService.getAgencies(res.locals)
       const { nextReviewDate } = req.body
+      const catListForValidation = getCatList(isInWomensEstate, undefined, existingCategory)
 
       const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
 
       const fieldOptions = {
         category: joi
           .string()
-          .valid(...getCatList(isInWomensEstate).map(c => c.value))
+          .valid(...catListForValidation.map(c => c.value))
           .required()
           .messages({ 'any.required': 'Select a category' }),
         authority: joi
@@ -269,7 +287,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       if (formValidation.error) {
         const prisonList = getPrisonList(prisonListFromApi, isInWomensEstate, placement)
-        const cats = getCatList(isInWomensEstate, category)
+        const cats = getCatList(isInWomensEstate, category, existingCategory)
         const committees = getCommitteeList(authority)
 
         res.render(`pages/liteCategories`, {
@@ -324,8 +342,11 @@ module.exports = function Index({ formService, offendersService, userService, au
         offendersService.getAgencies(res.locals),
       ])
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
+      const existingCategory = details?.categoryCode
       const tomorrow = moment().add(1, 'd').format('M/D/YYYY')
       const today = moment().format('M/D/YYYY')
+
+      const catListForValidation = getCatList(isInWomensEstate, undefined, existingCategory)
 
       const fieldOptions = {
         approvedDate: joi.date().format('D/M/YYYY').max(today).required().messages({
@@ -335,7 +356,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         }),
         supervisorCategory: joi
           .string()
-          .valid(...getCatList(isInWomensEstate).map(c => c.value))
+          .valid(...catListForValidation.map(c => c.value))
           .required()
           .messages({ 'any.required': 'Select a category' }),
         approvedCommittee: joi
