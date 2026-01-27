@@ -1153,10 +1153,13 @@ module.exports = function createOffendersService(
   async function getRiskChangeForOffender(context, bookingId, transactionalClient) {
     try {
       const details = await getOffenderDetails(context, bookingId)
-      const riskChange = await formService.getRiskChangeForOffender(details.offenderNo, transactionalClient)
+      const [riskChange, adjudicationsData] = await Promise.all([
+        formService.getRiskChangeForOffender(details.offenderNo, transactionalClient),
+        getCountOfAssaultIncidents(context, details.offenderNo),
+      ])
       if (riskChange) {
         const changeFlags = riskChangeHelper.assessRiskProfiles(riskChange.oldProfile, riskChange.newProfile)
-        return { ...riskChange, ...changeFlags, details }
+        return { ...riskChange, ...changeFlags, details, adjudicationsData }
       }
       throw new Error(`No risk change record found for offender ${details.offenderNo}`)
     } catch (error) {
