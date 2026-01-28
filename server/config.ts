@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const production = process.env.NODE_ENV === 'production'
+const test = process.env.NODE_ENV === 'test'
 
 type FallbackValue = string | number | string[] | null
 
@@ -106,7 +107,7 @@ function get<T extends FallbackValue>({ name, fallback, log, requireInProduction
   const value = process.env[name]
 
   if (value !== undefined) {
-    if (log) {
+    if (log && !test) {
       console.log(`Env var: ${name} value: ${value}`)
     }
 
@@ -114,7 +115,7 @@ function get<T extends FallbackValue>({ name, fallback, log, requireInProduction
   }
 
   if (fallback !== undefined && (!production || !requireInProduction)) {
-    if (log) {
+    if (log && !test) {
       console.log(`Env var: ${name} value: ${fallback} (from fallback)`)
     }
 
