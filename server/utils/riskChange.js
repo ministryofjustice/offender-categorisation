@@ -1,15 +1,15 @@
 const { equals } = require('./functionalHelpers')
 
 function listAlertChange(oldP, newP) {
-  const newEscapeAlerts = newP.escape.escapeListAlerts || newP.escapeListAlerts
-  const oldEscapeAlerts = oldP.escape.escapeListAlerts || oldP.escapeListAlerts
-  return !equals(newEscapeAlerts.sort(), oldEscapeAlerts.sort())
+  const newEscapeAlerts = newP.escape?.escapeListAlerts || newP.escapeListAlerts
+  const oldEscapeAlerts = oldP.escape?.escapeListAlerts || oldP.escapeListAlerts
+  return !equals(newEscapeAlerts?.sort(), oldEscapeAlerts?.sort())
 }
 
 function riskAlertChange(oldP, newP) {
-  const newEscapeAlerts = newP.escape.escapeRiskAlerts || newP.escapeRiskAlerts
-  const oldEscapeAlerts = oldP.escape.escapeRiskAlerts || oldP.escapeRiskAlerts
-  return !equals(newEscapeAlerts.sort(alertCompare), oldEscapeAlerts.sort(alertCompare))
+  const newEscapeAlerts = newP.escape?.escapeRiskAlerts || newP.escapeRiskAlerts
+  const oldEscapeAlerts = oldP.escape?.escapeRiskAlerts || oldP.escapeRiskAlerts
+  return !equals(newEscapeAlerts?.sort(alertCompare), oldEscapeAlerts?.sort(alertCompare))
 }
 
 function isNewlyOnTheEscapeList(oldP, newP) {
@@ -18,7 +18,7 @@ function isNewlyOnTheEscapeList(oldP, newP) {
     const newEscapeList = newP.escape.activeEscapeList
     return !oldEscapeList && newEscapeList
   }
-  return oldP.escapeListAlerts.isEmpty() && !newP.escapeListAlerts.isEmpty()
+  return oldP.escapeListAlerts?.length === 0 && newP.escapeListAlerts?.length > 0
 }
 
 function isNewEscapeRisk(oldP, newP) {
@@ -27,19 +27,22 @@ function isNewEscapeRisk(oldP, newP) {
     const newEscapeRisk = newP.escape.activeEscapeRisk
     return !oldEscapeRisk && newEscapeRisk
   }
-  return oldP.escapeRiskAlerts.isEmpty() && !newP.escapeRiskAlerts.isEmpty()
+  return oldP.escapeRiskAlerts?.length === 0 && newP.escapeRiskAlerts?.length > 0
 }
 
 function isNewlyReferredToSecurity(oldP, newP) {
-  const oldRisk = oldP.soc.transferToSecurity || oldP.riskDueToSeriousOrganisedCrime
-  const newRisk = newP.soc.transferToSecurity || newP.riskDueToSeriousOrganisedCrime
+  const oldRisk = oldP.soc?.transferToSecurity || oldP.riskDueToSeriousOrganisedCrime
+  const newRisk = newP.soc?.transferToSecurity || newP.riskDueToSeriousOrganisedCrime
   return !oldRisk && newRisk
 }
 
 function changeInViolenceCategoryRecommendation(oldP, newP) {
-  const oldCategory = oldP.violence.provisionalCategorisation
-  const newCategory = newP.violence.provisionalCategorisation
-  return (oldCategory === 'C' && newCategory === 'B') || (!oldP.riskDueToViolence && newP.riskDueToViolence)
+  if (oldP.violence) {
+    const oldCategory = oldP.violence.provisionalCategorisation
+    const newCategory = newP.violence.provisionalCategorisation
+    return oldCategory === 'C' && newCategory === 'B'
+  }
+  return !oldP.riskDueToViolence && newP.riskDueToViolence
 }
 
 const assessRiskProfiles = (oldP, newP) => {
