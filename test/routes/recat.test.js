@@ -464,6 +464,11 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
         },
       },
       oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfAssaults: 0, provisionalCategorisation: 'B' } },
+      adjudicationsData: makeTestCountOfAssaultIncidents({
+        countOfAssaults: 4,
+        countOfRecentNonSeriousAssaults: 2,
+        countOfRecentSeriousAssaults: 1,
+      }),
     })
     return request(app)
       .get(`/riskProfileChangeDetail/12345`)
@@ -490,6 +495,11 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
       bookingId: 12345,
       newProfile: { violence: { numberOfSeriousAssaults: 3, numberOfNonSeriousAssaults: 2, numberOfAssaults: 7 } },
       oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 5, numberOfAssaults: 6 } },
+      adjudicationsData: makeTestCountOfAssaultIncidents({
+        countOfAssaults: 7,
+        countOfRecentNonSeriousAssaults: 2,
+        countOfRecentSeriousAssaults: 3,
+      }),
     })
     return request(app)
       .get(`/riskProfileChangeDetail/12345`)
@@ -513,6 +523,11 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
       bookingId: 12345,
       newProfile: { violence: { numberOfSeriousAssaults: 1, numberOfNonSeriousAssaults: 2, numberOfAssaults: 3 } },
       oldProfile: { violence: { numberOfSeriousAssaults: 1, numberOfNonSeriousAssaults: 4, numberOfAssaults: 5 } },
+      adjudicationsData: makeTestCountOfAssaultIncidents({
+        countOfAssaults: 3,
+        countOfRecentNonSeriousAssaults: 2,
+        countOfRecentSeriousAssaults: 1,
+      }),
     })
     return request(app)
       .get(`/riskProfileChangeDetail/12345`)

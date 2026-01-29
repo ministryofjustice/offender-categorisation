@@ -53,6 +53,30 @@ describe('it should assess the risk change status of a new and old risk profile 
     const newProfile = buildProfile({ transferToSecurity: true })
     expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).socNewlyReferred).toBe(true)
   })
+  it('Change in escape list status is detected with new profile structure', () => {
+    const oldProfile = { escapeListAlerts: [] }
+    const newProfile = { escapeListAlerts: [{ createdDate: '2025-01-01' }] }
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeList).toBe(true)
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeListAlert).toBe(true)
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeRisk).toBe(false)
+  })
+  it('Change in escape risk status is detected with new profile structure', () => {
+    const oldProfile = { escapeRiskAlerts: [] }
+    const newProfile = { escapeRiskAlerts: [{ createdDate: '2025-01-01' }] }
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeRisk).toBe(true)
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeRiskAlert).toBe(true)
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeList).toBe(false)
+  })
+  it('Change in violence risk is detected with new profile structure', () => {
+    const oldProfile = { riskDueToViolence: false }
+    const newProfile = { riskDueToViolence: true }
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceChange).toBe(true)
+  })
+  it('Change in violence risk is detected with new profile structure', () => {
+    const oldProfile = { riskDueToSeriousOrganisedCrime: false }
+    const newProfile = { riskDueToSeriousOrganisedCrime: true }
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).socNewlyReferred).toBe(true)
+  })
 })
 
 function buildProfile({

@@ -1,7 +1,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "../../macros/renderAlert.html" import renderAlert %}
+{% from "../../macros/renderAlert.html" import renderAlert, renderEscapeListAlert, renderEscapeRiskAlert %}
 {% from "../../macros/breadCrumb.html" import breadCrumb %}
 
 {% set pageTitle = "Check change in risk status" %}
@@ -35,12 +35,18 @@ attributes: {  'id': 'escapeWarning'},
 
 {% if data.escapeListAlert or data.escapeRiskAlert %}
 <div class="govuk-details__text govuk-!-margin-bottom-3" id="escapeAlerts">
-  {% if data.newProfile.escape.escapeListAlerts.length > 0 or data.newProfile.escape.escapeRiskAlerts.length > 0 %}
+  {% if (data.newProfile.escape and (data.newProfile.escape.escapeListAlerts.length > 0 or data.newProfile.escape.escapeRiskAlerts.length > 0)) or (data.newProfile.escapeRiskAlerts.length > 0 or data.newProfile.escapeListAlerts.length > 0) %}
     {% for alert in data.newProfile.escape.escapeListAlerts %}
-    {{ renderAlert(alert) }}
+      {{ renderAlert(alert) }}
+    {% endfor %}
+    {% for alert in data.newProfile.escapeListAlerts %}
+      {{ renderEscapeListAlert(alert) }}
     {% endfor %}
     {% for alert in data.newProfile.escape.escapeRiskAlerts %}
-    {{ renderAlert(alert) }}
+      {{ renderAlert(alert) }}
+    {% endfor %}
+    {% for alert in data.newProfile.escapeRiskAlerts %}
+      {{ renderEscapeRiskAlert(alert) }}
     {% endfor %}
   {% else %}
     No alerts
@@ -53,12 +59,18 @@ attributes: {  'id': 'escapeWarning'},
     </span>
   </summary>
   <div class="govuk-details__text" id="escapeAlertsOld">
-    {% if data.oldProfile.escape.escapeListAlerts.length > 0 or data.oldProfile.escape.escapeRiskAlerts.length > 0 %}
+    {% if (data.newProfile.escape and (data.oldProfile.escape.escapeListAlerts.length > 0 or data.oldProfile.escape.escapeRiskAlerts.length > 0)) or (data.oldProfile.escapeRiskAlerts.length > 0 or data.oldProfile.escapeListAlerts.length > 0) %}
       {% for alert in data.oldProfile.escape.escapeListAlerts %}
-      {{ renderAlert(alert) }}
+        {{ renderAlert(alert) }}
+      {% endfor %}
+      {% for alert in data.oldProfile.escapeListAlerts %}
+        {{ renderEscapeListAlert(alert) }}
       {% endfor %}
       {% for alert in data.oldProfile.escape.escapeRiskAlerts %}
-      {{ renderAlert(alert) }}
+        {{ renderAlert(alert) }}
+      {% endfor %}
+      {% for alert in data.oldProfile.escapeRiskAlerts %}
+        {{ renderEscapeRiskAlert(alert) }}
       {% endfor %}
     {% else %}
       No alerts
@@ -73,8 +85,8 @@ attributes: {  'id': 'escapeWarning'},
 <h2 id="violenceSection" class="govuk-heading-m  govuk-!-padding-top-4">Safety and good order</h2>
 
     {% set warningText %}
-      This person has been reported as involved in {{ data.newProfile.violence.numberOfAssaults }} assaults in custody. In the past 12 months,
-      there have been {{ data.newProfile.violence.numberOfSeriousAssaults }} serious assaults and {{ data.newProfile.violence.numberOfNonSeriousAssaults }} non-serious assaults
+        This person has been reported as involved in {{ data.adjudicationsData.countOfAssaults }} assaults in custody. In the past 12 months,
+        there have been {{ data.adjudicationsData.countOfRecentSeriousAssaults }} serious assaults and {{ data.adjudicationsData.countOfRecentNonSeriousAssaults }} non-serious assaults
     {% endset %}
     {{ govukWarningText({
       html: warningText,
@@ -90,29 +102,31 @@ attributes: {  'id': 'escapeWarning'},
       classes: "forms-warning-text warning-overrides"
     }) }}
 
-<details class="govuk-details" data-module="govuk-details">
-  <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      View previous safety and good order warnings
-    </span>
-  </summary>
-  <div class="govuk-details__text">
-    {% set warningText %}
-    {% if data.oldProfile.violence.numberOfAssaults == 0 %}
-      There are no reported assaults during this sentence
-    {% else %}
-      This person has been reported as involved in {{ data.oldProfile.violence.numberOfAssaults }} assaults in custody. In the past 12 months,
-      there have been {{ data.oldProfile.violence.numberOfSeriousAssaults }} serious assaults and {{ data.oldProfile.violence.numberOfNonSeriousAssaults }} non-serious assaults
+  {% if data.oldProfile.violence %}
+    <details class="govuk-details" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">
+          View previous safety and good order warnings
+        </span>
+      </summary>
+      <div class="govuk-details__text">
+        {% set warningText %}
+        {% if data.oldProfile.violence.numberOfAssaults == 0 %}
+          There are no reported assaults during this sentence
+        {% else %}
+          This person has been reported as involved in {{ data.oldProfile.violence.numberOfAssaults }} assaults in custody. In the past 12 months,
+          there have been {{ data.oldProfile.violence.numberOfSeriousAssaults }} serious assaults and {{ data.oldProfile.violence.numberOfNonSeriousAssaults }} non-serious assaults
+        {% endif %}
+        {% endset %}
+        {{ govukWarningText({
+        html: warningText,
+        attributes: {  'id': 'violenceWarningOld'},
+        iconFallbackText: "Warning",
+        classes: "forms-warning-text warning-overrides"
+        }) }}
+      </div>
+    </details>
     {% endif %}
-    {% endset %}
-    {{ govukWarningText({
-    html: warningText,
-    attributes: {  'id': 'violenceWarningOld'},
-    iconFallbackText: "Warning",
-    classes: "forms-warning-text warning-overrides"
-    }) }}
-  </div>
-</details>
 
 {% endif %}
 
