@@ -93,6 +93,11 @@ describe('Potential reviews', () => {
         categoryCode: 'U',
       })
 
+      cy.task('stubGetAssaultIncidents', {
+        prisonerNumber: 'B2345XY',
+        assaultIncidents: [],
+      })
+
       cy.task('stubGetEscapeProfile', {
         offenderNo: 'B2345XY',
         onEscapeList: false,

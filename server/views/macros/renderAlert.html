@@ -4,3 +4,17 @@
   <strong>{{ alert.dateCreated }}</strong>
 </p>
 {% endmacro %}
+
+{% macro renderEscapeListAlert(alert) %}
+  <p class="govuk-!-margin-bottom-1">
+    E-List:
+    <strong>{{ alert.dateCreated }}</strong>
+  </p>
+{% endmacro %}
+
+{% macro renderEscapeRiskAlert(alert) %}
+  <p class="govuk-!-margin-bottom-1">
+    Escape Risk Alert:
+    <strong>{{ alert.dateCreated }}</strong>
+  </p>
+{% endmacro %}
