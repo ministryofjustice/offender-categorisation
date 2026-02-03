@@ -13,21 +13,15 @@ function riskAlertChange(oldP, newP) {
 }
 
 function isNewlyOnTheEscapeList(oldP, newP) {
-  if (newP.escape && oldP.escape) {
-    const oldEscapeList = oldP.escape.activeEscapeList
-    const newEscapeList = newP.escape.activeEscapeList
-    return !oldEscapeList && newEscapeList
-  }
-  return oldP.escapeListAlerts?.length === 0 && newP.escapeListAlerts?.length > 0
+  const wasNotPreviouslyOnEscapeList = oldP.escape ? !oldP.escape.activeEscapeList : oldP.escapeListAlerts?.length === 0
+  const isNowOnEscapeList = newP.escape ? newP.escape.activeEscapeList : newP.escapeListAlerts?.length > 0
+  return wasNotPreviouslyOnEscapeList && isNowOnEscapeList
 }
 
 function isNewEscapeRisk(oldP, newP) {
-  if (newP.escape && oldP.escape) {
-    const oldEscapeRisk = oldP.escape.activeEscapeRisk
-    const newEscapeRisk = newP.escape.activeEscapeRisk
-    return !oldEscapeRisk && newEscapeRisk
-  }
-  return oldP.escapeRiskAlerts?.length === 0 && newP.escapeRiskAlerts?.length > 0
+  const wasNotPreviouslyEscapeRisk = oldP.escape ? !oldP.escape.activeEscapeRisk : oldP.escapeRiskAlerts?.length === 0
+  const isNowEscapeRisk = newP.escape ? newP.escape.activeEscapeRisk : newP.escapeRiskAlerts?.length > 0
+  return wasNotPreviouslyEscapeRisk && isNowEscapeRisk
 }
 
 function isNewlyReferredToSecurity(oldP, newP) {
@@ -37,12 +31,14 @@ function isNewlyReferredToSecurity(oldP, newP) {
 }
 
 function changeInViolenceCategoryRecommendation(oldP, newP) {
-  if (oldP.violence) {
-    const oldCategory = oldP.violence.provisionalCategorisation
-    const newCategory = newP.violence.provisionalCategorisation
-    return oldCategory === 'C' && newCategory === 'B'
-  }
-  return !oldP.riskDueToViolence && newP.riskDueToViolence
+  const wasNotPreviouslyRiskDueToViolence = oldP.violence
+    ? oldP.violence.provisionalCategorisation === 'C'
+    : !oldP.riskDueToViolence
+  const isNowRiskDueToViolence = newP.violence
+    ? newP.violence.provisionalCategorisation === 'B'
+    : newP.riskDueToViolence
+
+  return wasNotPreviouslyRiskDueToViolence && isNowRiskDueToViolence
 }
 
 const assessRiskProfiles = (oldP, newP) => {
