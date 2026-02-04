@@ -89,7 +89,7 @@ module.exports = function createSqsService(offenderService, formService) {
     }),
   })
 
-  logger.info(`Consuming from queues ${config.sqs.riskProfiler.queueUrl}, ${config.sqs.event.queueUrl}`)
+  logger.info(`Consuming from queue ${config.sqs.event.queueUrl}`)
 
   eventQueueConsumer.on('error', err => {
     logger.error(err.message)
