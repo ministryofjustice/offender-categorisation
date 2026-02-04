@@ -53,12 +53,8 @@ const DEFAULTS = {
   DB_NAME: 'form-builder',
   DB_SSL_ENABLED: 'false',
 
-  // SQS
-  SQS_ENABLED: 'true',
-  RP_QUEUE_URL: 'http://localhost:4566/000000000000/risk_profiler_change',
-  RP_DL_QUEUE_URL: 'http://localhost:4566/000000000000/risk_profiler_change_dlq',
-
   // Event SQS
+  SQS_ENABLED: 'true',
   EVENT_QUEUE_URL: 'http://localhost:4566/000000000000/event',
   EVENT_DL_QUEUE_URL: 'http://localhost:4566/000000000000/event_dlq',
 
@@ -233,46 +229,6 @@ export const config = {
       log: true,
       requireInProduction: false,
     }),
-    riskProfiler: {
-      queueUrl: get({
-        name: 'RP_QUEUE_URL',
-        fallback: DEFAULTS.RP_QUEUE_URL,
-        log: false,
-        requireInProduction: true,
-      }),
-      accessKeyId: get({
-        name: 'RP_QUEUE_ACCESS_KEY_ID',
-        fallback: null,
-        log: false,
-        requireInProduction: false,
-      }),
-      secretAccessKey: get({
-        name: 'RP_QUEUE_SECRET_ACCESS_KEY',
-        fallback: null,
-        log: false,
-        requireInProduction: false,
-      }),
-      dlq: {
-        queueUrl: get({
-          name: 'RP_DL_QUEUE_URL',
-          fallback: DEFAULTS.RP_DL_QUEUE_URL,
-          log: false,
-          requireInProduction: true,
-        }),
-        accessKeyId: get({
-          name: 'RP_DL_QUEUE_ACCESS_KEY_ID',
-          fallback: null,
-          log: false,
-          requireInProduction: false,
-        }),
-        secretAccessKey: get({
-          name: 'RP_DL_QUEUE_SECRET_ACCESS_KEY',
-          fallback: null,
-          log: false,
-          requireInProduction: false,
-        }),
-      },
-    },
     event: {
       queueUrl: get({
         name: 'EVENT_QUEUE_URL',

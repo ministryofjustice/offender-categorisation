@@ -21,8 +21,6 @@ const formClient = {
   updateRiskProfileData: jest.fn(),
   updateRecordWithNomisSeqNumber: jest.fn(),
   getNewRiskChangeByOffender: jest.fn(),
-  mergeRiskChangeForOffender: jest.fn(),
-  createRiskChange: jest.fn(),
   getSecurityReferral: jest.fn(),
   setSecurityReferralProcessed: jest.fn(),
   getRiskChangeByStatus: jest.fn(),
@@ -962,34 +960,6 @@ describe('cancelOpenConditions', () => {
       },
       mockTransactionalClient,
     )
-  })
-})
-
-describe('createRiskChange', () => {
-  const newProfile = { something: 'hello' }
-  test('merge with existing', async () => {
-    const existingRecord = { existing: true }
-    formClient.getNewRiskChangeByOffender.mockResolvedValue({ rows: [{ existingRecord }] })
-    formClient.mergeRiskChangeForOffender.mockResolvedValue({ rowCount: 1 })
-
-    await service.createRiskChange(offenderNo, 'LEI', {}, newProfile, mockTransactionalClient)
-
-    expect(formClient.mergeRiskChangeForOffender).toBeCalledWith(offenderNo, newProfile, mockTransactionalClient)
-  })
-
-  test('create new record', async () => {
-    formClient.getNewRiskChangeByOffender.mockResolvedValue({ rows: [] })
-
-    await service.createRiskChange(offenderNo, 'LEI', {}, newProfile, mockTransactionalClient)
-
-    expect(formClient.createRiskChange).toBeCalledWith({
-      agencyId: 'LEI',
-      offenderNo,
-      oldProfile: {},
-      newProfile,
-      transactionalClient: mockTransactionalClient,
-    })
-    expect(formClient.mergeRiskChangeForOffender).not.toBeCalled()
   })
 })
 

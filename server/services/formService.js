@@ -403,25 +403,6 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     await formClient.deleteLiteCategorisation({ bookingId, sequence, transactionalClient })
   }
 
-  async function createRiskChange(offenderNo, agencyId, oldProfile, newProfile, transactionalClient) {
-    const newRiskChangeByOffender = await formClient.getNewRiskChangeByOffender(offenderNo, transactionalClient)
-    const existingRecordOptional = dataIfExists(newRiskChangeByOffender)
-
-    if (existingRecordOptional) {
-      log.info(`createRiskChange: updating existing risk profile record for offender ${offenderNo}`)
-      await formClient.mergeRiskChangeForOffender(offenderNo, newProfile, transactionalClient)
-    } else {
-      log.info(`createRiskChange: creating risk profile record for offender ${offenderNo}`)
-      await formClient.createRiskChange({
-        agencyId,
-        offenderNo,
-        oldProfile,
-        newProfile,
-        transactionalClient,
-      })
-    }
-  }
-
   async function updateStatusForOutstandingRiskChange({ offenderNo, userId, status, transactionalClient }) {
     const result = await formClient.updateNewRiskChangeStatus({
       offenderNo,
@@ -1006,7 +987,6 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     categoriserDecision,
     getCategorisationRecordUsingSequence,
     getRiskChanges,
-    createRiskChange,
     createSecurityReferral,
     cancelSecurityReferral,
     getSecurityReferral,

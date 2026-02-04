@@ -12,7 +12,6 @@ const offendersService = {
 }
 
 const formService = {
-  createRiskChange: jest.fn(),
   deletePendingCategorisations: jest.fn(),
 }
 
@@ -26,81 +25,6 @@ beforeEach(() => {
 afterEach(() => {
   jest.resetAllMocks()
 })
-
-describe('rpQueueConsumer', () => {
-  const profile = buildProfile()
-  test('should ignore old and new profiles with no change', async () => {
-    await service.rpQueueConsumer.handleMessage({
-      Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
-        profile,
-      )} }`,
-    })
-    expect(offendersService.getOffenderDetailWithFullInfo).not.toBeCalled()
-  })
-  test('should ignore old and new profiles with a change that is not of interest', async () => {
-    const newProfile = buildProfile({ socPC: 'B' })
-    await service.rpQueueConsumer.handleMessage({
-      Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
-        newProfile,
-      )} }`,
-    })
-    expect(offendersService.getOffenderDetailWithFullInfo).not.toBeCalled()
-  })
-  test('should ignore an offender with a category that cannot be increased', async () => {
-    offendersService.getOffenderDetailWithFullInfo.mockResolvedValue({
-      offenderNo: 'B2345XY',
-      bookingId: 12,
-      categoryCode: 'B',
-    })
-    const newProfile = buildProfile({ activeEscapeList: true })
-    await service.rpQueueConsumer.handleMessage({
-      Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
-        newProfile,
-      )} }`,
-    })
-    expect(offendersService.getOffenderDetailWithFullInfo).toBeCalledWith({ user: {} }, 'GN123')
-  })
-})
-
-function buildProfile({
-  activeEscapeList = false,
-  activeEscapeRisk = true,
-  assaults = 0,
-  seriousAssaults = 0,
-  notifySCL = false,
-  violentOffender = false,
-  escapeListAlerts = [],
-  escapeRiskAlerts = [],
-  socPC = 'C',
-} = {}) {
-  return {
-    soc: {
-      nomsId: 'G1709GX',
-      riskType: 'SOC',
-      transferToSecurity: false,
-      provisionalCategorisation: socPC,
-    },
-    escape: {
-      nomsId: 'G1709GX',
-      riskType: 'ESCAPE',
-      activeEscapeList,
-      activeEscapeRisk,
-      escapeListAlerts,
-      escapeRiskAlerts,
-      provisionalCategorisation: 'C',
-    },
-    violence: {
-      nomsId: 'G1709GX',
-      riskType: 'VIOLENCE',
-      displayAssaults: false,
-      numberOfAssaults: assaults,
-      notifySafetyCustodyLead: notifySCL,
-      numberOfSeriousAssaults: seriousAssaults,
-      provisionalCategorisation: 'C',
-      veryHighRiskViolentOffender: violentOffender,
-    },
-  }
-}
 
 describe('eventQueueConsumer', () => {
   test('merge event', async () => {
