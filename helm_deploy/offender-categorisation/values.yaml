@@ -59,12 +59,6 @@ generic-service:
       SESSION_SECRET: "SESSION_SECRET"
       GOOGLE_TAG_MANAGER_TAG: "GOOGLE_TAG_MANAGER_TAG"
 
-    rp-sqs-instance-output:
-      RP_QUEUE_URL: "sqs_rpc_url"
-
-    rp-sqs-dl-instance-output:
-      RP_DL_QUEUE_URL: "sqs_rpc_url"
-
     ocu-events-sqs-instance-output:
       EVENT_QUEUE_URL: "url"
 

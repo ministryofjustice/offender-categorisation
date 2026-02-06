@@ -122,15 +122,6 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  mergeRiskChangeForOffender(offenderNo, newProfile, transactionalClient) {
-    logger.info(`mergeRiskChangeForOffender called with offenderNo ${offenderNo}`)
-    const query = {
-      text: `update risk_change set new_profile = $2, raised_date = CURRENT_TIMESTAMP where offender_no= $1 and status = 'NEW'`,
-      values: [offenderNo, newProfile],
-    }
-    return transactionalClient.query(query)
-  },
-
   referToSecurity(bookingId, userId, status, transactionalClient) {
     logger.info(`referToSecurity called with status ${status} for booking id ${bookingId}`)
     const query = {
@@ -271,15 +262,6 @@ module.exports = {
     const query = {
       text: `update form f set form_response = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,
       values: [formResponse, status, bookingId],
-    }
-    return transactionalClient.query(query)
-  },
-
-  createRiskChange({ agencyId, offenderNo, oldProfile, newProfile, transactionalClient }) {
-    logger.info(`creating risk_change record for offender no ${offenderNo}`)
-    const query = {
-      text: `insert into risk_change ( prison_id, offender_no, old_profile, new_profile, raised_date ) values ($1, $2, $3, $4, CURRENT_TIMESTAMP )`,
-      values: [agencyId, offenderNo, oldProfile, newProfile],
     }
     return transactionalClient.query(query)
   },
