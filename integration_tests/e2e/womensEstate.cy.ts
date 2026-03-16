@@ -508,7 +508,10 @@ describe("Women's Estate", () => {
         { term: 'Can the risk to the public be managed in open conditions?', definition: 'Not applicable' },
         // foreign national
         { term: 'Are they a foreign national?', definition: 'No' },
-        { term: 'Have the Home Office confirmed their immigration status?', definition: 'Not applicable' },
+        {
+          term: 'Has the Home Office confirmed their immigration status on a CCD3 form?',
+          definition: 'Not applicable',
+        },
         { term: 'Do they have a liability for deportation?', definition: 'Not applicable' },
         { term: 'Have they been through all appeals process in the UK?', definition: 'Not applicable' },
         // risk of serious harm

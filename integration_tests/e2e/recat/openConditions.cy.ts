@@ -466,7 +466,10 @@ describe('Open Conditions', () => {
     ])
     reviewRecatPage.validateForeignNationalSummary([
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
-      { question: 'Have the Home Office confirmed their immigration status?', expectedAnswer: 'Not applicable' },
+      {
+        question: 'Has the Home Office confirmed their immigration status on a CCD3 form?',
+        expectedAnswer: 'Not applicable',
+      },
       { question: 'Do they have a liability for deportation?', expectedAnswer: 'Not applicable' },
       { question: 'Have they been through all appeals process in the UK?', expectedAnswer: 'Not applicable' },
     ])
@@ -771,7 +774,10 @@ describe('Open Conditions', () => {
     ])
     reviewRecatPage.validateForeignNationalSummary([
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
-      { question: 'Have the Home Office confirmed their immigration status?', expectedAnswer: 'Not applicable' },
+      {
+        question: 'Has the Home Office confirmed their immigration status on a CCD3 form?',
+        expectedAnswer: 'Not applicable',
+      },
       { question: 'Do they have a liability for deportation?', expectedAnswer: 'Not applicable' },
       { question: 'Have they been through all appeals process in the UK?', expectedAnswer: 'Not applicable' },
     ])
