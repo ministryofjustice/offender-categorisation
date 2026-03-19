@@ -26,9 +26,10 @@ const getRedisAsync = promisify(client.get).bind(client)
 const setRedisAsync = promisify(client.set).bind(client)
 
 const oauthUrl = `${config.apis.oauth2.url}/oauth/token`
+
 const timeoutSpec = {
-  response: config.apis.riskProfiler.timeout.response,
-  deadline: config.apis.riskProfiler.timeout.deadline,
+  response: config.apis.oauth2.timeout.response,
+  deadline: config.apis.oauth2.timeout.deadline,
 }
 
 function generateOauthClientToken(
@@ -58,7 +59,7 @@ async function getApiClientToken(username) {
     return { body: { access_token: tokenFromRedis } }
   }
 
-  const oauthRiskProfilerClientToken = generateSystemClientToken()
+  const oauthClientToken = generateSystemClientToken()
 
   const oauthRequest = username
     ? querystring.stringify({ grant_type: 'client_credentials', username })
@@ -70,7 +71,7 @@ async function getApiClientToken(username) {
 
   const newToken = await superagent
     .post(oauthUrl)
-    .set('Authorization', oauthRiskProfilerClientToken)
+    .set('Authorization', oauthClientToken)
     .set('content-type', 'application/x-www-form-urlencoded')
     .send(oauthRequest)
     .timeout(timeoutSpec)

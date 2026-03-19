@@ -53,12 +53,8 @@ const DEFAULTS = {
   DB_NAME: 'form-builder',
   DB_SSL_ENABLED: 'false',
 
-  // SQS
-  SQS_ENABLED: 'true',
-  RP_QUEUE_URL: 'http://localhost:4566/000000000000/risk_profiler_change',
-  RP_DL_QUEUE_URL: 'http://localhost:4566/000000000000/risk_profiler_change_dlq',
-
   // Event SQS
+  SQS_ENABLED: 'true',
   EVENT_QUEUE_URL: 'http://localhost:4566/000000000000/event',
   EVENT_DL_QUEUE_URL: 'http://localhost:4566/000000000000/event_dlq',
 
@@ -72,7 +68,6 @@ const DEFAULTS = {
 
   // API
   ELITE2API_ENDPOINT_URL: 'http://localhost:8080/',
-  RISK_PROFILER_ENDPOINT_URL: 'http://localhost:8082/',
   ALLOCATION_MANAGER_ENDPOINT_URL: 'http://localhost:8083/',
   PRISONER_SEARCH_ENDPOINT_URL: 'http://localhost:8084/',
   RISKS_AND_NEEDS_ENDPOINT_URL: 'http://localhost:8086/',
@@ -233,46 +228,6 @@ export const config = {
       log: true,
       requireInProduction: false,
     }),
-    riskProfiler: {
-      queueUrl: get({
-        name: 'RP_QUEUE_URL',
-        fallback: DEFAULTS.RP_QUEUE_URL,
-        log: false,
-        requireInProduction: true,
-      }),
-      accessKeyId: get({
-        name: 'RP_QUEUE_ACCESS_KEY_ID',
-        fallback: null,
-        log: false,
-        requireInProduction: false,
-      }),
-      secretAccessKey: get({
-        name: 'RP_QUEUE_SECRET_ACCESS_KEY',
-        fallback: null,
-        log: false,
-        requireInProduction: false,
-      }),
-      dlq: {
-        queueUrl: get({
-          name: 'RP_DL_QUEUE_URL',
-          fallback: DEFAULTS.RP_DL_QUEUE_URL,
-          log: false,
-          requireInProduction: true,
-        }),
-        accessKeyId: get({
-          name: 'RP_DL_QUEUE_ACCESS_KEY_ID',
-          fallback: null,
-          log: false,
-          requireInProduction: false,
-        }),
-        secretAccessKey: get({
-          name: 'RP_DL_QUEUE_SECRET_ACCESS_KEY',
-          fallback: null,
-          log: false,
-          requireInProduction: false,
-        }),
-      },
-    },
     event: {
       queueUrl: get({
         name: 'EVENT_QUEUE_URL',
@@ -374,33 +329,6 @@ export const config = {
         deadline: Number(
           get({
             name: 'ELITE2API_ENDPOINT_TIMEOUT_DEADLINE',
-            fallback: DEFAULT_TIMEOUTS.deadline,
-            log: true,
-            requireInProduction: false,
-          }),
-        ),
-      },
-      agent: DEFAULT_HTTP_AGENT,
-    },
-    riskProfiler: {
-      url: get({
-        name: 'RISK_PROFILER_ENDPOINT_URL',
-        fallback: DEFAULTS.RISK_PROFILER_ENDPOINT_URL,
-        log: true,
-        requireInProduction: false,
-      }),
-      timeout: {
-        response: Number(
-          get({
-            name: 'RISK_PROFILER_ENDPOINT_TIMEOUT_RESPONSE',
-            fallback: DEFAULT_TIMEOUTS.response,
-            log: true,
-            requireInProduction: false,
-          }),
-        ),
-        deadline: Number(
-          get({
-            name: 'RISK_PROFILER_ENDPOINT_TIMEOUT_DEADLINE',
             fallback: DEFAULT_TIMEOUTS.deadline,
             log: true,
             requireInProduction: false,

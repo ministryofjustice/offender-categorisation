@@ -34,7 +34,6 @@ knex1.migrate.latest().then(() => {
   })
   // must be created after migration scripts are complete
   if (config.sqs.enabled === 'true') {
-    sqsService.rpQueueConsumer.start()
     sqsService.eventQueueConsumer.start()
   }
 })

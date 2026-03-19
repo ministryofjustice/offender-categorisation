@@ -145,7 +145,6 @@ module.exports = function createApp({
   const health = healthFactory(
     config.apis.oauth2.url,
     config.apis.elite2.url,
-    config.apis.riskProfiler.url,
     config.apis.allocationManager.url,
     config.apis.prisonerSearch.url,
     config.apis.pathfinderApi.url,

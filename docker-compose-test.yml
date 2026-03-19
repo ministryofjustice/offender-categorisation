@@ -62,9 +62,7 @@ services:
     command: >
       "
         aws --endpoint-url=http://categorisation-localstack:4566 --region eu-west-2 sqs create-queue --queue-name event
-        aws --endpoint-url=http://categorisation-localstack:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change
         aws --endpoint-url=http://categorisation-localstack:4566 --region eu-west-2 sqs create-queue --queue-name event_dlq
-        aws --endpoint-url=http://categorisation-localstack:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change_dlq
 
         exit 0
       "

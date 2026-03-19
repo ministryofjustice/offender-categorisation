@@ -11,7 +11,6 @@ const formClient = require('./data/formClient')
 const { formApiClientBuilder } = require('./data/formApi/formApiClient')
 const statsClient = require('./data/statsClient')
 const nomisClientBuilder = require('./data/nomisClientBuilder')
-const riskProfilerClientBuilder = require('./data/riskProfilerClientBuilder')
 const allocationClientBuilder = require('./data/allocationManagerApi')
 const prisonerSearchClientBuilder = require('./data/prisonerSearchApi')
 const dpsFeComponentsClientBuilder = require('./data/dpsFeComponentsClientBuilder')
@@ -26,7 +25,6 @@ const createFormService = require('./services/formService')
 const createStatsService = require('./services/statsService')
 const createOffendersService = require('./services/offendersService')
 const createUserService = require('./services/userService')
-const createRiskProfilerService = require('./services/riskProfilerService')
 const createSqsService = require('./services/sqsService')
 const createDpsFeComponentService = require('./services/dpsFeComponentService')
 const CreatePathfinderService = require('./services/pathfinderService').default
@@ -45,7 +43,6 @@ const offendersService = createOffendersService(
   adjudicationsApiClientBuilder,
 )
 const userService = createUserService(nomisClientBuilder)
-const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)
 const sqsService = createSqsService(offendersService, formService)
 const frontEndComponentsService = createDpsFeComponentService(dpsFeComponentsClientBuilder)
 const pathfinderService = new CreatePathfinderService(pathfinderApiClientBuilder)
@@ -55,7 +52,6 @@ const app = createApp({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   statsService,
   frontEndComponentsService,
   pathfinderService,

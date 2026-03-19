@@ -17,10 +17,6 @@ jobs:
     name: Run the cypress integration tests
     runs-on: ubuntu-latest
     env:
-      RP_QUEUE_ACCESS_KEY_ID: dummy
-      RP_QUEUE_SECRET_ACCESS_KEY: dummy
-      RP_DL_QUEUE_ACCESS_KEY_ID: dummy
-      RP_DL_QUEUE_SECRET_ACCESS_KEY: dummy
       EVENT_QUEUE_ACCESS_KEY_ID: dummy
       EVENT_QUEUE_SECRET_ACCESS_KEY: dummy
       EVENT_DL_QUEUE_ACCESS_KEY_ID: dummy
@@ -85,9 +81,7 @@ jobs:
         run: |
           export AWS_PAGER=""
             aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event
-            aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change
             aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event_dlq
-            aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change_dlq
       - name: Prepare and run integration tests
         id: integration-tests
         shell: bash

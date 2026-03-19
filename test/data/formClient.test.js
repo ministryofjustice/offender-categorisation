@@ -152,24 +152,6 @@ describe('supervisorApproval update', () => {
   })
 })
 
-describe('createRiskChange', () => {
-  test('it should create a risk change record with a status of new', () => {
-    formClient.createRiskChange({
-      agencyId: 'LEI',
-      offenderNo: 'ABC123',
-      oldProfile: '{old}',
-      newProfile: '{new}',
-      transactionalClient: mockTransactionalClient,
-    })
-
-    expect(mockTransactionalClient.query).toBeCalledWith({
-      text: 'insert into risk_change ( prison_id, offender_no, old_profile, new_profile, raised_date ) values ($1, $2, $3, $4, CURRENT_TIMESTAMP )',
-
-      values: ['LEI', 'ABC123', '{old}', '{new}'],
-    })
-  })
-})
-
 describe('getRiskChangeByStatus', () => {
   test('it should retrieve a list of risk change records by agency and status', () => {
     formClient.getRiskChangeByStatus('LEI', RiskChangeStatus.NEW.name, mockTransactionalClient)
@@ -190,18 +172,6 @@ describe('getNewRiskChangeByOffender', () => {
       text: 'select old_profile as "oldProfile", new_profile as "newProfile", status, raised_date as "raisedDate" from risk_change r where r.offender_no= $1 and r.status = \'NEW\'',
 
       values: ['GN12345'],
-    })
-  })
-})
-
-describe('mergeRiskChangeForOffender', () => {
-  test('it should update the risk change record by offender with a status of NEW', () => {
-    formClient.mergeRiskChangeForOffender('GN12345', { hello: 'hello' }, mockTransactionalClient)
-
-    expect(mockTransactionalClient.query).toBeCalledWith({
-      text: "update risk_change set new_profile = $2, raised_date = CURRENT_TIMESTAMP where offender_no= $1 and status = 'NEW'",
-
-      values: ['GN12345', { hello: 'hello' }],
     })
   })
 })
