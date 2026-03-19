@@ -81,9 +81,7 @@ jobs:
         run: |
           export AWS_PAGER=""
             aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event
-            aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change
             aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event_dlq
-            aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change_dlq
       - name: Prepare and run integration tests
         id: integration-tests
         shell: bash
