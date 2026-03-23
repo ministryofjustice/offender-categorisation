@@ -68,7 +68,6 @@ const DEFAULTS = {
 
   // API
   ELITE2API_ENDPOINT_URL: 'http://localhost:8080/',
-  RISK_PROFILER_ENDPOINT_URL: 'http://localhost:8082/',
   ALLOCATION_MANAGER_ENDPOINT_URL: 'http://localhost:8083/',
   PRISONER_SEARCH_ENDPOINT_URL: 'http://localhost:8084/',
   RISKS_AND_NEEDS_ENDPOINT_URL: 'http://localhost:8086/',
@@ -330,33 +329,6 @@ export const config = {
         deadline: Number(
           get({
             name: 'ELITE2API_ENDPOINT_TIMEOUT_DEADLINE',
-            fallback: DEFAULT_TIMEOUTS.deadline,
-            log: true,
-            requireInProduction: false,
-          }),
-        ),
-      },
-      agent: DEFAULT_HTTP_AGENT,
-    },
-    riskProfiler: {
-      url: get({
-        name: 'RISK_PROFILER_ENDPOINT_URL',
-        fallback: DEFAULTS.RISK_PROFILER_ENDPOINT_URL,
-        log: true,
-        requireInProduction: false,
-      }),
-      timeout: {
-        response: Number(
-          get({
-            name: 'RISK_PROFILER_ENDPOINT_TIMEOUT_RESPONSE',
-            fallback: DEFAULT_TIMEOUTS.response,
-            log: true,
-            requireInProduction: false,
-          }),
-        ),
-        deadline: Number(
-          get({
-            name: 'RISK_PROFILER_ENDPOINT_TIMEOUT_DEADLINE',
             fallback: DEFAULT_TIMEOUTS.deadline,
             log: true,
             requireInProduction: false,
