@@ -2,10 +2,12 @@
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
 {% if data.nextReviewDate  %}
-    <h2 class="govuk-heading-l">Manage category</h2>
+  <h2 class="govuk-heading-m govuk-!-padding-top-4">Review date</h2>
     {% if not inProgress(data) %}
       <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0"><b>They are due to be reviewed by:</b></p>
       <p>{{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}</p>
+    {% else %}
+      <p>No review date has been scheduled</p>
     {% endif %}
 
     <h3 class="govuk-heading-m">Updates</h3>
@@ -41,8 +43,4 @@
         attributes: { 'id': 'nextReviewDateButton' }
     }) }}
    {% endif %}
-
-  {% else %}
-    <p>No review date has been scheduled</p>
-
 {% endif %}
