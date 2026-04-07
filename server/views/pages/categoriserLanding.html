@@ -16,7 +16,7 @@
 
 <div class="govuk-!-width-two-thirds">
   <h1 class="govuk-heading-l">Manage category</h1>
-  <h1 class="govuk-heading-m">Start an initial categorisation</h1>
+  <h2 class="govuk-heading-m">Start an initial categorisation</h2>
 
   {% include "../partials/tprsLandingBanner.html" %}
 
@@ -75,11 +75,11 @@
   {% include "../partials/nextReviewDate.html" %}
 
   {% if data.isSecurityReferred %}
-    <h1 class="govuk-heading-m">This person will automatically be referred to security at next category review</h1>
+    <h2 class="govuk-heading-m">This person will automatically be referred to security at next category review</h2>
     <p>Referred by {{ data.referrerUser.displayNameAlternative }}{% if data.prisonDescription %} of {{ data.prisonDescription}}{% endif %} on {{ data.referredDate }}.</p>
   {% endif %}
 
-  <h1 class="govuk-heading-m govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
+  <h2 class="govuk-heading-m govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h2>
   <p>See all information from previous category reviews.</p>
   {{ govukButton({
     text: 'Check previous reviews',
@@ -88,7 +88,7 @@
     attributes: { 'id': 'historyButton' }
   }) }}
 
-  <h1 class="govuk-heading-m govuk-!-padding-top-4" id="liteCategoriesHeading">Change security category</h1>
+  <h2 class="govuk-heading-m govuk-!-padding-top-4" id="liteCategoriesHeading">Change security category</h2>
   <p>This allows you to recategorise, for example to category A or unclassified.</p>
   {{ govukButton({
     text: 'Change category',

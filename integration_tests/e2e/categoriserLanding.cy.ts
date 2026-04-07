@@ -57,6 +57,7 @@ describe('Categoriser Landing page', () => {
     landingPage.initialButton().invoke('attr', 'href').should('contain', '/tasklist/12?reason=MANUAL')
     landingPage.validateNextReviewDateButtonExists({ exists: false })
     landingPage.warning().should('not.exist')
+    landingPage.previousCategoryHeading().should('contain', 'Check previous category reviews')
 
     landingPage.initialButton().click()
     Page.verifyOnPage(TaskListPage)
