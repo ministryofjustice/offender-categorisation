@@ -9,7 +9,7 @@ export default class CategoriserLandingPage extends BaseLandingPage {
   }
 
   constructor() {
-    super('Check previous category reviews')
+    super('Manage category')
   }
 
   static createForBookingId = (bookingId: number) => {
@@ -20,4 +20,5 @@ export default class CategoriserLandingPage extends BaseLandingPage {
   initialButton = (): PageElement => cy.get('#initialButton')
   editButton = (): PageElement => cy.get('#editButton')
   historyButton = (): PageElement => cy.get('#historyButton')
+  previousCategoryHeading = (): PageElement => cy.get('#previousCategoryHeading')
 }
