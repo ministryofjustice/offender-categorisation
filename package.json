@@ -78,7 +78,6 @@
   "nodemonConfig": {
     "ext": "js,mjs,json,html",
     "ignore": [
-      ".circleci/*",
       "migrations/*",
       "node_modules/*",
       "test/*"
