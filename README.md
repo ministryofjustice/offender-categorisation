@@ -2,7 +2,7 @@
 
 > A digital service for categorising prisoners
 
-[![CircleCI](https://circleci.com/gh/ministryofjustice/offender-categorisation/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/offender-categorisation/tree/main)
+[![pipeline](https://github.com/ministryofjustice/offender-categorisation/actions/workflows/pipeline.yml/badge.svg)](https://github.com/ministryofjustice/offender-categorisation)
 [![Known Vulnerabilities](https://snyk.io/test/github/ministryofjustice/offender-categorisation/badge.svg)](https://snyk.io/test/github/ministryofjustice/offender-categorisation)
 [![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/offender-categorisation/badge)](https://github-community.service.justice.gov.uk/repository-standards/offender-categorisation)
 
@@ -40,17 +40,17 @@ Offender-Categorisation is a nodeJS application which by default starts up and l
 
 It has services on which it depends :
 
-|              Dependency               | Description                                            | Default                                                              | Override Env Var                              |
-| :-----------------------------------: | :----------------------------------------------------- |:---------------------------------------------------------------------| :-------------------------------------------- |
-|              prison-api               | Nomis API providing prisons/offender information       | http://localhost:8080                                                | ELITE2API_ENDPOINT_URL                        |
-|              hmpps-auth               | OAuth2 API server for authenticating requests          | http://localhost:9090/auth                                           | RISK_PROFILER_ENDPOINT_URL                    |
-|          allocation-manager           | Allocation manager                                     | http://localhost:8083/                                               | ALLOCATION_MANAGER_ENDPOINT_URL               |
-|        postgres (form-builder)        | PostgreSQL database server for offender-categorisation | jdbc:postgresql://localhost:5432/form-builder                        | Uses port forwarding<br>DB_NAME found in Lens |
-|                 redis                 | Redis cache for user 'session' data (roles)            | localhost:6379/tcp                                                   |                                               |
-|              SQS (event)              | AWS SQS queue for events                               | http://localhost:4566<br>Name: event<br>(localstack)                 | EVENT_QUEUE_URL                                  |
-|        SQS (event dead letter)        | AWS SQS queue for events dead letter                   | http://localhost:4566<br>Name: event<br>(localstack)                 | EVENT_DL_QUEUE_URL                               |
-|              ingress url              |                                                        | http://localhost:3000/                                               | INGRESS_URL                                   |
-|                dps url                |                                                        | http://localhost:3000/                                               | DPS_URL                                       |
+|       Dependency        | Description                                            | Default                                              | Override Env Var                              |
+| :---------------------: | :----------------------------------------------------- | :--------------------------------------------------- | :-------------------------------------------- |
+|       prison-api        | Nomis API providing prisons/offender information       | http://localhost:8080                                | ELITE2API_ENDPOINT_URL                        |
+|       hmpps-auth        | OAuth2 API server for authenticating requests          | http://localhost:9090/auth                           | RISK_PROFILER_ENDPOINT_URL                    |
+|   allocation-manager    | Allocation manager                                     | http://localhost:8083/                               | ALLOCATION_MANAGER_ENDPOINT_URL               |
+| postgres (form-builder) | PostgreSQL database server for offender-categorisation | jdbc:postgresql://localhost:5432/form-builder        | Uses port forwarding<br>DB_NAME found in Lens |
+|          redis          | Redis cache for user 'session' data (roles)            | localhost:6379/tcp                                   |                                               |
+|       SQS (event)       | AWS SQS queue for events                               | http://localhost:4566<br>Name: event<br>(localstack) | EVENT_QUEUE_URL                               |
+| SQS (event dead letter) | AWS SQS queue for events dead letter                   | http://localhost:4566<br>Name: event<br>(localstack) | EVENT_DL_QUEUE_URL                            |
+|       ingress url       |                                                        | http://localhost:3000/                               | INGRESS_URL                                   |
+|         dps url         |                                                        | http://localhost:3000/                               | DPS_URL                                       |
 
 ## Other configuration
 
