@@ -5,7 +5,7 @@ export default class RecategoriserLandingPage extends BaseLandingPage {
   static baseUrl: string = '/:bookingId'
 
   constructor() {
-    super('Check previous category reviews')
+    super('Manage category')
   }
 
   recatButton = (): PageElement => cy.get('#recatButton')
