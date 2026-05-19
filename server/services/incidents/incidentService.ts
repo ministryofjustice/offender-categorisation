@@ -1,34 +1,48 @@
-import { isAfter, subMonths, toDate } from 'date-fns'
+import { IncidentReportingApiClient } from '../../data/incidentReportingApi/incidentReportingApiClient'
 import {
-  INCIDENT_STATUS_DUPLICATE,
-  NomisIncidentDto,
+  IncidentReport,
   QUESTION_ANSWER_YES,
   SERIOUS_ASSAULT_QUESTIONS,
-} from '../../data/nomis/incidents/nomisIncident.dto'
+} from '../../data/incidentReportingApi/incidentReport.dto'
 import { CountOfAssaultIncidents } from './countOfAssaultIncidents'
 
 const RECENT_ASSAULT_MONTHS = 12
 
-export const getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents = (
-  assaultIncidents: NomisIncidentDto[],
-): CountOfAssaultIncidents => {
-  const nonDuplicateAssaultIncidents = assaultIncidents.filter(
-    assaultIncident => assaultIncident.incidentStatus !== INCIDENT_STATUS_DUPLICATE,
+export const getCountOfRecentAssaultsAndSeriousAssaults = async (
+  incidentReportingApiClient: IncidentReportingApiClient,
+  prisonerNumber: string,
+): Promise<CountOfAssaultIncidents> => {
+  const countOfAssaults = await incidentReportingApiClient.getTotalNumberOfIncidents(prisonerNumber)
+
+  if (countOfAssaults === 0) {
+    return {
+      countOfAssaults: 0,
+      countOfRecentSeriousAssaults: 0,
+      countOfRecentNonSeriousAssaults: 0,
+    }
+  }
+
+  const recentIncidentIds = await incidentReportingApiClient.getIncidentIds(
+    prisonerNumber,
+    RECENT_ASSAULT_MONTHS,
+    countOfAssaults,
   )
-  const recentNonDuplicateAssaultIncidents = nonDuplicateAssaultIncidents.filter(
-    assaultIncident =>
-      assaultIncident.reportTime !== null &&
-      isAfter(toDate(assaultIncident.reportTime), subMonths(new Date(), RECENT_ASSAULT_MONTHS)),
+  const recentIncidents = await Promise.all(
+    recentIncidentIds.map(id => incidentReportingApiClient.getDetailedIncidentReport(id)),
   )
-  const countOfRecentSeriousAssaults = recentNonDuplicateAssaultIncidents.filter(assaultIncident =>
-    assaultIncident.responses.find(
-      response => SERIOUS_ASSAULT_QUESTIONS.includes(response.question) && response.answer === QUESTION_ANSWER_YES,
-    ),
-  ).length
+
+  const countOfRecentSeriousAssaults = recentIncidents.filter(isSeriousAssault).length
 
   return {
+    countOfAssaults,
     countOfRecentSeriousAssaults,
-    countOfAssaults: nonDuplicateAssaultIncidents.length,
-    countOfRecentNonSeriousAssaults: recentNonDuplicateAssaultIncidents.length - countOfRecentSeriousAssaults,
+    countOfRecentNonSeriousAssaults: recentIncidents.length - countOfRecentSeriousAssaults,
   }
 }
+
+const isSeriousAssault = (incident: IncidentReport): boolean =>
+  incident.questions.some(
+    question =>
+      SERIOUS_ASSAULT_QUESTIONS.includes(question.question.toUpperCase()) &&
+      question.responses.some(response => response.response.toUpperCase() === QUESTION_ANSWER_YES),
+  )

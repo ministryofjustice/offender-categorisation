@@ -7,10 +7,14 @@ import { FormDbJson } from '../../fixtures/db-key-convertor'
 import Status from '../../../server/utils/statusEnum'
 import ViolencePage from '../../pages/form/ratings/violence'
 import {
-  makeTestNomisIncidentDto,
-  makeTestNomisIncidentDtoResponse,
-} from '../../../server/data/nomis/incidents/nomisIncident.dto.test-factory'
-import { QUESTION_ANSWER_YES, SERIOUS_ASSAULT_QUESTIONS } from '../../../server/data/nomis/incidents/nomisIncident.dto'
+  makeTestIncidentReport,
+  makeTestQuestion,
+  makeTestResponse,
+} from '../../../server/data/incidentReportingApi/incidentReport.dto.test-factory'
+import {
+  QUESTION_ANSWER_YES,
+  SERIOUS_ASSAULT_QUESTIONS,
+} from '../../../server/data/incidentReportingApi/incidentReport.dto'
 
 describe('Violence', () => {
   let categoriserHomePage: CategoriserHomePage
@@ -187,53 +191,48 @@ describe('Violence', () => {
       cy.task('stubGetAssaultIncidents', {
         prisonerNumber: 'B2345YZ',
         assaultIncidents: [
-          makeTestNomisIncidentDto({
-            incidentStatus: 'Something',
-            reportTime: new Date().toDateString(),
-            responses: [
-              makeTestNomisIncidentDtoResponse({
+          makeTestIncidentReport({
+            id: '00000000-0000-0000-0000-000000000001',
+            questions: [
+              makeTestQuestion({
                 question: SERIOUS_ASSAULT_QUESTIONS[0],
-                answer: QUESTION_ANSWER_YES,
+                responses: [makeTestResponse({ response: QUESTION_ANSWER_YES })],
               }),
             ],
           }),
-          makeTestNomisIncidentDto({
-            incidentStatus: 'Something',
-            reportTime: new Date().toDateString(),
-            responses: [
-              makeTestNomisIncidentDtoResponse({
+          makeTestIncidentReport({
+            id: '00000000-0000-0000-0000-000000000002',
+            questions: [
+              makeTestQuestion({
                 question: SERIOUS_ASSAULT_QUESTIONS[0],
-                answer: QUESTION_ANSWER_YES,
+                responses: [makeTestResponse({ response: QUESTION_ANSWER_YES })],
               }),
             ],
           }),
-          makeTestNomisIncidentDto({
-            incidentStatus: 'Something',
-            reportTime: new Date().toDateString(),
-            responses: [
-              makeTestNomisIncidentDtoResponse({
+          makeTestIncidentReport({
+            id: '00000000-0000-0000-0000-000000000003',
+            questions: [
+              makeTestQuestion({
                 question: 'something',
-                answer: 'No',
+                responses: [makeTestResponse({ response: 'No' })],
               }),
             ],
           }),
-          makeTestNomisIncidentDto({
-            incidentStatus: 'Something',
-            reportTime: new Date().toDateString(),
-            responses: [
-              makeTestNomisIncidentDtoResponse({
+          makeTestIncidentReport({
+            id: '00000000-0000-0000-0000-000000000004',
+            questions: [
+              makeTestQuestion({
                 question: 'something',
-                answer: 'No',
+                responses: [makeTestResponse({ response: 'No' })],
               }),
             ],
           }),
-          makeTestNomisIncidentDto({
-            incidentStatus: 'Something',
-            reportTime: new Date().toDateString(),
-            responses: [
-              makeTestNomisIncidentDtoResponse({
+          makeTestIncidentReport({
+            id: '00000000-0000-0000-0000-000000000005',
+            questions: [
+              makeTestQuestion({
                 question: 'something',
-                answer: 'No',
+                responses: [makeTestResponse({ response: 'No' })],
               }),
             ],
           }),
