@@ -9,6 +9,7 @@ import formApi from './formApi'
 import pathfinderApi from './pathfinderApi'
 import alertsApi from './alertsApi'
 import adjudicationsApi from './adjudicationsApi'
+import incidentReportingApi from './incidentReportingApi'
 
 export default {
   ...allocationManager,
@@ -22,4 +23,5 @@ export default {
   ...pathfinderApi,
   ...alertsApi,
   ...adjudicationsApi,
+  ...incidentReportingApi,
 }
