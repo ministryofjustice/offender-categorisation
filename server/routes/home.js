@@ -117,7 +117,7 @@ module.exports = function Index({
     asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      const validation = joi.object({ hideFilter: joi.bool().required() }).unknown(true).validate(req.body)
+      const validation = joi.object({ hideFilter: joi.bool().required() }).validate(req.body, { stripUnknown: true })
       if (validation.error) {
         logger.error('Categoriser home page hide filter endpoint passed invalid value.', validation.error)
         res.sendStatus(400)
@@ -263,7 +263,7 @@ module.exports = function Index({
     asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      const validation = joi.object({ hideFilter: joi.bool().required() }).unknown(true).validate(req.body)
+      const validation = joi.object({ hideFilter: joi.bool().required() }).validate(req.body, { stripUnknown: true })
       if (validation.error) {
         logger.error('Recategoriser home page hide filter endpoint passed invalid value.', validation.error)
         res.sendStatus(400)
