@@ -1,5 +1,5 @@
 const express = require('express')
-const addRequestId = require('express-request-id')()
+const { randomUUID } = require('crypto')
 const moment = require('moment')
 const path = require('path')
 const noCache = require('nocache')
@@ -68,7 +68,17 @@ module.exports = function createApp({
   setUpEnvironmentName(app)
   nunjucksSetup(app, path)
   app.use(setUpWebSecurity())
-  app.use(addRequestId)
+
+  app.use((req, res, next) => {
+    const headerName = 'X-Request-Id'
+    const oldValue = req.get(headerName)
+    const id = oldValue === undefined ? randomUUID() : oldValue
+
+    res.set(headerName, id)
+    req.id = id
+
+    next()
+  })
 
   // should be moved to setUpWebSession middleware
   const client = redis.createClient({
