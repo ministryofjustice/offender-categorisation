@@ -194,6 +194,6 @@
 
 {% block bodyEnd %}
   {{ super() }}
-  <meta name="csrf-token" content="{{ csrfToken }}">
+  <meta name="_csrf" content="{{ csrfToken }}">
   <script type="module" src="/assets/js/categorisationHome.js"></script>
 {% endblock %}
