@@ -3,7 +3,6 @@ const { randomUUID } = require('crypto')
 const moment = require('moment')
 const path = require('path')
 const noCache = require('nocache')
-const csurf = require('csurf')
 const compression = require('compression')
 const passport = require('passport')
 const bodyParser = require('body-parser')
@@ -20,6 +19,7 @@ const createTasklistRouter = require('./routes/tasklist')
 const createTasklistRecatRouter = require('./routes/tasklistRecat')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
+const setUpCsrf = require('./middleware/setUpCsrf').default
 const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
 const setUpWebSecurity = require('./utils/setUpWebSecurity')
 const nunjucksSetup = require('./utils/nunjucksSetup')
@@ -35,7 +35,6 @@ const { authenticationMiddleware } = auth
 
 const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
-const testMode = process.env.NODE_ENV === 'test'
 
 module.exports = function createApp({
   formService,
@@ -189,9 +188,7 @@ module.exports = function createApp({
   app.use(noCache())
 
   // CSRF protection
-  if (!testMode) {
-    app.use(csurf())
-  }
+  app.use(setUpCsrf())
 
   // Update a value in the cookie so that the set-cookie will be sent.
   // Only changes every minute so that it's not sent with every request.
