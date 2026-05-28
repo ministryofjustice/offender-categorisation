@@ -21,13 +21,12 @@ if (hideFilterButton) {
       // eslint-disable-next-line no-param-reassign
       event.target.innerText = 'Hide filter'
     }
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content')
     await fetch('/categoriserHome/hide-filter', {
       method: 'POST',
-      body: JSON.stringify({ hideFilter }),
+      body: JSON.stringify({ hideFilter, _csrf: csrfToken }),
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken,
       },
     })
   })
