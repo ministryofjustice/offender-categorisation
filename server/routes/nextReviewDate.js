@@ -2,7 +2,7 @@ const express = require('express')
 const flash = require('connect-flash')
 const { firstItem, extractNextReviewDate } = require('../utils/functionalHelpers')
 const { calculateNextReviewDate, dateConverter, dateConverterToISO } = require('../utils/utils')
-const { handleCsrf, getPathFor } = require('../utils/routes')
+const { getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const nextReviewDate = require('../config/nextReviewDate')
 const Status = require('../utils/statusEnum')
@@ -16,7 +16,6 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.use(authenticationMiddleware())
   router.use(flash())
-  router.use(handleCsrf)
 
   router.get(
     '/nextReviewDate/:bookingId',
