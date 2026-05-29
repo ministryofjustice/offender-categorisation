@@ -198,6 +198,6 @@
 
 {% block bodyEnd %}
   {{ super() }}
-  <meta name="csrf-token" content="{{ csrfToken }}">
+  <meta name="_csrf" content="{{ csrfToken }}">
   <script type="module" src="/assets/js/recategoriserHome.js"></script>
 {% endblock %}

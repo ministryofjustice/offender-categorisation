@@ -12,7 +12,6 @@ const {
   formatDateForValidation,
   isFemalePrisonId,
 } = require('../utils/utils')
-const { handleCsrf } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 
 const joi = baseJoi.extend(dateExtend)
@@ -116,7 +115,6 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.use(authenticationMiddleware())
   router.use(flash())
-  router.use(handleCsrf)
 
   router.get(
     '/approveList',

@@ -3,7 +3,7 @@ const flash = require('connect-flash')
 const R = require('ramda')
 const joi = require('joi')
 const { firstItem } = require('../utils/functionalHelpers')
-const { handleCsrf, getPathFor } = require('../utils/routes')
+const { getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
@@ -26,8 +26,6 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.use(authenticationMiddleware())
   router.use(flash())
-
-  router.use(handleCsrf)
 
   router.get(
     '/furtherCharges/:bookingId',
