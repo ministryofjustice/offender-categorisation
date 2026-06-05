@@ -45,6 +45,7 @@ describe("Women's estate recategorisation", () => {
       startDates: [moment('2019-01-28').format('yyyy-MM-dd')],
     })
     cy.task('stubAssessments', { offenderNumber: testOffenderNumber })
+    cy.task('stubAssessmentsActiveOnly', { offenderNumber: testOffenderNumber })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: testOffenderNumber, formattedReleaseDate: '2014-11-23' })
     cy.task('stubOffenceHistory', { offenderNumber: testOffenderNumber })
     cy.task('stubGetOffenderDetailsWomen', {
