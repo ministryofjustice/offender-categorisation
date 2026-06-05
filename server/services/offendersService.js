@@ -368,7 +368,7 @@ module.exports = function createOffendersService(
         const [offenderDetailsFromNomis, userDetailFromElite, nomisCatData] = await Promise.all([
           nomisClient.getOffenderDetailList(securityReferredFromDB.map(c => c.offenderNo)),
           nomisClient.getUserDetailList(securityReferredFromDB.map(c => c.securityReferredBy)),
-          nomisClient.getLatestCategorisationForOffenders(
+          nomisClient.getLatestActiveCategorisationForOffenders(
             securityReferredFromDB.filter(c => c.catType === CatType.RECAT.name).map(c => c.offenderNo),
           ),
         ])
