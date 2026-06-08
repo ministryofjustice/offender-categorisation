@@ -1653,7 +1653,7 @@ const stubRecategorise = (
     stubFor({
       request: {
         method: 'POST',
-        url: `/elite2/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false`,
+        url: `/elite2/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=true`,
       },
       response: {
         status: 200,
