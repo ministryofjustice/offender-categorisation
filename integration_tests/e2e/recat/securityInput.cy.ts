@@ -35,7 +35,7 @@ describe('Security Input', () => {
       bookingIds: [12],
       startDates: [moment('2019-01-28').format('yyyy-MM-dd')],
     })
-    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
+    cy.task('stubAssessmentsActiveOnly', { offenderNumber: 'B2345YZ' })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
     cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
     cy.task('stubGetOffenderDetails', {

@@ -16,8 +16,8 @@ describe('Security Landing', () => {
     cy.task('deleteRowsFromSecurityReferral')
     cy.task('reset')
     cy.task('setUpDb')
-
     cy.task('getOffenderStub', { offenderNumber: testOffenderNumber })
+    cy.task('stubAssessmentsActiveOnly', { offenderNumber: testOffenderNumber })
     cy.task('stubSentenceData', {
       offenderNumbers: [testOffenderNumber],
       bookingIds: [testBookingId],

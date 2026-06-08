@@ -44,6 +44,11 @@ module.exports = context => {
       const path = `${apiUrl}api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false`
       return nomisPost({ path, body: offenderNos })
     },
+    getLatestActiveCategorisationForOffenders(offenderNos) {
+      if (offenderNos.length === 0) return []
+      const path = `${apiUrl}api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=true`
+      return nomisPost({ path, body: offenderNos })
+    },
     getRecategoriseOffenders(agencyId, cutoff) {
       const path = `${apiUrl}api/offender-assessments/category/${agencyId}?type=RECATEGORISATIONS&date=${cutoff}`
       return nomisUserGet({ path })
