@@ -129,6 +129,7 @@ afterEach(() => {
   nomisClient.getAgencyDetail.mockReset()
   nomisClient.getCategorisedOffenders.mockReset()
   nomisClient.getLatestCategorisationForOffenders.mockReset()
+  nomisClient.getLatestActiveCategorisationForOffenders.mockReset()
   nomisClient.updateNextReviewDate.mockReset()
   nomisClient.getBasicOffenderDetails.mockReset()
   formService.getLiteCategorisation.mockReset()
@@ -2745,7 +2746,7 @@ describe('getRiskChanges', () => {
     ]
 
     formService.getRiskChanges.mockResolvedValue(riskAlerts)
-    nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(latestCategorisations)
+    nomisClient.getLatestActiveCategorisationForOffenders.mockResolvedValue(latestCategorisations)
     nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
 
     const expected = [
@@ -2778,6 +2779,7 @@ describe('getRiskChanges', () => {
 
   test('No results from elite', async () => {
     nomisClient.getUncategorisedOffenders.mockResolvedValue([])
+    formService.getUnapprovedLite.mockResolvedValue([])
     const result = await service.getUnapprovedOffenders(context, 'LEI', mockTransactionalClient)
     expect(result).toHaveLength(0)
   })

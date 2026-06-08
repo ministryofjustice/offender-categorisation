@@ -489,7 +489,7 @@ module.exports = function createOffendersService(
         const offenderNos = changesFromDB.map(c => c.offenderNo)
         const [offenderDetailsFromElite, offenderCategorisationsFromElite] = await Promise.all([
           nomisClient.getOffenderDetailList(offenderNos),
-          nomisClient.getLatestCategorisationForOffenders(offenderNos),
+          nomisClient.getLatestActiveCategorisationForOffenders(offenderNos),
         ])
 
         const decoratedResults = changesFromDB.map(o => {
