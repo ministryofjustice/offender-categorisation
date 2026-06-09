@@ -30,6 +30,7 @@ const nomisClient = {
   getAgencyDetail: jest.fn(),
   getCategorisedOffenders: jest.fn(),
   getLatestCategorisationForOffenders: jest.fn(),
+  getLatestActiveCategorisationForOffenders: jest.fn(),
   updateNextReviewDate: jest.fn(),
   getBasicOffenderDetails: jest.fn(),
   getIdentifiersByBookingId: jest.fn(),
@@ -128,6 +129,7 @@ afterEach(() => {
   nomisClient.getAgencyDetail.mockReset()
   nomisClient.getCategorisedOffenders.mockReset()
   nomisClient.getLatestCategorisationForOffenders.mockReset()
+  nomisClient.getLatestActiveCategorisationForOffenders.mockReset()
   nomisClient.updateNextReviewDate.mockReset()
   nomisClient.getBasicOffenderDetails.mockReset()
   formService.getLiteCategorisation.mockReset()
@@ -1603,7 +1605,7 @@ describe('getReferredOffenders', () => {
 
     nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
     nomisClient.getUserDetailList.mockResolvedValue(userDetailsList)
-    nomisClient.getLatestCategorisationForOffenders.mockResolvedValue([
+    nomisClient.getLatestActiveCategorisationForOffenders.mockResolvedValue([
       { bookingId: 135, nextReviewDate: '2020-09-20' },
       { bookingId: 137, nextReviewDate: '2020-09-30' },
       { bookingId: -99, nextReviewDate: '2011-09-30' },
@@ -1656,7 +1658,7 @@ describe('getReferredOffenders', () => {
 
     expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
     expect(prisonerSearchClient.getPrisonersByBookingIds).toBeCalledTimes(1)
-    expect(nomisClient.getLatestCategorisationForOffenders).toBeCalledWith(['A1000AA', 'A1000AB'])
+    expect(nomisClient.getLatestActiveCategorisationForOffenders).toBeCalledWith(['A1000AA', 'A1000AB'])
     expect(result).toMatchObject(expected)
   })
 
@@ -1728,6 +1730,49 @@ describe('getReferredOffenders', () => {
     const result = await service.getReferredOffenders(context, mockTransactionalClient)
     expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
     expect(result).toEqual([])
+  })
+
+  test('it should use latest active categorisations for recat security referrals', async () => {
+    nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
+    nomisClient.getUserDetailList.mockResolvedValue(userDetailsList)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([])
+
+    formService.getSecurityReferredOffenders.mockResolvedValue([
+      {
+        id: -7,
+        bookingId: 137,
+        offenderNo: 'A1000AB',
+        userId: 'me',
+        status: Status.SECURITY_MANUAL.name,
+        formObject: '',
+        securityReferredDate: '2019-02-04',
+        securityReferredBy: 'BMAY',
+        catType: 'RECAT',
+      },
+    ])
+
+    nomisClient.getLatestActiveCategorisationForOffenders.mockResolvedValue([
+      {
+        offenderNo: 'A1000AB',
+        bookingId: 137,
+        nextReviewDate: '2025-12-24',
+        assessStatus: 'A',
+      },
+    ])
+
+    const result = await service.getReferredOffenders(context, mockTransactionalClient)
+
+    expect(nomisClient.getLatestActiveCategorisationForOffenders).toBeCalledWith(['A1000AB'])
+    expect(nomisClient.getLatestCategorisationForOffenders).not.toBeCalled()
+
+    expect(result).toMatchObject([
+      {
+        offenderNo: 'A1000AB',
+        bookingId: 137,
+        dateRequired: '24/12/2025',
+        catTypeDisplay: 'Recat',
+      },
+    ])
   })
 })
 
@@ -2701,7 +2746,7 @@ describe('getRiskChanges', () => {
     ]
 
     formService.getRiskChanges.mockResolvedValue(riskAlerts)
-    nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(latestCategorisations)
+    nomisClient.getLatestActiveCategorisationForOffenders.mockResolvedValue(latestCategorisations)
     nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
 
     const expected = [
@@ -2734,6 +2779,7 @@ describe('getRiskChanges', () => {
 
   test('No results from elite', async () => {
     nomisClient.getUncategorisedOffenders.mockResolvedValue([])
+    formService.getUnapprovedLite.mockResolvedValue([])
     const result = await service.getUnapprovedOffenders(context, 'LEI', mockTransactionalClient)
     expect(result).toHaveLength(0)
   })

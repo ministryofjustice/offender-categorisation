@@ -104,6 +104,36 @@ const stubAssessments = ({
     },
   })
 
+const stubAssessmentsActiveOnly = ({
+  offenderNumber,
+  emptyResponse = false,
+  bookingId = -45,
+}: {
+  offenderNumber: string
+  emptyResponse?: boolean
+  bookingId?: number
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      url: `/elite2/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=true`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: emptyResponse
+        ? []
+        : [
+            {
+              bookingId,
+              offenderNo: offenderNumber,
+              nextReviewDate: '2012-06-07',
+              assessStatus: 'A',
+            },
+          ],
+    },
+  })
+
 const stubAssessmentsWithCurrent = ({ offenderNumber }: { offenderNumber: string }): SuperAgentRequest =>
   stubFor({
     request: {
@@ -205,6 +235,43 @@ const stubAssessmentsWomen = ({
     request: {
       method: 'GET',
       url: `/elite2/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false&activeOnly=false`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: emptyResponse
+        ? []
+        : [
+            {
+              bookingId,
+              offenderNo,
+              classification: 'No Cat A',
+              assessmentCode: 'CATEGORY',
+              assessmentDescription: 'Categorisation',
+              cellSharingAlertFlag: false,
+              assessmentDate: '2012-04-04',
+              nextReviewDate: '2012-06-07',
+              approvalDate: '2012-06-08',
+              assessmentAgencyId: 'PFI',
+              assessmentStatus: 'No CAT A, Restricted',
+            },
+          ],
+    },
+  })
+
+const stubAssessmentsWomenActiveOnly = ({
+  offenderNo,
+  emptyResponse = false,
+  bookingId = -45,
+}: {
+  offenderNo: string
+  emptyResponse?: boolean
+  bookingId?: number
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      url: `/elite2/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=true&activeOnly=true`,
     },
     response: {
       status: 200,
@@ -1586,7 +1653,7 @@ const stubRecategorise = (
     stubFor({
       request: {
         method: 'POST',
-        url: `/elite2/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false`,
+        url: `/elite2/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=true`,
       },
       response: {
         status: 200,
@@ -1686,8 +1753,10 @@ export default {
   stubAgencyDetails,
   stubAgenciesPrison,
   stubAssessments,
+  stubAssessmentsActiveOnly,
   stubAssessmentsWithCurrent,
   stubAssessmentsWomen,
+  stubAssessmentsWomenActiveOnly,
   stubCategorise,
   stubCategoriseUpdate,
   stubCategorised,

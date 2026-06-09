@@ -368,7 +368,7 @@ module.exports = function createOffendersService(
         const [offenderDetailsFromNomis, userDetailFromElite, nomisCatData] = await Promise.all([
           nomisClient.getOffenderDetailList(securityReferredFromDB.map(c => c.offenderNo)),
           nomisClient.getUserDetailList(securityReferredFromDB.map(c => c.securityReferredBy)),
-          nomisClient.getLatestCategorisationForOffenders(
+          nomisClient.getLatestActiveCategorisationForOffenders(
             securityReferredFromDB.filter(c => c.catType === CatType.RECAT.name).map(c => c.offenderNo),
           ),
         ])
@@ -489,7 +489,7 @@ module.exports = function createOffendersService(
         const offenderNos = changesFromDB.map(c => c.offenderNo)
         const [offenderDetailsFromElite, offenderCategorisationsFromElite] = await Promise.all([
           nomisClient.getOffenderDetailList(offenderNos),
-          nomisClient.getLatestCategorisationForOffenders(offenderNos),
+          nomisClient.getLatestActiveCategorisationForOffenders(offenderNos),
         ])
 
         const decoratedResults = changesFromDB.map(o => {
