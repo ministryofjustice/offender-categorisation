@@ -249,6 +249,12 @@ module.exports = function createOffendersService(
             ? 'OTHER'
             : (inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status)) && 'PNOMIS'
 
+          if (pnomis === 'PNOMIS') {
+            logger.warn(
+              `getUncategorisedOffenders: Marking record as PNOMIS for booking id=${nomisRecord.bookingId}, offenderNo=${nomisRecord.offenderNo} due to status inconsistency or missing local record, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`,
+            )
+          }
+
           const sentence = sentenceMap.get(nomisRecord.bookingId)
           const row = {
             ...nomisRecord,
