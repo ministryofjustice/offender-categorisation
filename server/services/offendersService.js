@@ -245,21 +245,13 @@ module.exports = function createOffendersService(
             (nomisStatusUncategorised &&
               (dbRecord.status === Status.AWAITING_APPROVAL.name || dbRecord.status === Status.APPROVED.name))
 
-          const pnomis = liteInProgress
-            ? 'OTHER'
-            : (inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status)) && 'PNOMIS'
-
-          if (pnomis === 'PNOMIS') {
-            logger.warn(
-              `getUncategorisedOffenders: Marking record as PNOMIS for booking id=${nomisRecord.bookingId}, offenderNo=${nomisRecord.offenderNo} due to status inconsistency or missing local record, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`,
-            )
-          }
+          const pnomis = liteInProgress ? 'OTHER' : false
 
           const sentence = sentenceMap.get(nomisRecord.bookingId)
           const row = {
             ...nomisRecord,
             displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
-            ...buildSentenceData(sentence && sentence.sentenceDate),
+            ...buildSentenceData(sentence && sentence.sentenceDate, assessmentData),
             ...(await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)),
             pnomis,
             pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
@@ -379,7 +371,7 @@ module.exports = function createOffendersService(
           ),
         ])
 
-        const decoratedResults = securityReferredFromDB.map(o => {
+        const decoratedResults = securityReferredFromDB.map(async o => {
           const offenderDetail = offenderDetailsFromNomis.find(record => record.offenderNo === o.offenderNo)
           if (!offenderDetail) {
             logger.error(`Offender ${o.offenderNo} in DB not found in NOMIS`)
@@ -397,7 +389,8 @@ module.exports = function createOffendersService(
           let sentenceAndDate
           if (o.catType === CatType.INITIAL.name) {
             const entry = sentenceMap.get(o.bookingId)
-            sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
+            const assessmentData = await formService.getLiteCategorisation(o.bookingId)
+            sentenceAndDate = entry && buildSentenceData(entry.sentenceDate, assessmentData)
           } else {
             const nomisCat = nomisCatData.find(record => record.bookingId === o.bookingId)
             sentenceAndDate = { dateRequired: nomisCat && dateConverter(nomisCat.nextReviewDate) }
@@ -447,7 +440,7 @@ module.exports = function createOffendersService(
             .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }]),
         )
 
-        const decoratedResults = newSecurityReferred.map(o => {
+        const decoratedResults = newSecurityReferred.map(async o => {
           const offenderDetail = offenderDetailsFromNomis.find(record => record.offenderNo === o.offenderNo)
           if (!offenderDetail) {
             logger.error(`Offender ${o.offenderNo} in DB not found in NOMIS`)
@@ -463,7 +456,8 @@ module.exports = function createOffendersService(
           }
 
           const entry = sentenceMap.get(offenderDetail.bookingId)
-          const sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
+          const assessmentData = await formService.getLiteCategorisation(offenderDetail.bookingId)
+          const sentenceAndDate = entry && buildSentenceData(entry.sentenceDate, assessmentData)
 
           return {
             ...o,
@@ -608,9 +602,13 @@ module.exports = function createOffendersService(
 
       const sentenceMap = await getSentenceMap(unapprovedOffenders, prisonerSearchClient)
 
-      const decoratedResults = unapprovedOffenders.map(o => {
+      const decoratedResults = unapprovedOffenders.map(async o => {
         const sentencedOffender = sentenceMap.get(o.bookingId)
-        const sentenceData = sentencedOffender ? buildSentenceData(sentencedOffender.sentenceDate) : {}
+        let sentenceData = {}
+        if (sentencedOffender) {
+          const assessmentData = await formService.getLiteCategorisation(o.bookingId)
+          sentenceData = buildSentenceData(sentencedOffender.sentenceDate, assessmentData)
+        }
         const dbRecordExists = !!o.dbRecord.bookingId
         const row = {
           ...o,
@@ -1175,7 +1173,7 @@ module.exports = function createOffendersService(
     }
   }
 
-  function buildSentenceData(sentenceDate) {
+  function buildSentenceData(sentenceDate, liteCat) {
     if (!sentenceDate) {
       return {}
     }
@@ -1183,7 +1181,10 @@ module.exports = function createOffendersService(
     const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
 
     const actualDays = get10BusinessDays(sentenceDateMoment)
-    const dateRequiredRaw = sentenceDateMoment.add(actualDays, 'day')
+    const dateRequiredRaw =
+      !liteCat || (liteCat.bookingId && !liteCat.approvedDate)
+        ? sentenceDateMoment.add(actualDays, 'day')
+        : liteCat.nextReviewDate
     const dateRequired = dateRequiredRaw.format('DD/MM/YYYY')
     const now = moment(0, 'HH')
     const overdue = dateRequiredRaw.isBefore(now)
