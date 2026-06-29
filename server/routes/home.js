@@ -445,11 +445,17 @@ module.exports = function Index({
   )
 
   router.get(
-    '/:role(categoriser|supervisor|security|recategoriser)Landing/:bookingId',
+    [
+      '/categoriserLanding/:bookingId',
+      '/supervisorLanding/:bookingId',
+      '/securityLanding/:bookingId',
+      '/recategoriserLanding/:bookingId',
+    ],
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      const { role, bookingId } = req.params
+      const { bookingId } = req.params
+      const role = req.path.split('/')[1].replace(/landing$/i, '')
       const [details, categorisationRecord] = await Promise.all([
         offendersService.getOffenderDetails(res.locals, bookingId),
         formService.getCategorisationRecord(bookingId, transactionalDbClient),

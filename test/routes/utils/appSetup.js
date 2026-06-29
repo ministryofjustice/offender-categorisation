@@ -9,6 +9,7 @@ const setUpWebRequestParsing = require('../../../server/middleware/setUpRequestP
 
 module.exports = (route, production = false) => {
   const app = express()
+  app.set('query parser', 'extended')
 
   app.set('view engine', 'html')
 
