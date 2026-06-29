@@ -3,7 +3,6 @@ const express = require('express')
 const flash = require('connect-flash')
 const joi = require('joi')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
-const asyncMiddleware = require('../middleware/asyncMiddleware').default
 const { redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
@@ -65,50 +64,47 @@ module.exports = function Index({
     }),
   )
 
-  router.get(
-    '/categoriserHome',
-    asyncMiddleware(async (req, res) => {
-      const validation = categorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
-      if (validation.error) {
-        logger.error('Categoriser home page submitted with invalid filters.', validation.error)
-        res.render('pages/error', {
-          message: 'Invalid recategoriser home filters',
-        })
-        return
-      }
-
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-
-      // Can be removed after pilot of categorisation filter
-      if (validation.value.filterRemoved) {
-        logger.info(`Categorisation Filter: filter removed using chips: ${validation.value.filterRemoved}`)
-        delete validation.value.filterRemoved
-      }
-
-      const { sortAttribute } = validation.value
-      const sortDirection = validation.value.sortDirection ?? 'none'
-      delete validation.value.sortAttribute
-      delete validation.value.sortDirection
-
-      const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getUncategorisedOffenders(res.locals, user, validation.value)
-        : []
-
-      res.render('pages/categoriserHome', {
-        offenders,
-        filters: validation.value,
-        allFilters: categorisationHomeFilters,
-        filterKeys: recategorisationHomeFilterKeys,
-        numberOfFiltersApplied: Object.values(validation.value).flat().length,
-        url: 'categoriserHome',
-        fullUrl: req.url,
-        hideHomeFilter: req.session.hideCategoriserHomeFilter ?? false,
-        sortAttribute,
-        sortDirection,
+  router.get('/categoriserHome', async (req, res) => {
+    const validation = categorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
+    if (validation.error) {
+      logger.error('Categoriser home page submitted with invalid filters.', validation.error)
+      res.render('pages/error', {
+        message: 'Invalid recategoriser home filters',
       })
-    }),
-  )
+      return
+    }
+
+    const user = await userService.getUser(res.locals)
+    res.locals.user = { ...user, ...res.locals.user }
+
+    // Can be removed after pilot of categorisation filter
+    if (validation.value.filterRemoved) {
+      logger.info(`Categorisation Filter: filter removed using chips: ${validation.value.filterRemoved}`)
+      delete validation.value.filterRemoved
+    }
+
+    const { sortAttribute } = validation.value
+    const sortDirection = validation.value.sortDirection ?? 'none'
+    delete validation.value.sortAttribute
+    delete validation.value.sortDirection
+
+    const offenders = res.locals.user.activeCaseLoad
+      ? await offendersService.getUncategorisedOffenders(res.locals, user, validation.value)
+      : []
+
+    res.render('pages/categoriserHome', {
+      offenders,
+      filters: validation.value,
+      allFilters: categorisationHomeFilters,
+      filterKeys: recategorisationHomeFilterKeys,
+      numberOfFiltersApplied: Object.values(validation.value).flat().length,
+      url: 'categoriserHome',
+      fullUrl: req.url,
+      hideHomeFilter: req.session.hideCategoriserHomeFilter ?? false,
+      sortAttribute,
+      sortDirection,
+    })
+  })
 
   router.post(
     '/categoriserHome/hide-filter',
@@ -165,27 +161,21 @@ module.exports = function Index({
     }),
   )
 
-  router.get(
-    '/supervisorHome',
-    asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
+  router.get('/supervisorHome', async (req, res) => {
+    const user = await userService.getUser(res.locals)
+    res.locals.user = { ...user, ...res.locals.user }
 
-      const offenders = res.locals.user.activeCaseLoad ? await offendersService.getUnapprovedOffenders(res.locals) : []
-      res.render('pages/supervisorHome', { offenders })
-    }),
-  )
+    const offenders = res.locals.user.activeCaseLoad ? await offendersService.getUnapprovedOffenders(res.locals) : []
+    res.render('pages/supervisorHome', { offenders })
+  })
 
-  router.get(
-    '/securityHome',
-    asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
+  router.get('/securityHome', async (req, res) => {
+    const user = await userService.getUser(res.locals)
+    res.locals.user = { ...user, ...res.locals.user }
 
-      const offenders = res.locals.user.activeCaseLoad ? await offendersService.getReferredOffenders(res.locals) : []
-      res.render('pages/securityHome', { offenders })
-    }),
-  )
+    const offenders = res.locals.user.activeCaseLoad ? await offendersService.getReferredOffenders(res.locals) : []
+    res.render('pages/securityHome', { offenders })
+  })
 
   router.get(
     '/securityUpcoming',
@@ -200,19 +190,13 @@ module.exports = function Index({
     }),
   )
 
-  router.get(
-    '/recategoriserHome',
-    asyncMiddleware(async (req, res) => {
-      return recategoriserHome(req, res)
-    }),
-  )
+  router.get('/recategoriserHome', async (req, res) => {
+    return recategoriserHome(req, res)
+  })
 
-  router.get(
-    '/recategoriserHomeDevelopment',
-    asyncMiddleware(async (req, res) => {
-      return recategoriserHome(req, res, true)
-    }),
-  )
+  router.get('/recategoriserHomeDevelopment', async (req, res) => {
+    return recategoriserHome(req, res, true)
+  })
 
   const recategoriserHome = async (req, res, withSi1481Changes = false) => {
     const user = await userService.getUser(res.locals)

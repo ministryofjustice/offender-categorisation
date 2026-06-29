@@ -5,7 +5,6 @@ const path = require('path')
 const noCache = require('nocache')
 const compression = require('compression')
 const passport = require('passport')
-const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const redis = require('redis')
 const session = require('express-session')
@@ -30,6 +29,7 @@ const createNextReviewDateRouter = require('./routes/nextReviewDate')
 const createLiteCategoriesRouter = require('./routes/liteCategories')
 const errorHandler = require('./errorHandler')
 const featureFlagMiddleware = require('./middleware/featureFlagMiddleware')
+const setUpWebRequestParsing = require('./middleware/setUpRequestParsing').default
 
 const { authenticationMiddleware } = auth
 
@@ -103,8 +103,7 @@ module.exports = function createApp({
   app.use(passport.session())
 
   // Request Processing Configuration
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(setUpWebRequestParsing())
 
   // Resource Delivery Configuration
   app.use(compression())
