@@ -444,54 +444,52 @@ module.exports = function Index({
     }),
   )
 
-  router.get(
-    [
-      '/categoriserLanding/:bookingId',
-      '/supervisorLanding/:bookingId',
-      '/securityLanding/:bookingId',
-      '/recategoriserLanding/:bookingId',
-    ],
-    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      const { bookingId } = req.params
-      const role = req.path.split('/')[1].replace(/landing$/i, '')
-      const [details, categorisationRecord] = await Promise.all([
-        offendersService.getOffenderDetails(res.locals, bookingId),
-        formService.getCategorisationRecord(bookingId, transactionalDbClient),
-      ])
+  const roles = ['categoriser', 'supervisor', 'security', 'recategoriser']
 
-      const [securityReferral, categorisationUser, categoryHistory] = await Promise.all([
-        getSecurityReferral(res.locals, details.offenderNo, transactionalDbClient),
-        getCategorisationUserForSecurityDisplay(res.locals, categorisationRecord),
-        offendersService.getCategoryHistory(res.locals, bookingId, transactionalDbClient),
-      ])
+  roles.forEach(role => {
+    router.get(
+      `/${role}Landing/:bookingId`,
+      asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
+        const user = await userService.getUser(res.locals)
+        res.locals.user = { ...user, ...res.locals.user }
+        const { bookingId } = req.params
+        const [details, categorisationRecord] = await Promise.all([
+          offendersService.getOffenderDetails(res.locals, bookingId),
+          formService.getCategorisationRecord(bookingId, transactionalDbClient),
+        ])
 
-      const nextReviewDate = extractNextReviewDate(details)
-      const requiredCatType = offendersService.requiredCatType(
-        parseInt(bookingId, 10),
-        details.categoryCode,
-        categoryHistory.history,
-      )
+        const [securityReferral, categorisationUser, categoryHistory] = await Promise.all([
+          getSecurityReferral(res.locals, details.offenderNo, transactionalDbClient),
+          getCategorisationUserForSecurityDisplay(res.locals, categorisationRecord),
+          offendersService.getCategoryHistory(res.locals, bookingId, transactionalDbClient),
+        ])
 
-      const nextReviewDateHistory = await formService.getNextReview(details.offenderNo, transactionalDbClient)
-      const firstRecord = categoryHistory?.history.length > 0 && categoryHistory.history[0]
-      res.render(`pages/${role}Landing`, {
-        data: {
-          requiredCatType,
-          inProgressCatType: categorisationRecord.catType,
-          nextReviewDate,
-          ...securityReferral,
-          details,
-          categorisationUser,
-          status: categorisationRecord.status,
-          hasTprsSelected: (firstRecord?.tprsSelected && isOpenCategory(firstRecord?.classificationCode)) || false,
-          tprsDate: firstRecord?.tprsSelected ? firstRecord.approvalDate : '',
-          nextReviewDateHistory,
-        },
-      })
-    }),
-  )
+        const nextReviewDate = extractNextReviewDate(details)
+        const requiredCatType = offendersService.requiredCatType(
+          parseInt(bookingId, 10),
+          details.categoryCode,
+          categoryHistory.history,
+        )
+
+        const nextReviewDateHistory = await formService.getNextReview(details.offenderNo, transactionalDbClient)
+        const firstRecord = categoryHistory?.history.length > 0 && categoryHistory.history[0]
+        res.render(`pages/${role}Landing`, {
+          data: {
+            requiredCatType,
+            inProgressCatType: categorisationRecord.catType,
+            nextReviewDate,
+            ...securityReferral,
+            details,
+            categorisationUser,
+            status: categorisationRecord.status,
+            hasTprsSelected: (firstRecord?.tprsSelected && isOpenCategory(firstRecord?.classificationCode)) || false,
+            tprsDate: firstRecord?.tprsSelected ? firstRecord.approvalDate : '',
+            nextReviewDateHistory,
+          },
+        })
+      }),
+    )
+  })
 
   router.get(
     '/landing/:bookingId',

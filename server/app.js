@@ -56,7 +56,6 @@ module.exports = function createApp({
   app.set('trust proxy', true)
   // Server Configuration
   app.set('port', process.env.PORT || 3000)
-  // Preserve legacy filter query parsing (e.g. field[]=a&field[]=b -> field: ['a','b']).
   app.set('query parser', 'extended')
 
   app.get('/ping', (req, res) => {
