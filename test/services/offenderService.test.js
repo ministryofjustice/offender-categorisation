@@ -942,7 +942,7 @@ describe('getUncategorisedOffenders', () => {
     expect(result[0].pnomis).toBe('PNOMIS')
   })
 
-  test('new test', async () => {
+  test('does not show PNOMIS when there is an approved lite cat with category U', async () => {
     const uncategorised = [
       {
         offenderNo: 'G12345',
