@@ -919,7 +919,7 @@ describe('getUncategorisedOffenders', () => {
     }
   })
 
-  test('it returns a pnomis marker for inconsistent data', async () => {
+  test('it handles inconsistent data', async () => {
     const uncategorised = [
       {
         offenderNo: 'G12345',
@@ -940,6 +940,33 @@ describe('getUncategorisedOffenders', () => {
 
     const result = await service.getUncategorisedOffenders(context, 'user1')
     expect(result[0].pnomis).toBe('PNOMIS')
+  })
+
+  test('new test', async () => {
+    const uncategorised = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        status: Status.UNCATEGORISED.name,
+      },
+    ]
+
+    const dbRecord = { bookingId: 1, nomisSeq: 11, catType: 'INITIAL', status: Status.AWAITING_APPROVAL.name }
+
+    const sentenceDates = [{ bookingId: 123, sentenceStartDate: mockTodaySubtract(4) }]
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    formService.getLiteCategorisation.mockResolvedValue({
+      category: 'U',
+      status: 'APPROVED',
+    })
+    formService.getCategorisationRecords.mockResolvedValue([])
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
+    formService.getCategorisationRecord.mockResolvedValue(dbRecord)
+
+    const result = await service.getUncategorisedOffenders(context, 'user1')
+    expect(result[0].pnomis).toBe(false)
   })
 
   test('it filters out IS91s', async () => {
