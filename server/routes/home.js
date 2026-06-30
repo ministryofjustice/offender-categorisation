@@ -69,7 +69,7 @@ module.exports = function Index({
     if (validation.error) {
       logger.error('Categoriser home page submitted with invalid filters.', validation.error)
       res.render('pages/error', {
-        message: 'Invalid recategoriser home filters',
+        message: 'Invalid categoriser home filters',
       })
       return
     }
