@@ -1194,7 +1194,7 @@ module.exports = function createOffendersService(
     const dateRequiredRaw =
       typeof liteCat === 'undefined' || !liteCat.approvedDate
         ? sentenceDateMoment.add(actualDays, 'day')
-        : liteCat.nextReviewDate
+        : moment(liteCat.nextReviewDate, 'YYYY-MM-DD')
     const dateRequired = dateRequiredRaw.format('DD/MM/YYYY')
     const now = moment(0, 'HH')
     const overdue = dateRequiredRaw.isBefore(now)

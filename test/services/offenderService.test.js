@@ -960,6 +960,8 @@ describe('getUncategorisedOffenders', () => {
     formService.getLiteCategorisation.mockResolvedValue({
       category: 'U',
       status: 'APPROVED',
+      approvedDate: '2024-01-01',
+      nextReviewDate: '2027-01-01',
     })
     formService.getCategorisationRecords.mockResolvedValue([])
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
@@ -967,6 +969,7 @@ describe('getUncategorisedOffenders', () => {
 
     const result = await service.getUncategorisedOffenders(context, 'user1')
     expect(result[0].pnomis).toBe(false)
+    expect(result[0].dateRequired).toBe('01/01/2027')
   })
 
   test('it filters out IS91s', async () => {
