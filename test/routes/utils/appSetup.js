@@ -1,14 +1,15 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const nunjucksSetup = require('../../../server/utils/nunjucksSetup')
 const errorHandler = require('../../../server/errorHandler')
 const featureFlagMiddleware = require('../../../server/middleware/featureFlagMiddleware')
+const setUpWebRequestParsing = require('../../../server/middleware/setUpRequestParsing').default
 
 module.exports = (route, production = false) => {
   const app = express()
+  app.set('query parser', 'extended')
 
   app.set('view engine', 'html')
 
@@ -26,8 +27,7 @@ module.exports = (route, production = false) => {
     next()
   })
   app.use(cookieSession({ keys: [''] }))
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(setUpWebRequestParsing())
   app.use(cookieParser())
   app.use(featureFlagMiddleware)
   app.use('/', route)
