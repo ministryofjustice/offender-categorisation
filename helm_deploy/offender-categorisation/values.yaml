@@ -2,7 +2,7 @@
 generic-service:
   nameOverride: offender-categorisation
   serviceAccountName: offender-categorisation
-  productId: "DPS006"
+  productId: 'DPS006'
 
   image:
     repository: ghcr.io/ministryofjustice/offender-categorisation
@@ -17,8 +17,8 @@ generic-service:
     v0_47_enabled: false
     annotations:
     modsecurity_snippet: |
-        SecRuleEngine On
-        SecRuleRemoveById 949110
+      SecRuleEngine On
+      SecRuleRemoveById 949110
     tlsSecretName: offender-categorisation-cert
 
   livenessProbe:
@@ -39,36 +39,35 @@ generic-service:
     failureThreshold: 15
 
   env:
-    DB_SSL_ENABLED: "true"
-    REDIS_TLS_ENABLED: "true"
-    APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
+    DB_SSL_ENABLED: 'true'
+    REDIS_TLS_ENABLED: 'true'
+    APPLICATIONINSIGHTS_CONNECTION_STRING: 'InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)'
 
   namespace_secrets:
     dps-rds-instance-output:
-      DB_PASS: "database_password"
-      DB_USER: "database_username"
-      DB_SERVER: "rds_instance_address"
-      DB_NAME: "database_name"
+      DB_PASS: 'database_password'
+      DB_USER: 'database_username'
+      DB_SERVER: 'rds_instance_address'
+      DB_NAME: 'database_name'
 
     offender-categorisation:
-      APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
-      AUTH_CODE_CLIENT_ID: "AUTH_CODE_CLIENT_ID"
-      AUTH_CODE_CLIENT_SECRET: "AUTH_CODE_CLIENT_SECRET"
-      CLIENT_CREDS_CLIENT_ID: "CLIENT_CREDS_CLIENT_ID"
-      CLIENT_CREDS_CLIENT_SECRET: "CLIENT_CREDS_CLIENT_SECRET"
-      SESSION_SECRET: "SESSION_SECRET"
-      GOOGLE_TAG_MANAGER_TAG: "GOOGLE_TAG_MANAGER_TAG"
+      APPINSIGHTS_INSTRUMENTATIONKEY: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+      AUTH_CODE_CLIENT_ID: 'AUTH_CODE_CLIENT_ID'
+      AUTH_CODE_CLIENT_SECRET: 'AUTH_CODE_CLIENT_SECRET'
+      CLIENT_CREDS_CLIENT_ID: 'CLIENT_CREDS_CLIENT_ID'
+      CLIENT_CREDS_CLIENT_SECRET: 'CLIENT_CREDS_CLIENT_SECRET'
+      SESSION_SECRET: 'SESSION_SECRET'
+      GOOGLE_TAG_MANAGER_TAG: 'GOOGLE_TAG_MANAGER_TAG'
 
     ocu-events-sqs-instance-output:
-      EVENT_QUEUE_URL: "url"
+      EVENT_QUEUE_URL: 'url'
 
     ocu-events-sqs-dl-instance-output:
-      EVENT_DL_QUEUE_URL: "url"
+      EVENT_DL_QUEUE_URL: 'url'
 
     oc-elasticache-redis:
-      REDIS_HOST: "primary_endpoint_address"
-      REDIS_AUTH_TOKEN: "auth_token"
-
+      REDIS_HOST: 'primary_endpoint_address'
+      REDIS_AUTH_TOKEN: 'auth_token'
 
 generic-prometheus-alerts:
   targetApplication: offender-categorisation
