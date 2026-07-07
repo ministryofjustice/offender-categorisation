@@ -1,3 +1,9 @@
+// Initialise telemetry before any other modules are loaded so instrumentation patches are applied first
+/* eslint-disable import/order */
+const { initialise } = require('./server/utils/azureAppInsights')
+
+initialise('offender-categorisation')
+
 const knex = require('knex')
 const knexfile = require('./knexfile')
 const { app, sqsService } = require('./server/index')
