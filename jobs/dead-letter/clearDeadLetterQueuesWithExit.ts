@@ -1,22 +1,21 @@
 /*
- * Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
- * In particular, applicationinsights automatically collects bunyan logs
+ * Initialise telemetry
  */
-/* eslint-disable import/first */
-import { initialiseAppInsights, buildAppInsightsClient } from '../../server/utils/azure-appinsights'
-
-initialiseAppInsights()
-buildAppInsightsClient()
-
-import { clearDLQs } from './clearDeadLetterQueues'
+import { flushTelemetry } from '@ministryofjustice/hmpps-azure-telemetry'
+import { initialise } from '../../server/utils/azureAppInsights'
 import logger from '../../log'
 
-clearDLQs()
-  .then(() => {
-    // Flush logs to app insights and only exit when complete
-    // appInsights.flush({ callback: () => process.exit() })
-  })
-  .catch(error => {
-    logger.error(error, 'Problem polling')
-    // appInsights.flush({ callback: () => process.exit() })
-  })
+initialise('offender-categorisation-dlq-job')
+
+// eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+const { clearDLQs } = require('./clearDeadLetterQueues') as { clearDLQs: () => Promise<void> }
+
+// eslint-disable-next-line func-names
+setTimeout(function () {
+  clearDLQs()
+    .then(() => flushTelemetry().finally(() => process.exit(0)))
+    .catch(error => {
+      logger.error(error, 'Problem polling')
+      flushTelemetry().finally(() => process.exit(1))
+    })
+}, 5000)
