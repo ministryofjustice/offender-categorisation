@@ -193,6 +193,10 @@
     "uuid": ">=11.1.1",
     "@typescript-eslint/typescript-estree": {
       "minimatch": ">=9.0.7"
+    },
+    "qs": ">=6.15.2",
+    "@istanbuljs/load-nyc-config": {
+      "js-yaml": "^3.15.0"
     }
   }
 }
