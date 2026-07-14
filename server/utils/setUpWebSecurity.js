@@ -15,7 +15,11 @@ module.exports = function setUpWebSecurity() {
   })
 
   const googleDomains = ['*.google-analytics.com', '*.analytics.google.com', '*.googletagmanager.com']
-  const azureUrls = ['https://northeurope-0.in.applicationinsights.azure.com', '*.monitor.azure.com']
+  const azureUrls = [
+    'https://northeurope-0.in.applicationinsights.azure.com',
+    '*.monitor.azure.com',
+    'https://dc.services.visualstudio.com',
+  ]
   const nonceFn = (_req, res) => `'nonce-${res.locals.cspNonce}'`
 
   const scriptSrc = ["'self'", ...googleDomains, ...azureUrls, nonceFn]
