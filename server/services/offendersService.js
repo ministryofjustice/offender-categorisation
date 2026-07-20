@@ -247,19 +247,15 @@ module.exports = function createOffendersService(
 
           const pnomis = liteInProgress
             ? 'OTHER'
-            : (inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status)) && 'PNOMIS'
-
-          if (pnomis === 'PNOMIS') {
-            logger.warn(
-              `getUncategorisedOffenders: Marking record as PNOMIS for booking id=${nomisRecord.bookingId}, offenderNo=${nomisRecord.offenderNo} due to status inconsistency or missing local record, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`,
-            )
-          }
+            : (!assessmentData.category || assessmentData.category !== 'U') &&
+              (inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status)) &&
+              'PNOMIS'
 
           const sentence = sentenceMap.get(nomisRecord.bookingId)
           const row = {
             ...nomisRecord,
             displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
-            ...buildSentenceData(sentence && sentence.sentenceDate),
+            ...buildSentenceData(sentence && sentence.sentenceDate, assessmentData),
             ...(await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)),
             pnomis,
             pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
@@ -379,40 +375,43 @@ module.exports = function createOffendersService(
           ),
         ])
 
-        const decoratedResults = securityReferredFromDB.map(o => {
-          const offenderDetail = offenderDetailsFromNomis.find(record => record.offenderNo === o.offenderNo)
-          if (!offenderDetail) {
-            logger.error(`Offender ${o.offenderNo} in DB not found in NOMIS`)
-            return o
-          }
+        const decoratedResults = await Promise.all(
+          securityReferredFromDB.map(async o => {
+            const offenderDetail = offenderDetailsFromNomis.find(record => record.offenderNo === o.offenderNo)
+            if (!offenderDetail) {
+              logger.error(`Offender ${o.offenderNo} in DB not found in NOMIS`)
+              return o
+            }
 
-          let securityReferredBy
-          if (o.securityReferredBy) {
-            const referrer = userDetailFromElite.find(record => record.username === o.securityReferredBy)
-            securityReferredBy = referrer
-              ? `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`
-              : o.securityReferredBy
-          }
+            let securityReferredBy
+            if (o.securityReferredBy) {
+              const referrer = userDetailFromElite.find(record => record.username === o.securityReferredBy)
+              securityReferredBy = referrer
+                ? `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`
+                : o.securityReferredBy
+            }
 
-          let sentenceAndDate
-          if (o.catType === CatType.INITIAL.name) {
-            const entry = sentenceMap.get(o.bookingId)
-            sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
-          } else {
-            const nomisCat = nomisCatData.find(record => record.bookingId === o.bookingId)
-            sentenceAndDate = { dateRequired: nomisCat && dateConverter(nomisCat.nextReviewDate) }
-          }
+            let sentenceAndDate
+            if (o.catType === CatType.INITIAL.name) {
+              const entry = sentenceMap.get(o.bookingId)
+              const assessmentData = await formService.getLiteCategorisation(o.bookingId)
+              sentenceAndDate = entry && buildSentenceData(entry.sentenceDate, assessmentData)
+            } else {
+              const nomisCat = nomisCatData.find(record => record.bookingId === o.bookingId)
+              sentenceAndDate = { dateRequired: nomisCat && dateConverter(nomisCat.nextReviewDate) }
+            }
 
-          return {
-            ...o,
-            offenderNo: offenderDetail.offenderNo,
-            displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
-            securityReferredBy,
-            ...sentenceAndDate,
-            catTypeDisplay: CatType[o.catType].value,
-            buttonText: getIn(['formObject', 'security', 'review', 'securityReview'], o) ? 'Edit' : 'Start',
-          }
-        })
+            return {
+              ...o,
+              offenderNo: offenderDetail.offenderNo,
+              displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
+              securityReferredBy,
+              ...sentenceAndDate,
+              catTypeDisplay: CatType[o.catType].value,
+              buttonText: getIn(['formObject', 'security', 'review', 'securityReview'], o) ? 'Edit' : 'Start',
+            }
+          }),
+        )
 
         return decoratedResults.sort((a, b) => sortByDateTime(b.dateRequired, a.dateRequired))
       }
@@ -447,33 +446,36 @@ module.exports = function createOffendersService(
             .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }]),
         )
 
-        const decoratedResults = newSecurityReferred.map(o => {
-          const offenderDetail = offenderDetailsFromNomis.find(record => record.offenderNo === o.offenderNo)
-          if (!offenderDetail) {
-            logger.error(`Offender ${o.offenderNo} in DB not found in NOMIS`)
-            return o
-          }
+        const decoratedResults = await Promise.all(
+          newSecurityReferred.map(async o => {
+            const offenderDetail = offenderDetailsFromNomis.find(record => record.offenderNo === o.offenderNo)
+            if (!offenderDetail) {
+              logger.error(`Offender ${o.offenderNo} in DB not found in NOMIS`)
+              return o
+            }
 
-          let securityReferredBy
-          if (o.userId) {
-            const referrer = userDetailFromElite.find(record => record.username === o.userId)
-            securityReferredBy = referrer
-              ? `${properCaseName(referrer.lastName)}, ${properCaseName(referrer.firstName)}`
-              : o.userId
-          }
+            let securityReferredBy
+            if (o.userId) {
+              const referrer = userDetailFromElite.find(record => record.username === o.userId)
+              securityReferredBy = referrer
+                ? `${properCaseName(referrer.lastName)}, ${properCaseName(referrer.firstName)}`
+                : o.userId
+            }
 
-          const entry = sentenceMap.get(offenderDetail.bookingId)
-          const sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
+            const entry = sentenceMap.get(offenderDetail.bookingId)
+            const assessmentData = await formService.getLiteCategorisation(offenderDetail.bookingId)
+            const sentenceAndDate = entry && buildSentenceData(entry.sentenceDate, assessmentData)
 
-          return {
-            ...o,
-            offenderNo: offenderDetail.offenderNo,
-            displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
-            securityReferredBy,
-            ...sentenceAndDate,
-            bookingId: offenderDetail.bookingId,
-          }
-        })
+            return {
+              ...o,
+              offenderNo: offenderDetail.offenderNo,
+              displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
+              securityReferredBy,
+              ...sentenceAndDate,
+              bookingId: offenderDetail.bookingId,
+            }
+          }),
+        )
 
         return decoratedResults.sort((a, b) => sortByDateTime(b.dateRequired, a.dateRequired))
       }
@@ -608,38 +610,44 @@ module.exports = function createOffendersService(
 
       const sentenceMap = await getSentenceMap(unapprovedOffenders, prisonerSearchClient)
 
-      const decoratedResults = unapprovedOffenders.map(o => {
-        const sentencedOffender = sentenceMap.get(o.bookingId)
-        const sentenceData = sentencedOffender ? buildSentenceData(sentencedOffender.sentenceDate) : {}
-        const dbRecordExists = !!o.dbRecord.bookingId
-        const row = {
-          ...o,
-          displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-          categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(o.categoriserLastName)}`,
-          dbRecordExists,
-          catType: dbRecordExists ? CatType[o.dbRecord.catType].value : '',
-          ...sentenceData,
-          // Both the elite2 and the database record are the latest available for each booking so the nomis seq should always match.
-          // If the database one is earlier, then a cat has been subsequently done in P-Nomis, so ‘PNOMIS’ should be shown.
-          // If elite2 is earlier then it is out of date (somehow the insertion of a record failed earlier, and also the pre-existing record was also awaiting_approval).
-          // ‘PNOMIS’ should be shown and a warning logged.
-          pnomis:
-            !(dbRecordExists && o.dbRecord.status === Status.AWAITING_APPROVAL.name) ||
-            (dbRecordExists && o.dbRecord.nomisSeq !== o.assessmentSeq),
-          nextReviewDate: o.dbRecord.catType === 'RECAT' || !dbRecordExists ? dateConverter(o.nextReviewDate) : null,
-        }
-        if (dbRecordExists && row.dbRecord.status !== Status.AWAITING_APPROVAL.name) {
-          logger.warn(
-            `getUnapprovedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, PG status=${row.dbRecord.status}`,
-          )
-        }
-        if (dbRecordExists && row.dbRecord.nomisSeq !== row.assessmentSeq) {
-          logger.warn(
-            `getUnapprovedOffenders: sequence mismatch for bookingId=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${o.status}, nomisSeq=${row.dbRecord.nomisSeq}, assessmentSeq=${row.assessmentSeq}`,
-          )
-        }
-        return row
-      })
+      const decoratedResults = await Promise.all(
+        unapprovedOffenders.map(async o => {
+          const sentencedOffender = sentenceMap.get(o.bookingId)
+          let sentenceData = {}
+          if (sentencedOffender) {
+            const assessmentData = await formService.getLiteCategorisation(o.bookingId)
+            sentenceData = buildSentenceData(sentencedOffender.sentenceDate, assessmentData)
+          }
+          const dbRecordExists = !!o.dbRecord.bookingId
+          const row = {
+            ...o,
+            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+            categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(o.categoriserLastName)}`,
+            dbRecordExists,
+            catType: dbRecordExists ? CatType[o.dbRecord.catType].value : '',
+            ...sentenceData,
+            // Both the elite2 and the database record are the latest available for each booking so the nomis seq should always match.
+            // If the database one is earlier, then a cat has been subsequently done in P-Nomis, so ‘PNOMIS’ should be shown.
+            // If elite2 is earlier then it is out of date (somehow the insertion of a record failed earlier, and also the pre-existing record was also awaiting_approval).
+            // ‘PNOMIS’ should be shown and a warning logged.
+            pnomis:
+              !(dbRecordExists && o.dbRecord.status === Status.AWAITING_APPROVAL.name) ||
+              (dbRecordExists && o.dbRecord.nomisSeq !== o.assessmentSeq),
+            nextReviewDate: o.dbRecord.catType === 'RECAT' || !dbRecordExists ? dateConverter(o.nextReviewDate) : null,
+          }
+          if (dbRecordExists && row.dbRecord.status !== Status.AWAITING_APPROVAL.name) {
+            logger.warn(
+              `getUnapprovedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, PG status=${row.dbRecord.status}`,
+            )
+          }
+          if (dbRecordExists && row.dbRecord.nomisSeq !== row.assessmentSeq) {
+            logger.warn(
+              `getUnapprovedOffenders: sequence mismatch for bookingId=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${o.status}, nomisSeq=${row.dbRecord.nomisSeq}, assessmentSeq=${row.assessmentSeq}`,
+            )
+          }
+          return row
+        }),
+      )
 
       return decoratedResults.sort((a, b) =>
         sortByDateTime(
@@ -1175,7 +1183,7 @@ module.exports = function createOffendersService(
     }
   }
 
-  function buildSentenceData(sentenceDate) {
+  function buildSentenceData(sentenceDate, liteCat) {
     if (!sentenceDate) {
       return {}
     }
@@ -1183,7 +1191,10 @@ module.exports = function createOffendersService(
     const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
 
     const actualDays = get10BusinessDays(sentenceDateMoment)
-    const dateRequiredRaw = sentenceDateMoment.add(actualDays, 'day')
+    const dateRequiredRaw =
+      typeof liteCat === 'undefined' || !liteCat.approvedDate
+        ? sentenceDateMoment.add(actualDays, 'day')
+        : moment(liteCat.nextReviewDate, 'YYYY-MM-DD')
     const dateRequired = dateRequiredRaw.format('DD/MM/YYYY')
     const now = moment(0, 'HH')
     const overdue = dateRequiredRaw.isBefore(now)
