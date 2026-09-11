@@ -28,9 +28,9 @@ https://dev.offender-categorisation.service.justice.gov.uk/
 You will need the following tools installed:
 
 |      Tool      |   Version   |                               Reason                               |
-| :------------: | :---------: | :----------------------------------------------------------------: |
+| :------------: |:-----------:| :----------------------------------------------------------------: |
 |      npm       |  &ge;9.5.x  | Node package manager for resolving/installing project dependencies |
-|      node      | &ge;18.17.x |                         NodeJS interpreter                         |
+|      node      | &ge;24.18.x |                         NodeJS interpreter                         |
 |     docker     |  &ge;18.x   |          Installing/removing/managing containers & images          |
 | docker-compose | &ge;1.25.x  |      Convenience utility for grouped management of containers      |
 
@@ -72,24 +72,24 @@ It has services on which it depends :
 
 The offender-categorisation can be run in two ways.
 
-`Simplest way to run locally`
+### Simplest way to run locally
 
 - if you have a high-spec machine
 - if you are unable to connect to remote services
 
 Set up port-forwarding by following the instructions here: <https://dsdmoj.atlassian.net/wiki/spaces/SED/pages/3930816517/Port+Forwarding+-+Developer+Instructions>
 
-Use docker compose to download and run the four required containers
-
-`docker-compose -f docker-compose-test.yml pull`
-
-`docker-compose -f docker-compose-test.yml up`
-
-Either set the environment variable `SQS_ENABLED=false` or make sure all the SQS queues have started up in the categorisation-localstack container and categorisation-localstack-setup container has exited
+Start supporting Docker services:
+`docker compose up -d form-db categorisation-redis nomis-oauth2-server`
 
 Install dependencies using `npm run setup`
 
 Run the application using `npm run start`
+
+Open http://localhost:3000
+
+Either set the environment variable `SQS_ENABLED=false` in .env before starting the application or make sure all the SQS queues have started up in the categorisation-localstack container and categorisation-localstack-setup container has exited
+The `docker-compose-test.yml` file starts LocalStack and SQS separately for Cypress tests. The normal Compose command does not start LocalStack.
 
 ### Note for M4 (Apple Silicon) CPU users
 
@@ -104,11 +104,7 @@ environment:
   - JAVA_TOOL_OPTIONS=-XX:UseSVE=0
 ```
 
-`Alternative way`
-
-Run redis as a local docker container on the default port of 6379 when running the app locally with tls disabled (the default)
-
-`docker run -p6379:6379 redis`
+### Alternative way
 
 The other option is to run stunnel and port forward using the cloud platform guidance:
 `https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster`
@@ -121,15 +117,11 @@ NODE_TLS_REJECT_UNAUTHORIZED=0
 
 Install dependencies
 
-```bash
-npm install
-```
+`npm install`
 
 Run the application
 
-```bash
-npm run start
-```
+`npm run start`
 
 #### Notes:
 
@@ -154,29 +146,39 @@ In config.js you can see all the required variables. These are set with defaults
 
 #### Run the node application
 
-```bash
-npm run start
-```
+`npm run start`
 
 #### Run linter
 
 To automate the checking of the source code for programmatic and stylistic errors run lint using:
-
-```bash
-npm run lint
-```
+`npm run lint`
 
 ## Running the tests
+
 
 ### Unit Tests
 
 To run the jest unit tests:
 
-```bash
-npm run test
-```
+`npm run test`
 
 ### Running Cypress integration tests
+
+### Important: Cypress tests reset the local database
+
+Do not run `docker compose -f docker-compose.yml` and `docker-compose-test.yml` at the same time.
+Both files define a PostgreSQL container named `form-builder-db` on port `5432`, and initialise `DB_NAME=form-builder` database.
+
+The Cypress commands load `feature.env`, which sets`DB_NAME=form-builder`.
+When Cypress tests run through `npm run int-test` or `npm run int-test-ui` many tests call `cy.task('setUpDb')`.
+`setUpDb` rolls back and reapplies the database migrations. This can remove existing data from the `form-builder` database used by the local application.
+Do not run the Cypress integration tests if you need to preserve data in your local `form-builder` database.
+
+Stop the current environment before switching:
+`docker compose -f docker-compose.yml down` or `docker compose -f docker-compose-test.yml down`
+These commands prevent container and port conflicts; they do not protect the database from Cypress resets.
+
+#### Starting the Cypress environment
 
 For local running, start a test db, redis, and wiremock instance by:
 
