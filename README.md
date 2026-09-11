@@ -167,15 +167,16 @@ To run the jest unit tests:
 ### Important: Cypress tests reset the local database
 
 Do not run `docker compose -f docker-compose.yml` and `docker-compose-test.yml` at the same time.
-Both files define a PostgreSQL container named `form-builder-db` on port `5432`, and use `DB_NAME=form-builder` database.
+Both files define a PostgreSQL container named `form-builder-db` on port `5432`, and initialise `DB_NAME=form-builder` database.
 
 The Cypress commands load `feature.env`, which sets`DB_NAME=form-builder`.
 When Cypress tests run through `npm run int-test` or `npm run int-test-ui` many tests call `cy.task('setUpDb')`.
-`setUpDb` rolls back and reapplies the database migrations, which can remove existing data from the `form-builder` database used by the local application.
+`setUpDb` rolls back and reapplies the database migrations. This can remove existing data from the `form-builder` database used by the local application.
 Do not run the Cypress integration tests if you need to preserve data in your local `form-builder` database.
 
 Stop the current environment before switching:
 `docker compose -f docker-compose.yml down` or `docker compose -f docker-compose-test.yml down`
+These commands prevent container and port conflicts; they do not protect the database from Cypress resets.
 
 #### Starting the Cypress environment
 
