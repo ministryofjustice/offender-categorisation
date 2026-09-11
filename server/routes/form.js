@@ -354,6 +354,7 @@ module.exports = function Index({
       : await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
     if (!formData || !formData.formObject) {
+      log.info(formData)
       throw new Error('No categorisation found for this booking id / sequence no')
     }
     res.locals.formObject = { ...formData.formObject, ...formData.riskProfile }
