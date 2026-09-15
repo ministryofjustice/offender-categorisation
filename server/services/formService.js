@@ -960,6 +960,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
 
   return {
     getCategorisationRecord,
+    isCategorisationCancelled,
     update,
     updateFormData,
     cancel,
