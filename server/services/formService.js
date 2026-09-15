@@ -28,6 +28,19 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     }
   }
 
+  async function isCategorisationCancelled(bookingId, transactionalClient = undefined) {
+    try {
+      const data = await formClient.getFormDataForUserIncludingCancelled(bookingId, transactionalClient)
+      const status = dataIfExists(data)?.status
+      return (
+        status !== null && [Status.CANCELLED_RELEASE.name, Status.CANCELLED.name].includes(dataIfExists(data)?.status)
+      )
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
   async function getCategorisationRecordUsingSequence(bookingId, seq, transactionalClient) {
     try {
       const data = await formClient.getFormDataUsingSequence(bookingId, seq, transactionalClient)

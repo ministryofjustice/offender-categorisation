@@ -36,6 +36,14 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
+  getFormDataForUserIncludingCancelled(bookingId, transactionalClient = db) {
+    const query = {
+      text: `${selectClause} from form f where f.booking_id = $1 ${sequenceClauseIncludeCancelled}`,
+      values: [bookingId],
+    }
+    return transactionalClient.query(query)
+  },
+
   getFormDataUsingSequence(bookingId, sequenceNo, transactionalClient) {
     logger.debug(`getFormDataUsingSequence called for ${bookingId}, sequenceNo ${sequenceNo}`)
     const query = {
