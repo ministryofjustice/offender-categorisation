@@ -7,6 +7,7 @@ services:
     depends_on:
       - form-db
       - nomis-oauth2-server
+      - categorisation-redis
     ports:
       - '3000:3000'
     environment:
@@ -19,6 +20,7 @@ services:
       - NOMIS_AUTH_URL=http://nomis-oauth2-server:8080/auth
       - NOMIS_AUTH_EXTERNAL_URL=http://localhost:8080/auth
       - NODE_ENV=development
+      - REDIS_HOST=categorisation-redis
 
   form-db:
     image: postgres:15
@@ -32,6 +34,17 @@ services:
       - POSTGRES_PASSWORD=form-builder
       - POSTGRES_USER=form-builder
       - POSTGRES_DB=form-builder
+
+  categorisation-redis:
+    image: redis
+    networks:
+      - hmpps
+    container_name: categorisation-redis
+    restart: unless-stopped
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
 
   nomis-oauth2-server:
     image: ghcr.io/ministryofjustice/hmpps-auth:latest
