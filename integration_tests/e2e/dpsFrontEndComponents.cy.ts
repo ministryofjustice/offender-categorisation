@@ -55,7 +55,7 @@ describe('DPS Front End Components', () => {
       it('should have the expected Feedback link', () => {
         cy.get('#surveyLink')
           .contains('Feedback')
-          .should('have.attr', 'href', 'https://eu.surveymonkey.com/r/FRZYGVQ?source=localhost/autherror')
+          .should('have.attr', 'href', 'https://www.smartsurvey.co.uk/s/43EWY0/')
       })
 
       it('should have a link to the "Accessibility statement" page', () => {
@@ -160,7 +160,7 @@ describe('DPS Front End Components', () => {
         it('should have the expected Feedback link', () => {
           cy.get('#surveyLink')
             .contains('Feedback')
-            .should('have.attr', 'href', 'https://eu.surveymonkey.com/r/FRZYGVQ?source=localhost/dashboardInitial')
+            .should('have.attr', 'href', 'https://www.smartsurvey.co.uk/s/43EWY0/')
         })
 
         it('should have a link to the "Accessibility statement" page', () => {
