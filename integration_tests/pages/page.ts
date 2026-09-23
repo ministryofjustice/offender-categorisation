@@ -27,7 +27,7 @@ export default abstract class Page {
 
   checkOnPage(tag = 'h1'): void {
     if (typeof this.title !== 'undefined') {
-      cy.get(tag).contains(this.title)
+      cy.contains(tag, this.title).should('be.visible')
     }
   }
 
