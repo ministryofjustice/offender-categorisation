@@ -210,11 +210,11 @@ $xlBreakpoint: 1280px;
 }
 
 .grey-button {
-  background-color: govuk-colour("light-grey");
+  background-color: govuk-colour("light-grey") !important;
   color: govuk-colour("black") !important;
 
   &:hover {
-    background-color: govuk-colour("mid-grey");
+    background-color: govuk-colour("mid-grey") !important;
   }
 }
 
