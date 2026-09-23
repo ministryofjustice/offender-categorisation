@@ -2,32 +2,29 @@
 ARG BUILD_NUMBER
 ARG GIT_REF
 
-FROM node:24.18.1-bookworm-slim AS base
+FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS base
 
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
-ENV TZ=Europe/London
-RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
-
-RUN addgroup --gid 2000 --system appgroup && \
-    adduser --uid 2000 --system appuser --gid 2000
+RUN apk --update-cache upgrade --available \
+        && apk --no-cache add tzdata \
+        && rm -rf /var/cache/apk/* \
+        && apk add --no-cache curl
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y curl
 
 # Stage: build assets
 FROM base AS build
 ARG BUILD_NUMBER
 ARG GIT_REF
 
-RUN apt-get install -y make python3 wget gnupg gnupg1 gnupg2 \
+RUN apk add --no-cache make python3 wget gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-COPY package*.json ./
-RUN CYPRESS_INSTALL_BINARY=0 npm run setup --no-audit
+COPY package*.json .allowed-scripts.mjs ./
+RUN NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false CYPRESS_INSTALL_BINARY=0 npm run setup
+ENV NODE_ENV='production'
 
 COPY . .
 RUN npm run build
@@ -48,10 +45,9 @@ ARG GIT_REF
 ENV BUILD_NUMBER=${BUILD_NUMBER:-1_0_0}
 ENV GIT_REF=${GIT_REF:-dummy}
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk update \
+ && apk upgrade \
+ && rm -rf /var/cache/apk/
 
 # Install AWS RDS Root cert
 RUN mkdir -p /home/appuser/.postgresql \
