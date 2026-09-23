@@ -176,9 +176,7 @@ describe('Open conditions', () => {
     earliestReleasePage.continueButton().click()
 
     earliestReleasePage.validateErrorSummaryMessages([{ index: 0, href: '#justifyText', text: 'Please enter details' }])
-    earliestReleasePage.validateErrorMessages([
-      { selector: '#justifyText-error', text: '\n        \n        Error: Please enter details\n        \n      ' },
-    ])
+    earliestReleasePage.validateErrorMessages([{ selector: '#justifyText-error', text: 'Error: Please enter details' }])
     earliestReleasePage.setJustifyOpenConditionsTextInput('justify details text')
     earliestReleasePage.continueButton().click()
 
@@ -199,7 +197,7 @@ describe('Open conditions', () => {
     victimContactSchemePage.validateErrorMessages([
       {
         selector: '#vcsOptedFor-error',
-        text: '\n      \n      Error: Select if any victims of the crime have opted-in to the Victim Contact Scheme (VCS)\n      \n    ',
+        text: 'Error: Select if any victims of the crime have opted-in to the Victim Contact Scheme (VCS)',
       },
     ])
     victimContactSchemePage.selectVictimContactSchemeRadioButton('YES')
@@ -213,7 +211,7 @@ describe('Open conditions', () => {
     victimContactSchemePage.validateErrorMessages([
       {
         selector: '#vloResponseText-error',
-        text: '\n      \n      Error: Enter the response from the Victim Liaison Officer (VLO)\n      \n    ',
+        text: 'Error: Enter the response from the Victim Liaison Officer (VLO)',
       },
     ])
     victimContactSchemePage.setVictimLiaisonOfficerResponseTextInput('vlo response details text')
@@ -231,7 +229,7 @@ describe('Open conditions', () => {
       { index: 0, href: '#isForeignNational', text: 'Please select yes or no' },
     ])
     foreignNationalPage.validateErrorMessages([
-      { selector: '#isForeignNational-error', text: '\n      \n      Error: Please select yes or no\n      \n    ' },
+      { selector: '#isForeignNational-error', text: 'Error: Please select yes or no' },
     ])
     foreignNationalPage.selectForeignNationalRadioButton('YES')
     foreignNationalPage.continueButton().click()
@@ -242,7 +240,7 @@ describe('Open conditions', () => {
     foreignNationalPage.validateErrorMessages([
       {
         selector: '#formCompleted-error',
-        text: '\n        \n        Error: Please select yes or no\n        \n      ',
+        text: 'Error: Please select yes or no',
       },
     ])
 
@@ -255,7 +253,7 @@ describe('Open conditions', () => {
     foreignNationalPage.validateErrorMessages([
       {
         selector: '#dueDeported-error',
-        text: '\n          \n          Error: Please select yes or no\n          \n        ',
+        text: 'Error: Please select yes or no',
       },
     ])
 
@@ -268,7 +266,7 @@ describe('Open conditions', () => {
     foreignNationalPage.validateErrorMessages([
       {
         selector: '#exhaustedAppeal-error',
-        text: '\n            \n            Error: Please select yes or no\n            \n          ',
+        text: 'Error: Please select yes or no',
       },
     ])
 
@@ -291,7 +289,7 @@ describe('Open conditions', () => {
       { index: 0, href: '#harmManaged', text: 'Please select yes or no' },
     ])
     riskOfSeriousHarmPage.validateErrorMessages([
-      { selector: '#harmManaged-error', text: '\n        \n        Error: Please select yes or no\n        \n      ' },
+      { selector: '#harmManaged-error', text: 'Error: Please select yes or no' },
     ])
 
     riskOfSeriousHarmPage.selectManageInOpenConditionsRadioButton('YES')
@@ -300,7 +298,7 @@ describe('Open conditions', () => {
       { index: 0, href: '#harmManagedText', text: 'Please enter details' },
     ])
     /*
-    riskOfSeriousHarmPage.validateErrorMessages([{ selector: '#harmManagedText-error', text: '\n        \n        Error: Please select yes or no\n        \n      ' }])
+    riskOfSeriousHarmPage.validateErrorMessages([{ selector: '#harmManagedText-error', text: 'Error: Please select yes or no' }])
 */
     riskOfSeriousHarmPage.setManageRiskTextInput('harmManagedText details')
     riskOfSeriousHarmPage.continueButton().click()
@@ -314,8 +312,8 @@ describe('Open conditions', () => {
       { index: 1, href: '#increasedRisk', text: 'Please select yes or no' },
     ])
     furtherChargesPage.validateErrorMessages([
-      { selector: '#furtherChargesText-error', text: '\n    \n    Error: Please enter details\n    \n  ' },
-      { selector: '#increasedRisk-error', text: '\n      \n      Error: Please select yes or no\n      \n    ' },
+      { selector: '#furtherChargesText-error', text: 'Error: Please enter details' },
+      { selector: '#increasedRisk-error', text: 'Error: Please select yes or no' },
     ])
     furtherChargesPage.setFurtherChargesCategoryBAppropriateText('furtherChargesText details')
     furtherChargesPage.continue().click()
@@ -330,7 +328,7 @@ describe('Open conditions', () => {
       { index: 0, href: '#likelyToAbscond', text: 'Please select yes or no' },
     ])
     riskOfSeriousHarmPage.validateErrorMessages([
-      { selector: '#likelyToAbscond-error', text: '\n      \n      Error: Please select yes or no\n      \n    ' },
+      { selector: '#likelyToAbscond-error', text: 'Error: Please select yes or no' },
     ])
     riskLevelsPage.selectRiskLevelsRadioButton('YES')
     riskLevelsPage.continueButton().click()
@@ -339,7 +337,7 @@ describe('Open conditions', () => {
       { index: 0, href: '#likelyToAbscondText', text: 'Please enter details' },
     ])
     riskOfSeriousHarmPage.validateErrorMessages([
-      { selector: '#likelyToAbscondText-error', text: '\n      \n      Error: Please enter details\n      \n    ' },
+      { selector: '#likelyToAbscondText-error', text: 'Error: Please enter details' },
     ])
     riskLevelsPage.setLikelyToAbscondTextInput('likelyToAbscondText details')
     riskLevelsPage.continueButton().click()
