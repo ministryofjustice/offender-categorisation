@@ -1,0 +1,11 @@
+@use "govuk/index" as * with (
+  $govuk-global-styles: true,
+  $govuk-page-width: 1170px,
+  $govuk-assets-path: "/assets/",
+);
+
+@use "moj/all" as * with (
+  $moj-assets-path: "/assets/",
+);
+
+@use "./common";

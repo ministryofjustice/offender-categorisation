@@ -1,3 +1,5 @@
+@use "govuk/index" as *;
+
 .location-bar {
   @include govuk-width-container;
   @include govuk-responsive-margin(3, 'bottom');

@@ -1,5 +1,9 @@
-// eslint-disable-next-line import/no-unresolved,import/extensions,import/no-absolute-path
-import { initAll } from '/assets/govuk/govuk-frontend.min.js'
+import * as GOVUKFrontend from '/assets/govuk/govuk-frontend.min.js'
+import * as MOJFrontend from '/assets/moj/moj-frontend.min.js'
 
-initAll()
-window.MOJFrontend.initAll()
+// expose for legacy code
+window.GOVUKFrontend = GOVUKFrontend
+window.MOJFrontend = MOJFrontend
+
+GOVUKFrontend.initAll()
+MOJFrontend.initAll()
