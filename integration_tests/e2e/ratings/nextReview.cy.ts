@@ -374,6 +374,7 @@ describe('Next Review', () => {
         })
 
         it('should allow a supervisor to make a change', () => {
+          cy.intercept('POST', '**/nextReviewDateStandalone/**').as('updateReviewDate')
           dbSeeder(supervisorChangeFixture)
 
           cy.task('stubUncategorisedAwaitingApproval')
@@ -397,6 +398,8 @@ describe('Next Review', () => {
           nextReviewStandalonePage.setNewReviewDateInput(newReviewDate.format(EXPECTED_DATE_FORMAT_FRONT_END))
           nextReviewStandalonePage.setNewReviewReasonTextInput(newReviewReason)
           nextReviewStandalonePage.submitButton().click()
+
+          cy.wait('@updateReviewDate')
 
           supervisorLandingPage.validateChangeHistoryTableData([
             [newReviewDate.format('D MMMM yyyy'), 'Another test reason'],
