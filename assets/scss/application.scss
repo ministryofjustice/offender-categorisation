@@ -1,0 +1,10 @@
+$govuk-global-styles: true;
+$path: "/assets/images/";
+
+$moj-page-width: 1170px;
+$govuk-page-width: $moj-page-width;
+
+@import "govuk/index";
+@import "moj/all";
+
+@import "./common";
