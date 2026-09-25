@@ -93,10 +93,22 @@
 {% endblock %}
 
 {% block bodyEnd %}
-{# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
-<script src="/assets/moj-frontend/moj/all.js"></script>
-<script src="/assets/js/jquery.min.js"></script>
-<script type="module" src="/assets/js/govukInitialisation.js"></script>
-<script src="/assets/js/multirole-switcher.js"></script>
-<script src="/assets/js/dps-footer-feedback-link-updater.js"></script>
+  {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
+  <script src="/assets/js/jquery.min.js"></script>
+  <script type="module" src="/assets/govuk/govuk-frontend.min.js"></script>
+  <script type="module" src="/assets/moj/moj-frontend.min.js"></script>
+
+  <script type="module" nonce="{{ cspNonce }}">
+    import * as GOVUKFrontend from '/assets/govuk/govuk-frontend.min.js'
+    import * as MOJFrontend from '/assets/moj/moj-frontend.min.js'
+
+    // expose for legacy code
+    window.GOVUKFrontend = GOVUKFrontend
+    window.MOJFrontend   = MOJFrontend
+
+    GOVUKFrontend.initAll()
+    MOJFrontend.initAll()
+  </script>
+  <script src="/assets/js/multirole-switcher.js"></script>
+  <script src="/assets/js/dps-footer-feedback-link-updater.js"></script>
 {% endblock %}
