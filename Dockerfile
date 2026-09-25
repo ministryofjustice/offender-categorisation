@@ -1,58 +1,61 @@
-# Stage: base image
+# Build args available to all stages
 ARG BUILD_NUMBER
 ARG GIT_REF
+ARG GIT_BRANCH
 
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS base
+# Stage: build assets
+FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS build
 
-LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
+ARG BUILD_NUMBER
+ARG GIT_REF
+ARG GIT_BRANCH
 
-RUN apk --update-cache upgrade --available \
-        && apk --no-cache add tzdata \
-        && rm -rf /var/cache/apk/* \
-        && apk add --no-cache curl
+# Cache breaking and ensure required build / git args defined
+RUN test -n "$BUILD_NUMBER" || (echo "BUILD_NUMBER not set" && false)
+RUN test -n "$GIT_REF" || (echo "GIT_REF not set" && false)
+RUN test -n "$GIT_BRANCH" || (echo "GIT_BRANCH not set" && false)
 
 WORKDIR /app
 
+RUN npm install -g npm@12.0.2
 
-# Stage: build assets
-FROM base AS build
-ARG BUILD_NUMBER
-ARG GIT_REF
+RUN apk add --no-cache \
+    make \
+    python3 \
+    wget \
+    gnupg
 
-RUN apk add --no-cache make python3 wget gnupg \
-    && rm -rf /var/lib/apt/lists/*
+COPY package*.json ./
 
-COPY package*.json .allowed-scripts.mjs ./
-RUN NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false CYPRESS_INSTALL_BINARY=0 npm run setup
-ENV NODE_ENV='production'
+RUN NPM_CONFIG_AUDIT=false \
+    NPM_CONFIG_FUND=false \
+    CYPRESS_INSTALL_BINARY=0 \
+    npm run setup
+
+ENV NODE_ENV=production
 
 COPY . .
+
 RUN npm run build
 
 ENV BUILD_NUMBER=${BUILD_NUMBER:-1_0_0}
 ENV GIT_REF=${GIT_REF:-dummy}
-RUN export BUILD_NUMBER=${BUILD_NUMBER} && \
-    export GIT_REF=${GIT_REF} && \
-    npm run record-build-info
 
-RUN npm prune --no-audit --production
+RUN npm run record-build-info
+
+RUN npm prune --no-audit --no-fund --omit=dev
 
 # Stage: copy production assets and dependencies
-FROM base
+FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine-runtime
 
 ARG BUILD_NUMBER
 ARG GIT_REF
-ENV BUILD_NUMBER=${BUILD_NUMBER:-1_0_0}
-ENV GIT_REF=${GIT_REF:-dummy}
-
-RUN apk update \
- && apk upgrade \
- && rm -rf /var/cache/apk/
+ARG GIT_BRANCH
 
 # Install AWS RDS Root cert
 RUN mkdir -p /home/appuser/.postgresql \
-    && curl https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem \
-    > /app/root.cert
+    && wget -qO /app/root.cert \
+    https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
 
 COPY --from=build --chown=appuser:appgroup \
     /app/package.json \
@@ -79,7 +82,10 @@ COPY --from=build --chown=appuser:appgroup \
     /app/package.json ./dist/package.json
 
 EXPOSE 3000
-ENV NODE_ENV='production'
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+ENV GIT_REF=${GIT_REF}
+ENV GIT_BRANCH=${GIT_BRANCH}
+ENV NODE_ENV=production
 USER 2000
 
-CMD [ "npm", "start" ]
+CMD [ "node", "dist/server.js" ]
