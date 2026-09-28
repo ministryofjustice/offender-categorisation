@@ -31,7 +31,7 @@
     "format": "prettier --check \"**/*.{js,jsx,ts,tsx,mjs,cjs}\"",
     "format:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,mjs,cjs}\"",
     "clear-dlq": "ts-node jobs/dead-letter/clearDeadLetterQueuesWithExit.ts",
-    "setup": "npm ci && hmpps-npm-script-run-allowlist"
+    "setup": "npm ci"
   },
   "jest": {
     "preset": "ts-jest",
@@ -73,7 +73,7 @@
   },
   "engines": {
     "node": ">= 24.18.1",
-    "npm": ">= 10.2.4"
+    "npm": "^12"
   },
   "nodemonConfig": {
     "ext": "js,mjs,json,html",
@@ -201,5 +201,11 @@
     },
     "proxy-addr": "2.0.8",
     "pacote": "21.5.1"
+  },
+  "allowScripts": {
+    "cypress@13.17.0": true,
+    "fsevents@2.3.3": true,
+    "dtrace-provider@0.8.8": false,
+    "aws-sdk@2.1693.0": false
   }
 }
