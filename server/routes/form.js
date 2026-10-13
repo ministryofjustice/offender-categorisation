@@ -792,39 +792,46 @@ module.exports = function Index({
     return res.redirect(redirectUrl)
   })
 
-  router.post('/supervisor/further-information/:bookingId', async (req, res) => {
-    const { bookingId } = req.params
-    const userInput = clearConditionalFields(req.body)
+  router.post(
+    '/supervisor/further-information/:bookingId',
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const userInput = clearConditionalFields(req.body)
 
-    const section = 'supervisor'
-    const form = 'furtherInformation'
-    const formPageConfig = formConfig[section][form]
+      const section = 'supervisor'
+      const form = 'furtherInformation'
+      const formPageConfig = formConfig[section][form]
 
-    await formService.supervisorApproval({
-      bookingId: parseInt(bookingId, 10),
-      userId: req.user.username,
-      config: formPageConfig,
-      userInput,
-      formSection: section,
-      formName: form,
-    })
-    const categorisationRecord = await formService.getCategorisationRecord(bookingId)
+      await formService.supervisorApproval({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput,
+        formSection: section,
+        formName: form,
+        transactionalClient: transactionalDbClient,
+      })
+      const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
-    if (userInput.catType === CatType.RECAT.name) {
-      const categorisations = await offendersService.getPrisonerBackground(res.locals, categorisationRecord.offenderNo)
-      const dataToStore = {
-        catHistory: categorisations,
+      if (userInput.catType === CatType.RECAT.name) {
+        const categorisations = await offendersService.getPrisonerBackground(
+          res.locals,
+          categorisationRecord.offenderNo,
+        )
+        const dataToStore = {
+          catHistory: categorisations,
+        }
+
+        await formService.mergeRiskProfileData(bookingId, dataToStore, transactionalDbClient)
       }
 
-      await formService.mergeRiskProfileData(bookingId, dataToStore)
-    }
+      await offendersService.createSupervisorApproval(res.locals, bookingId, userInput)
 
-    await offendersService.createSupervisorApproval(res.locals, bookingId, userInput)
-
-    const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-    const catTypeArgument = userInput.catType ? `?catType=${userInput.catType}` : ''
-    res.redirect(`${nextPath}${bookingId}${catTypeArgument}`)
-  })
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      const catTypeArgument = userInput.catType ? `?catType=${userInput.catType}` : ''
+      res.redirect(`${nextPath}${bookingId}${catTypeArgument}`)
+    }),
+  )
 
   router.post('/supervisor/change-category/:bookingId', async (req, res) => {
     const { bookingId } = req.params
