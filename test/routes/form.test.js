@@ -1666,7 +1666,13 @@ describe('POST /supervisor/review', () => {
       .expect(302)
       .expect(() => {
         expect(offendersService.getPrisonerBackground).toBeCalledTimes(1)
-        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', { catHistory })
+        expect(formService.supervisorApproval).toBeCalledWith(
+          expect.objectContaining({
+            bookingId: 12345,
+            transactionalClient: mockTransactionalClient,
+          }),
+        )
+        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', { catHistory }, mockTransactionalClient)
       })
   })
 
@@ -1722,7 +1728,32 @@ describe('POST /supervisor/review', () => {
       .expect(302)
       .expect(() => {
         expect(offendersService.getPrisonerBackground).toBeCalledTimes(1)
-        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', { catHistory })
+        expect(formService.supervisorApproval).toBeCalledWith(
+          expect.objectContaining({
+            bookingId: 12345,
+            transactionalClient: mockTransactionalClient,
+          }),
+        )
+        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', { catHistory }, mockTransactionalClient)
+      })
+  })
+
+  test('should fail supervisor approval when NOMIS approval fails', () => {
+    const userInput = { catType: 'INITIAL' }
+    offendersService.createSupervisorApproval.mockRejectedValue(new Error('nomis failed'))
+
+    return request(app)
+      .post(`/supervisor/further-information/12345`)
+      .send(userInput)
+      .expect(500)
+      .expect(() => {
+        expect(formService.supervisorApproval).toBeCalledWith(
+          expect.objectContaining({
+            bookingId: 12345,
+            transactionalClient: mockTransactionalClient,
+          }),
+        )
+        expect(offendersService.createSupervisorApproval).toBeCalledWith(expect.any(Object), '12345', userInput)
       })
   })
 
