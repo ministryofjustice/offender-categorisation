@@ -13,6 +13,7 @@ const {
   isFemalePrisonId,
 } = require('../utils/utils')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
+const { Page, SUBJECT_TYPE_PRISONER_NUMBER } = require('../services/auditService')
 
 const joi = baseJoi.extend(dateExtend)
 
@@ -110,7 +111,13 @@ const assessmentHasBeenApprovedInNomisManually = error => {
   return error.status === 400 && error.data.developerMessage.startsWith('400 No pending category assessment found')
 }
 
-module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
+module.exports = function Index({
+  formService,
+  offendersService,
+  userService,
+  authenticationMiddleware,
+  auditService,
+}) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -121,6 +128,10 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+      auditService.logPageView(Page.LITE_CAT_DUE_APPROVAL_LIST, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
       const offenders = await offendersService.getUnapprovedLite(res.locals, transactionalDbClient)
       res.render(`pages/supervisorLite`, { offenders })
     }),
@@ -139,6 +150,14 @@ module.exports = function Index({ formService, offendersService, userService, au
         formService.getLiteCategorisation(bookingId, transactionalDbClient),
         offendersService.getAgencies(res.locals),
       ])
+
+      auditService.logPageView(Page.NEW_LITE_CAT, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
 
       const existingCategory = details?.categoryCode
       const liteInProgress = existingData.bookingId && !existingData.approvedDate
@@ -181,6 +200,15 @@ module.exports = function Index({ formService, offendersService, userService, au
         formService.getLiteCategorisation(bookingId, transactionalDbClient),
         offendersService.getAgencies(res.locals),
       ])
+
+      auditService.logPageView(Page.APPROVE_LITE_CAT, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
       const existingCategory = details?.categoryCode
       const cats = getCatList(isInWomensEstate, rawAssessmentData.category, existingCategory)
@@ -244,6 +272,15 @@ module.exports = function Index({ formService, offendersService, userService, au
       const originalDateInput = req.body.nextReviewDate
       req.body.nextReviewDate = formatDateForValidation(req.body.nextReviewDate)
       const details = await offendersService.getOffenderDetails(res.locals, bookingIdInt)
+
+      auditService.logCreateEvent(Page.NEW_LITE_CAT, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       const existingCategory = details?.categoryCode
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
       const prisonListFromApi = await offendersService.getAgencies(res.locals)
@@ -339,6 +376,15 @@ module.exports = function Index({ formService, offendersService, userService, au
         offendersService.getOffenderDetails(res.locals, bookingIdInt),
         offendersService.getAgencies(res.locals),
       ])
+
+      auditService.logCreateEvent(Page.APPROVE_LITE_CAT, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
       const existingCategory = details?.categoryCode
       const tomorrow = moment().add(1, 'd').format('M/D/YYYY')

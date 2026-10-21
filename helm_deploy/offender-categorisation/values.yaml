@@ -42,6 +42,8 @@ generic-service:
     DB_SSL_ENABLED: 'true'
     REDIS_TLS_ENABLED: 'true'
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/'
+    AUDIT_SQS_REGION: "eu-west-2"
+    AUDIT_SERVICE_NAME: "offender-categorisation"
 
   namespace_secrets:
     dps-rds-instance-output:
@@ -68,6 +70,10 @@ generic-service:
     oc-elasticache-redis:
       REDIS_HOST: 'primary_endpoint_address'
       REDIS_AUTH_TOKEN: 'auth_token'
+
+    sqs-hmpps-audit-secret:
+      AUDIT_SQS_QUEUE_URL: "sqs_queue_url"
+      AUDIT_SQS_QUEUE_NAME: "sqs_queue_name"
 
 generic-prometheus-alerts:
   targetApplication: offender-categorisation
