@@ -45,16 +45,13 @@ export default class HmppsAuditClient {
   }
 
   async sendMessage(event: AuditEvent, throwOnError: boolean = true) {
-    console.log('HERE')
     if (!this.enabled) return null
-    console.log('12345')
 
     const sqsMessage: SqsMessage = {
       ...event,
       service: this.serviceName,
       when: new Date().toISOString(),
     }
-    console.log(sqsMessage)
 
     try {
       const messageResponse = await this.sqsClient.send(
