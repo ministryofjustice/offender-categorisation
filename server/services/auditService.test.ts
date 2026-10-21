@@ -36,7 +36,7 @@ describe('Audit service', () => {
 
   describe('logPageView', () => {
     it('sends page view event audit message using audit client', async () => {
-      await auditService.logPageView(Page.LITE_CAT_APPROVAL_LIST, {
+      await auditService.logPageView(Page.LITE_CAT_DUE_APPROVAL_LIST, {
         who: 'user1',
         subjectId: 'subject123',
         subjectType: 'exampleType',
@@ -45,7 +45,7 @@ describe('Audit service', () => {
       })
 
       expect(hmppsAuditClient.sendMessage).toHaveBeenCalledWith({
-        what: 'PAGE_VIEW_LITE_CAT_APPROVAL_LIST',
+        what: 'PAGE_VIEW_LITE_CAT_DUE_APPROVAL_LIST',
         who: 'user1',
         subjectId: 'subject123',
         subjectType: 'exampleType',
