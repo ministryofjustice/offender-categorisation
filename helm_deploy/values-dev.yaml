@@ -28,6 +28,7 @@ generic-service:
     DPS_URL: https://digital-dev.prison.service.justice.gov.uk/
     SUPPORT_URL: https://support-dev.hmpps.service.justice.gov.uk/
     COMPONENT_API_URL: https://frontend-components-dev.hmpps.service.justice.gov.uk
+    AUDIT_ENABLED: "true"
 
   allowlist:
     ark-nps-hmcts-ttp1: 195.59.75.0/24
