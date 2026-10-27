@@ -54,4 +54,25 @@ describe('Audit service', () => {
       })
     })
   })
+
+  describe('logCreateEvent', () => {
+    it('sends create event audit message using audit client', async () => {
+      await auditService.logCreateEvent(Page.NEW_LITE_CAT, {
+        who: 'user1',
+        subjectId: 'subject123',
+        subjectType: 'exampleType',
+        correlationId: 'request123',
+        details: { extraDetails: 'example' },
+      })
+
+      expect(hmppsAuditClient.sendMessage).toHaveBeenCalledWith({
+        what: 'CREATE_NEW_LITE_CAT',
+        who: 'user1',
+        subjectId: 'subject123',
+        subjectType: 'exampleType',
+        correlationId: 'request123',
+        details: { extraDetails: 'example' },
+      })
+    })
+  })
 })

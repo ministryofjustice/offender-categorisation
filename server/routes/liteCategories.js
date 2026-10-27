@@ -128,7 +128,7 @@ module.exports = function Index({
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      auditService.logPageView(Page.LITE_CAT_DUE_APPROVAL_LIST, {
+      await auditService.logPageView(Page.LITE_CAT_DUE_APPROVAL_LIST, {
         who: res.locals.user.username,
         correlationId: req.id,
       })
@@ -151,7 +151,7 @@ module.exports = function Index({
         offendersService.getAgencies(res.locals),
       ])
 
-      auditService.logPageView(Page.NEW_LITE_CAT, {
+      await auditService.logPageView(Page.NEW_LITE_CAT, {
         who: res.locals.user.username,
         correlationId: req.id,
         subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
@@ -201,7 +201,7 @@ module.exports = function Index({
         offendersService.getAgencies(res.locals),
       ])
 
-      auditService.logPageView(Page.APPROVE_LITE_CAT, {
+      await auditService.logPageView(Page.APPROVE_LITE_CAT, {
         who: res.locals.user.username,
         correlationId: req.id,
         subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
@@ -272,14 +272,6 @@ module.exports = function Index({
       const originalDateInput = req.body.nextReviewDate
       req.body.nextReviewDate = formatDateForValidation(req.body.nextReviewDate)
       const details = await offendersService.getOffenderDetails(res.locals, bookingIdInt)
-
-      auditService.logCreateEvent(Page.NEW_LITE_CAT, {
-        who: res.locals.user.username,
-        correlationId: req.id,
-        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
-        subjectId: details.offenderNo,
-        details: { bookingId },
-      })
 
       const existingCategory = details?.categoryCode
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
@@ -354,6 +346,15 @@ module.exports = function Index({
           prisonId: details.agencyId,
           transactionalClient: transactionalDbClient,
         })
+
+        await auditService.logCreateEvent(Page.NEW_LITE_CAT, {
+          who: res.locals.user.username,
+          correlationId: req.id,
+          subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+          subjectId: details.offenderNo,
+          details: { bookingId },
+        })
+
         res.redirect(`/liteCategories/confirmed/${bookingId}`)
       }
     }),
@@ -376,14 +377,6 @@ module.exports = function Index({
         offendersService.getOffenderDetails(res.locals, bookingIdInt),
         offendersService.getAgencies(res.locals),
       ])
-
-      auditService.logCreateEvent(Page.APPROVE_LITE_CAT, {
-        who: res.locals.user.username,
-        correlationId: req.id,
-        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
-        subjectId: details.offenderNo,
-        details: { bookingId },
-      })
 
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
       const existingCategory = details?.categoryCode
@@ -490,6 +483,15 @@ module.exports = function Index({
             approvedComment: formValidation.value.approvedComment,
             transactionalClient: transactionalDbClient,
           })
+
+          await auditService.logCreateEvent(Page.APPROVE_LITE_CAT, {
+            who: res.locals.user.username,
+            correlationId: req.id,
+            subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+            subjectId: details.offenderNo,
+            details: { bookingId },
+          })
+
           res.redirect(`/liteCategories/confirmed/${bookingId}`)
         } catch (error) {
           if (assessmentHasBeenApprovedInNomisManually(error)) {
