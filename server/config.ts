@@ -128,6 +128,37 @@ const authUrl = get({
   requireInProduction: false,
 })
 
+const auditConfig = () => {
+  const auditEnabled =
+    get({
+      name: 'AUDIT_ENABLED',
+      fallback: 'false',
+      log: true,
+      requireInProduction: false,
+    }) === 'true'
+  return {
+    enabled: auditEnabled,
+    queueUrl: get({
+      name: 'AUDIT_SQS_QUEUE_URL',
+      fallback: 'http://localhost:4566/000000000000/mainQueue',
+      log: false,
+      requireInProduction: false,
+    }),
+    serviceName: get({
+      name: 'AUDIT_SERVICE_NAME',
+      fallback: 'UNASSIGNED',
+      log: false,
+      requireInProduction: auditEnabled,
+    }),
+    region: get({
+      name: 'AUDIT_SQS_REGION',
+      fallback: 'eu-west-2',
+      log: false,
+      requireInProduction: false,
+    }),
+  }
+}
+
 export const config = {
   // General environment
   environment: process.env.ENVIRONMENT || DEFAULTS.ENVIRONMENT,
@@ -269,6 +300,7 @@ export const config = {
         }),
       },
     },
+    audit: auditConfig(),
   },
   // OAuth
   apis: {

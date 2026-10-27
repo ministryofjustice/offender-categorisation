@@ -32,11 +32,17 @@ const userService = {
   getUserByUserId: jest.fn(),
 }
 
+const auditService = {
+  logPageView: jest.fn(),
+  logCreateEvent: jest.fn(),
+}
+
 const formRoute = createRouter({
   formService,
   offendersService,
   userService,
   authenticationMiddleware,
+  auditService,
 })
 
 let app

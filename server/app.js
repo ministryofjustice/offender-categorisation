@@ -44,6 +44,7 @@ module.exports = function createApp({
   frontEndComponentsService,
   pathfinderService,
   alertService,
+  auditService,
 }) {
   const app = express()
 
@@ -299,6 +300,7 @@ module.exports = function createApp({
     offendersService,
     userService,
     authenticationMiddleware,
+    auditService,
   })
   app.use('/liteCategories/', liteCategoriesRouter)
 

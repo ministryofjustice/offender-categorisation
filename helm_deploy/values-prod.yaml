@@ -28,6 +28,7 @@ generic-service:
     DPS_URL: https://digital.prison.service.justice.gov.uk/
     SUPPORT_URL: https://support.hmpps.service.justice.gov.uk/
     COMPONENT_API_URL: https://frontend-components.hmpps.service.justice.gov.uk
+    AUDIT_ENABLED: "true"
 
   allowlist:
     groups:
