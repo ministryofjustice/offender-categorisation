@@ -39,6 +39,10 @@ const pathfinderService = {
   getExtremismProfile: jest.fn(),
 }
 
+const auditService = {
+  logPageView: jest.fn(),
+}
+
 const tasklistRoute = createRouter({
   formService,
   offendersService,
@@ -46,6 +50,7 @@ const tasklistRoute = createRouter({
   authenticationMiddleware,
   alertService,
   pathfinderService,
+  auditService,
 })
 
 let app
@@ -112,6 +117,15 @@ describe('GET /tasklist/', () => {
         expect(res.text).not.toContain('Category decision')
         expect(res.text).toContain('Set next category review date')
         expect(res.text).toContain('Check and submit')
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CAT_TASKLIST',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            subjectId: 'GN123',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 
@@ -152,6 +166,15 @@ describe('GET /tasklist/', () => {
         expect(res.text).toContain('Category decision')
         expect(res.text).toContain('Set next category review date')
         expect(res.text).toContain('Check and submit')
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CAT_TASKLIST',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            subjectId: 'GN123',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 
@@ -192,6 +215,14 @@ describe('GET /tasklist/', () => {
         expect(res.text).toContain('Complete a categorisation')
         expect(res.text).toContain(`Automatically referred to Security (${today})`)
         expect(res.text).toContain('href="/form/ratings/offendingHistory/12345"')
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CAT_TASKLIST',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
 
         expect(formService.mergeRiskProfileData).toBeCalledWith(
           '12345',
@@ -223,6 +254,14 @@ describe('GET /tasklist/', () => {
         expect(res.text).toContain('Complete a categorisation')
         expect(res.text).not.toContain(`Automatically referred to Security`)
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CAT_TASKLIST',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 

@@ -5,6 +5,7 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
 const { isFemalePrisonId, add10BusinessDays } = require('../utils/utils')
+const { Page, SUBJECT_TYPE_PRISONER_NUMBER } = require('../services/auditService')
 
 module.exports = function Index({
   formService,
@@ -13,6 +14,7 @@ module.exports = function Index({
   authenticationMiddleware,
   alertService,
   pathfinderService,
+  auditService,
 }) {
   const router = express.Router()
 
@@ -26,6 +28,15 @@ module.exports = function Index({
       const { bookingId } = req.params
       const { reason } = req.query
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+
+      await auditService.logPageView(Page.INITIAL_CAT_TASKLIST, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       const dueByDate =
         details.sentence && details.sentence.sentenceStartDate && add10BusinessDays(details.sentence.sentenceStartDate)
 
