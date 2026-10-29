@@ -10,6 +10,7 @@ const categoriser = require('../config/categoriser')
 const log = require('../../log')
 const { isFemalePrisonId } = require('../utils/utils')
 const logger = require('../../log')
+const { Page, SUBJECT_TYPE_PRISONER_NUMBER } = require('../services/auditService')
 
 const formConfig = {
   openConditions,
@@ -21,7 +22,13 @@ const NOT_SUITABLE_REASON_PREVIOUS_SENTENCES = 'PREVIOUS_SENTENCES'
 const NOT_SUITABLE_FOREIGN_NATIONAL_FORM = 'FOREIGN_NATIONAL_FORM'
 const NOT_SUITABLE_FOREIGN_NATIONAL_EXHAUSTED_APPEALS = 'FOREIGN_NATIONAL_EXHAUSTED_APPEALS'
 
-module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
+module.exports = function Index({
+  formService,
+  offendersService,
+  userService,
+  authenticationMiddleware,
+  auditService,
+}) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -33,6 +40,14 @@ module.exports = function Index({ formService, offendersService, userService, au
       const { bookingId } = req.params
       const form = 'furtherCharges'
       let result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
+
+      await auditService.logPageView(Page.OPEN_CONDITIONS_FURTHER_CHARGES, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: result.data.details.offenderNo,
+        details: { bookingId, catType: result.data.details.catType },
+      })
 
       // Copy offending history charges or skip ?
       const openConditionsFCTextExists =
@@ -64,6 +79,15 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
+
+      await auditService.logPageView(Page.OPEN_CONDITIONS_PROVISIONAL_CATEGORY_FORM, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: result.data.details.offenderNo,
+        details: { bookingId, catType: result.data.details.catType },
+      })
+
       if (result.isInWomensEstate) {
         res.redirect(`/${result.catType === 'RECAT' ? 'tasklistRecat' : 'tasklist'}/${bookingId}`)
         return
@@ -98,6 +122,14 @@ module.exports = function Index({ formService, offendersService, userService, au
           message: 'Invalid not suitable for open conditions reason',
         })
       }
+
+      await auditService.logPageView(Page.OPEN_CONDITIONS_PROVISIONAL_CATEGORY_FORM, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: formData.offenderNo,
+        details: { bookingId, catType: formData.catType },
+      })
 
       let warningText = ''
       const years = '5'
@@ -137,6 +169,15 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
       const result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
+
+      await auditService.logPageView(Page.OPEN_CONDITIONS_FORM, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: result.data.details.offenderNo,
+        details: { bookingId, form },
+      })
+
       res.render(`formPages/openConditions/${form}`, result)
     }),
   )
@@ -244,6 +285,15 @@ module.exports = function Index({ formService, offendersService, userService, au
       })
 
       const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
+      await auditService.logEditEvent(Page.OPEN_CONDITIONS_RISK_LEVELS, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: formData.offenderNo,
+        details: { bookingId, form },
+      })
+
       const data = formData.formObject
       const oc = data.openConditions
       if (
@@ -275,6 +325,15 @@ module.exports = function Index({ formService, offendersService, userService, au
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logEditEvent(Page.OPEN_CONDITIONS_NOT_RECOMMENDED, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId, form },
+      })
 
       await formService.update({
         bookingId: parseInt(bookingId, 10),
@@ -323,6 +382,14 @@ module.exports = function Index({ formService, offendersService, userService, au
       if (userInput.openConditionsCategoryAppropriate === 'Yes') {
         const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
+        await auditService.logEditEvent(Page.OPEN_CONDITIONS_PROVISIONAL_CATEGORY_FORM, {
+          who: res.locals.user.username,
+          correlationId: req.id,
+          subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+          subjectId: formData.offenderNo,
+          details: { bookingId, form },
+        })
+
         log.info(`Categoriser creating initial categorisation record:`)
         await formService.categoriserDecisionWithFormResponse({
           bookingId: bookingInt,
@@ -368,6 +435,15 @@ module.exports = function Index({ formService, offendersService, userService, au
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logPageView(Page.OPEN_CONDITIONS_FORM, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId, form },
+      })
 
       const bookingIdInt = parseInt(bookingId, 10)
       await formService.update({

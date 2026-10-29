@@ -77,12 +77,20 @@ const alertService = {
   getEscapeProfile: jest.fn(),
 }
 
+const auditService = {
+  logPageView: jest.fn(),
+  logCreateEvent: jest.fn(),
+  logEditEvent: jest.fn(),
+  logDeleteEvent: jest.fn(),
+}
+
 const formRoute = createRouter({
   formService,
   offendersService,
   userService,
   pathfinderService,
   alertService,
+  auditService,
   authenticationMiddleware,
 })
 
@@ -149,6 +157,14 @@ describe('GET provisionalCategory page', () => {
         expect(res.text).toContain('Provisional category')
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
         expect(userService.getUser).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CAT_PROVISIONAL_CATEGORY_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 })
@@ -166,6 +182,13 @@ describe('GET /ratings/offendingHistory', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getCatAInformation).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          path === 'ratings/offendingHistory/12345' ? 'INITIAL_CAT_OFFENDING_HISTORY_FORM' : 'INITIAL_CAT_REVIEW_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+          }),
+        )
       }),
   )
 })
@@ -182,6 +205,14 @@ describe('GET /ratings/securityInput', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CAT_SECURITY_INPUT_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
       }),
   )
   test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
@@ -210,6 +241,14 @@ describe('GET /security/review', () => {
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(res.text).toContain('Claire Dent')
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
+        expect(auditService.logPageView).toBeCalledWith(
+          'SECURITY_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: expect.objectContaining({ bookingId: '12345' }),
+          }),
+        )
       }),
   )
 
@@ -369,6 +408,14 @@ describe('GET /approvedView', () => {
         expect(res.text).toContain('The supervisor also recommends Category C')
         expect(res.text).toContain('Next category review date')
         expect(res.text).toContain('Monday 25 November 2024')
+        expect(auditService.logPageView).toBeCalledWith(
+          'COMPLETED_APPROVED_INITIAL_CATEGORISATION',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '1234' },
+          }),
+        )
       })
   })
 
@@ -616,6 +663,14 @@ describe('GET /awaitingApprovalView', () => {
         expect(res.text).toContain('Open Conditions')
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('/form/openConditions/foreignNational/')
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CATEGORISATION_AWAITING_APPROVAL',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '1234' },
+          }),
+        )
       })
   })
 })
@@ -644,6 +699,14 @@ describe('GET /supervisor/review', () => {
         expect(res.text).not.toContain('No, consider for open')
         expect(res.text).not.toContain('No, closed is more appropriate')
         expect(res.text).not.toContain(`id="femaleBanner"`)
+        expect(auditService.logPageView).toBeCalledWith(
+          'SUPERVISOR_REVIEW_CATEGORISATION',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: expect.objectContaining({ bookingId: '1234' }),
+          }),
+        )
       })
   })
 
@@ -1280,6 +1343,14 @@ describe('GET /ratings/violence', () => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
         expect(res.text).toContain('This person has not been reported as involved in any assaults in custody before.')
         expect(res.text).not.toContain("'This person has been reported as involved in")
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CAT_VIOLENCE_RATING_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
       }),
   )
 
@@ -1323,6 +1394,14 @@ describe('GET /ratings/extremism', () => {
         expect(res.text).toContain(expectedContent)
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
         expect(pathfinderService.getExtremismProfile).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CAT_EXTREMISM_RATING_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
       }),
   )
 })
@@ -1621,6 +1700,34 @@ describe('GET /recat/review', () => {
         .expect(() => {
           expect(formService.update).toBeCalledTimes(1)
           expect(offendersService.getCatAInformation).toBeCalledTimes(0)
+          if (formName === 'securityInput') {
+            expect(auditService.logEditEvent).toBeCalledWith(
+              'INITIAL_CAT_SECURITY_INPUT_FORM',
+              expect.objectContaining({
+                who: 'me',
+                subjectType: 'PRISONER_NUMBER',
+                details: { bookingId: '12345' },
+              }),
+            )
+          } else if (formName === 'decision') {
+            expect(auditService.logEditEvent).toBeCalledWith(
+              'INITIAL_CAT_DECISION_FORM',
+              expect.objectContaining({
+                who: 'me',
+                subjectType: 'PRISONER_NUMBER',
+                details: { bookingId: '12345' },
+              }),
+            )
+          } else {
+            expect(auditService.logEditEvent).toBeCalledWith(
+              'INITIAL_CATEGORISATION_FORM_SECTION',
+              expect.objectContaining({
+                who: 'me',
+                subjectType: 'PRISONER_NUMBER',
+                details: { bookingId: '12345', section: sectionName },
+              }),
+            )
+          }
           const updateArg = formService.update.mock.calls[0][0]
           expect(updateArg.bookingId).toBe(12345)
           expect(updateArg.config).toBe(formConfig[sectionName][formName])
@@ -1646,6 +1753,14 @@ describe('POST /supervisor/review', () => {
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
         expect(formService.deleteFormData).toBeCalledTimes(1)
         expect(formService.requiresOpenConditions).toBeCalledTimes(1)
+        expect(auditService.logCreateEvent).toBeCalledWith(
+          'SUPERVISOR_REQUIRE_AMENDMENTS',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
         expect(formService.deleteFormData).toBeCalledWith({
           bookingId: 12345,
           formName: 'decision',
@@ -1666,6 +1781,14 @@ describe('POST /supervisor/review', () => {
       .expect(302)
       .expect(() => {
         expect(offendersService.getPrisonerBackground).toBeCalledTimes(1)
+        expect(auditService.logCreateEvent).toBeCalledWith(
+          'SUPERVISOR_REVIEW_CATEGORISATION',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
         expect(formService.supervisorApproval).toBeCalledWith(
           expect.objectContaining({
             bookingId: 12345,
@@ -1794,6 +1917,14 @@ describe('Submit provisionalCategory page', () => {
       .expect('Location', '/openConditionsAdded/12345?catType=INITIAL')
       .expect(() => {
         expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(0)
+        expect(auditService.logEditEvent).toBeCalledWith(
+          'INITIAL_CAT_PROVISIONAL_CATEGORY_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 
@@ -1806,6 +1937,14 @@ describe('Submit provisionalCategory page', () => {
       .expect('Location', '/tasklist/categoriserSubmitted/12345')
       .expect(() => {
         expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(1)
+        expect(auditService.logEditEvent).toBeCalledWith(
+          'INITIAL_CAT_PROVISIONAL_CATEGORY_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
         const updateArg = formService.categoriserDecisionWithFormResponse.mock.calls[0][0]
         expect(updateArg.bookingId).toBe(12345)
         expect(updateArg.userId).toBe('CA_USER_TEST')
@@ -1873,6 +2012,14 @@ describe('Submit provisionalCategory page', () => {
         expect(updateArg.config).toBe(formConfig.ratings.decision)
         expect(formService.cancelOpenConditions).toBeCalledTimes(1)
         expect(formService.requiresOpenConditions).toBeCalledTimes(0)
+        expect(auditService.logEditEvent).toBeCalledWith(
+          'INITIAL_CAT_DECISION_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
   test('Post womens category decision page with option open selected should save open and redirect to open conditions confirmation screen', () => {
@@ -1935,6 +2082,14 @@ describe('Submit provisionalCategory page', () => {
         expect(formService.getCategorisationRecord).not.toBeCalled()
         expect(formService.categoriserDecision).not.toBeCalled()
         expect(offendersService.createOrUpdateCategorisation).not.toBeCalled()
+        expect(auditService.logEditEvent).toBeCalledWith(
+          'INITIAL_CAT_REVIEW_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345', section: 'categoriser' },
+          }),
+        )
       })
   })
 
@@ -1961,6 +2116,14 @@ describe('Submit provisionalCategory page', () => {
         expect(formService.getCategorisationRecord).toBeCalledTimes(1)
         expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(1)
         expect(offendersService.createOrUpdateCategorisation).toBeCalledTimes(1)
+        expect(auditService.logEditEvent).toBeCalledWith(
+          'INITIAL_CAT_REVIEW_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345', section: 'categoriser' },
+          }),
+        )
         expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
           bookingId: 12345,
           context: {
@@ -2002,6 +2165,14 @@ describe('GET /ratings/escapeRating', () => {
         expect(res.text).not.toContain('Escape Risk Alert:')
         expect(res.text).not.toContain('Do you think this information means they should be in Cat B?')
         expect(res.text).toContain('Is there any other information to suggest they pose a risk of escape?')
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CAT_ESCAPE_RATING_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 

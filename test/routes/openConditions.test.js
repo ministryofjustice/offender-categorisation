@@ -54,10 +54,16 @@ const userService = {
   getUser: jest.fn(),
 }
 
+const auditService = {
+  logPageView: jest.fn(),
+  logEditEvent: jest.fn(),
+}
+
 const formRoute = createRouter({
   formService,
   offendersService,
   userService,
+  auditService,
   authenticationMiddleware,
 })
 
@@ -102,15 +108,27 @@ describe('open conditions', () => {
     ${'foreignNational'}     | ${'Foreign national'}
     ${'riskOfHarm'}          | ${'Risk of serious harm'}
     ${'riskLevels'}          | ${'Risk of escaping or absconding'}
-  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
-    request(app)
+  `('should render $expectedContent for $path', ({ path, expectedContent }) => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      formObject: {},
+    })
+    return request(app)
       .get(`/${path}/12345`)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
-      }),
-  )
+        expect(auditService.logPageView).toBeCalledWith(
+          'OPEN_CONDITIONS_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: { bookingId: '12345', form: path },
+          }),
+        )
+      })
+  })
 
   test('INITIAL categorisation in a mens prison where further charges and open conditions further charges are both yes', () => {
     userService.getUser.mockResolvedValue({
@@ -143,6 +161,14 @@ describe('open conditions', () => {
         expect(res.text).not.toContain('name="furtherCharges" type="radio" value="Yes"')
         expect(res.text).toContain('new stuff')
         expect(res.text).toContain('id="increasedRisk-2" name="increasedRisk" type="radio" value="No" checked')
+        expect(auditService.logPageView).toBeCalledWith(
+          'OPEN_CONDITIONS_FURTHER_CHARGES',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: expect.objectContaining({ bookingId: '12345' }),
+          }),
+        )
       })
   })
 
@@ -400,6 +426,18 @@ describe('open conditions', () => {
           formName,
           transactionalClient: mockTransactionalClient,
         })
+        if (formName === 'riskLevels') {
+          expect(auditService.logEditEvent).toBeCalledWith(
+            'OPEN_CONDITIONS_RISK_LEVELS',
+            expect.objectContaining({
+              who: 'me',
+              subjectType: 'PRISONER_NUMBER',
+              details: { bookingId: '12345', form: 'riskLevels' },
+            }),
+          )
+        } else {
+          expect(auditService.logEditEvent).not.toBeCalled()
+        }
       })
   })
 
@@ -502,6 +540,14 @@ describe('open conditions', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(`<input type="hidden" name="openConditionsSuggestedCategory" value="D"/>`)
+        expect(auditService.logPageView).toBeCalledWith(
+          'OPEN_CONDITIONS_PROVISIONAL_CATEGORY_FORM',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_NUMBER',
+            details: expect.objectContaining({ bookingId: '12345' }),
+          }),
+        )
       })
   })
 
