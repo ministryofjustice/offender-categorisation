@@ -46,7 +46,7 @@ const sqsService = createSqsService(offendersService, formService)
 const frontEndComponentsService = createDpsFeComponentService(dpsFeComponentsClientBuilder)
 const pathfinderService = new CreatePathfinderService(pathfinderApiClientBuilder)
 const alertService = new CreateAlertService(alertsApiClientBuilder)
-const authAuditService = AuditServiceFactory.createAuthAuditService(config.sqs.audit, logger)
+const authAuditService = AuditServiceFactory.createInstance(config.sqs.audit, logger)
 const auditService = new AuditService(authAuditService)
 
 const app = createApp({
