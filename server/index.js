@@ -1,3 +1,4 @@
+const { AuditServiceFactory } = require('@ministryofjustice/hmpps-audit-client')
 const createApp = require('./app')
 
 const formClient = require('./data/formClient')
@@ -21,11 +22,11 @@ const createOffendersService = require('./services/offendersService')
 const createUserService = require('./services/userService')
 const createSqsService = require('./services/sqsService')
 const createDpsFeComponentService = require('./services/dpsFeComponentService')
-const HmppsAuditClient = require('./data/hmppsAuditClient').default
 const AuditService = require('./services/auditService').default
 const CreatePathfinderService = require('./services/pathfinderService').default
 const CreateAlertService = require('./services/alertService').default
 const { config } = require('./config')
+const logger = require('../log')
 
 // pass in dependencies of service
 const formService = createFormService(formClient, formApiClientBuilder)
@@ -45,7 +46,8 @@ const sqsService = createSqsService(offendersService, formService)
 const frontEndComponentsService = createDpsFeComponentService(dpsFeComponentsClientBuilder)
 const pathfinderService = new CreatePathfinderService(pathfinderApiClientBuilder)
 const alertService = new CreateAlertService(alertsApiClientBuilder)
-const auditService = new AuditService(new HmppsAuditClient(config.sqs.audit))
+const authAuditService = AuditServiceFactory.createInstance(config.sqs.audit, logger)
+const auditService = new AuditService(authAuditService)
 
 const app = createApp({
   formService,

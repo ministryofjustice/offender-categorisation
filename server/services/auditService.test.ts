@@ -1,37 +1,16 @@
+import { AuditService as AuthAuditService } from '@ministryofjustice/hmpps-audit-client'
 import AuditService, { Page } from './auditService'
-import HmppsAuditClient from '../data/hmppsAuditClient'
-
-jest.mock('../data/hmppsAuditClient')
 
 describe('Audit service', () => {
-  let hmppsAuditClient: jest.Mocked<HmppsAuditClient>
+  let authAuditService: jest.Mocked<AuthAuditService>
   let auditService: AuditService
 
   beforeEach(() => {
-    hmppsAuditClient = new HmppsAuditClient(null) as jest.Mocked<HmppsAuditClient>
-    auditService = new AuditService(hmppsAuditClient)
-  })
+    authAuditService = {
+      logAuditEvent: jest.fn(),
+    } as unknown as jest.Mocked<AuthAuditService>
 
-  describe('logAuditEvent', () => {
-    it('sends audit message using audit client', async () => {
-      await auditService.logAuditEvent({
-        what: 'AUDIT_EVENT',
-        who: 'user1',
-        subjectId: 'subject123',
-        subjectType: 'exampleType',
-        correlationId: 'request123',
-        details: { extraDetails: 'example' },
-      })
-
-      expect(hmppsAuditClient.sendMessage).toHaveBeenCalledWith({
-        what: 'AUDIT_EVENT',
-        who: 'user1',
-        subjectId: 'subject123',
-        subjectType: 'exampleType',
-        correlationId: 'request123',
-        details: { extraDetails: 'example' },
-      })
-    })
+    auditService = new AuditService(authAuditService)
   })
 
   describe('logPageView', () => {
@@ -39,16 +18,16 @@ describe('Audit service', () => {
       await auditService.logPageView(Page.LITE_CAT_DUE_APPROVAL_LIST, {
         who: 'user1',
         subjectId: 'subject123',
-        subjectType: 'exampleType',
+        subjectType: 'PRISONER_ID',
         correlationId: 'request123',
         details: { extraDetails: 'example' },
       })
 
-      expect(hmppsAuditClient.sendMessage).toHaveBeenCalledWith({
-        what: 'PAGE_VIEW_LITE_CAT_DUE_APPROVAL_LIST',
+      expect(authAuditService.logAuditEvent).toHaveBeenCalledWith({
+        what: 'VIEW_LITE_CAT_DUE_APPROVAL_LIST',
         who: 'user1',
         subjectId: 'subject123',
-        subjectType: 'exampleType',
+        subjectType: 'PRISONER_ID',
         correlationId: 'request123',
         details: { extraDetails: 'example' },
       })
@@ -60,16 +39,17 @@ describe('Audit service', () => {
       await auditService.logCreateEvent(Page.NEW_LITE_CAT, {
         who: 'user1',
         subjectId: 'subject123',
-        subjectType: 'exampleType',
+        subjectType: 'PRISONER_ID',
         correlationId: 'request123',
         details: { extraDetails: 'example' },
+        what: 'ignored value',
       })
 
-      expect(hmppsAuditClient.sendMessage).toHaveBeenCalledWith({
+      expect(authAuditService.logAuditEvent).toHaveBeenCalledWith({
         what: 'CREATE_NEW_LITE_CAT',
         who: 'user1',
         subjectId: 'subject123',
-        subjectType: 'exampleType',
+        subjectType: 'PRISONER_ID',
         correlationId: 'request123',
         details: { extraDetails: 'example' },
       })
