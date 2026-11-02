@@ -1,4 +1,4 @@
-import HmppsAuditClient, { AuditEvent } from '../data/hmppsAuditClient'
+import { AuditService as AuthAuditService, AuditEvent, SubjectType } from '@ministryofjustice/hmpps-audit-client'
 
 export enum Page {
   // Cat lite
@@ -42,14 +42,14 @@ export enum Page {
   SECURITY_FORM = 'SECURITY_FORM',
 }
 
-export const SUBJECT_TYPE_PRISONER_NUMBER = 'PRISONER_NUMBER'
+export const SUBJECT_TYPE_PRISONER_NUMBER: SubjectType = 'PRISONER_ID'
 
 export interface PageViewEventDetails {
   who: string
   subjectId?: string
-  subjectType?: string
+  subjectType?: SubjectType
   correlationId?: string
-  details?: object
+  details?: Record<string, unknown>
 }
 
 const EventPrefix = {
@@ -63,25 +63,21 @@ type EventPrefixValue = (typeof EventPrefix)[keyof typeof EventPrefix]
 
 export default class AuditService {
   // eslint-disable-next-line no-empty-function
-  constructor(private readonly hmppsAuditClient: HmppsAuditClient) {}
-
-  async logAuditEvent(event: AuditEvent) {
-    await this.hmppsAuditClient.sendMessage(event)
-  }
+  constructor(private readonly authAuditService: AuthAuditService) {}
 
   private async logEvent(prefix: EventPrefixValue, page: Page, eventDetails: PageViewEventDetails) {
-    const event: AuditEvent = {
+    const event = {
       ...eventDetails,
       what: `${prefix}_${page}`,
     }
-    await this.hmppsAuditClient.sendMessage(event)
+    await this.authAuditService.logAuditEvent(event)
   }
 
   async logPageView(page: Page, eventDetails: PageViewEventDetails) {
     await this.logEvent(EventPrefix.pageView, page, eventDetails)
   }
 
-  async logCreateEvent(page: Page, eventDetails: PageViewEventDetails) {
+  async logCreateEvent(page: Page, eventDetails: AuditEvent) {
     await this.logEvent(EventPrefix.create, page, eventDetails)
   }
 
