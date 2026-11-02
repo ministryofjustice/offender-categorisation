@@ -267,6 +267,7 @@ module.exports = function createApp({
       authenticationMiddleware,
       pathfinderService,
       alertService,
+      auditService,
     }),
   )
 
