@@ -161,7 +161,7 @@ describe('GET provisionalCategory page', () => {
           'INITIAL_CAT_PROVISIONAL_CATEGORY_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )
@@ -186,7 +186,7 @@ describe('GET /ratings/offendingHistory', () => {
           path === 'ratings/offendingHistory/12345' ? 'INITIAL_CAT_OFFENDING_HISTORY_FORM' : 'INITIAL_CAT_REVIEW_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
           }),
         )
       }),
@@ -209,7 +209,7 @@ describe('GET /ratings/securityInput', () => {
           'INITIAL_CAT_SECURITY_INPUT_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )
@@ -245,7 +245,7 @@ describe('GET /security/review', () => {
           'SECURITY_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: expect.objectContaining({ bookingId: '12345' }),
           }),
         )
@@ -412,7 +412,7 @@ describe('GET /approvedView', () => {
           'COMPLETED_APPROVED_INITIAL_CATEGORISATION',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '1234' },
           }),
         )
@@ -667,7 +667,7 @@ describe('GET /awaitingApprovalView', () => {
           'INITIAL_CATEGORISATION_AWAITING_APPROVAL',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '1234' },
           }),
         )
@@ -703,7 +703,7 @@ describe('GET /supervisor/review', () => {
           'SUPERVISOR_REVIEW_CATEGORISATION',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: expect.objectContaining({ bookingId: '1234' }),
           }),
         )
@@ -1347,7 +1347,7 @@ describe('GET /ratings/violence', () => {
           'INITIAL_CAT_VIOLENCE_RATING_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )
@@ -1398,7 +1398,7 @@ describe('GET /ratings/extremism', () => {
           'INITIAL_CAT_EXTREMISM_RATING_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )
@@ -1705,7 +1705,7 @@ describe('GET /recat/review', () => {
               'INITIAL_CAT_SECURITY_INPUT_FORM',
               expect.objectContaining({
                 who: 'me',
-                subjectType: 'PRISONER_NUMBER',
+                subjectType: 'PRISONER_ID',
                 details: { bookingId: '12345' },
               }),
             )
@@ -1714,7 +1714,7 @@ describe('GET /recat/review', () => {
               'INITIAL_CAT_DECISION_FORM',
               expect.objectContaining({
                 who: 'me',
-                subjectType: 'PRISONER_NUMBER',
+                subjectType: 'PRISONER_ID',
                 details: { bookingId: '12345' },
               }),
             )
@@ -1723,7 +1723,7 @@ describe('GET /recat/review', () => {
               'INITIAL_CATEGORISATION_FORM_SECTION',
               expect.objectContaining({
                 who: 'me',
-                subjectType: 'PRISONER_NUMBER',
+                subjectType: 'PRISONER_ID',
                 details: { bookingId: '12345', section: sectionName },
               }),
             )
@@ -1757,7 +1757,7 @@ describe('POST /supervisor/review', () => {
           'SUPERVISOR_REQUIRE_AMENDMENTS',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )
@@ -1785,7 +1785,7 @@ describe('POST /supervisor/review', () => {
           'SUPERVISOR_REVIEW_CATEGORISATION',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )
@@ -1921,7 +1921,7 @@ describe('Submit provisionalCategory page', () => {
           'INITIAL_CAT_PROVISIONAL_CATEGORY_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )
@@ -1941,7 +1941,7 @@ describe('Submit provisionalCategory page', () => {
           'INITIAL_CAT_PROVISIONAL_CATEGORY_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )
@@ -2016,7 +2016,7 @@ describe('Submit provisionalCategory page', () => {
           'INITIAL_CAT_DECISION_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )
@@ -2086,7 +2086,7 @@ describe('Submit provisionalCategory page', () => {
           'INITIAL_CAT_REVIEW_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345', section: 'categoriser' },
           }),
         )
@@ -2120,7 +2120,7 @@ describe('Submit provisionalCategory page', () => {
           'INITIAL_CAT_REVIEW_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345', section: 'categoriser' },
           }),
         )
@@ -2169,7 +2169,7 @@ describe('GET /ratings/escapeRating', () => {
           'INITIAL_CAT_ESCAPE_RATING_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )

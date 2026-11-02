@@ -53,7 +53,7 @@ export interface PageViewEventDetails {
 }
 
 const EventPrefix = {
-  pageView: 'PAGE_VIEW',
+  pageView: 'VIEW',
   create: 'CREATE',
   edit: 'EDIT',
   delete: 'DELETE',

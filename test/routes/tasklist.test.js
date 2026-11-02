@@ -117,15 +117,12 @@ describe('GET /tasklist/', () => {
         expect(res.text).not.toContain('Category decision')
         expect(res.text).toContain('Set next category review date')
         expect(res.text).toContain('Check and submit')
-        expect(auditService.logPageView).toBeCalledWith(
-          'INITIAL_CAT_TASKLIST',
-          expect.objectContaining({
-            who: 'me',
-            subjectType: 'PRISONER_NUMBER',
-            subjectId: 'GN123',
-            details: { bookingId: '12345' },
-          }),
-        )
+        expect(auditService.logPageView).toBeCalledWith('INITIAL_CAT_TASKLIST', {
+          who: 'me',
+          subjectType: 'PRISONER_ID',
+          subjectId: 'GN123',
+          details: { bookingId: '12345' },
+        })
       })
   })
 
@@ -170,7 +167,7 @@ describe('GET /tasklist/', () => {
           'INITIAL_CAT_TASKLIST',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             subjectId: 'GN123',
             details: { bookingId: '12345' },
           }),
@@ -219,7 +216,7 @@ describe('GET /tasklist/', () => {
           'INITIAL_CAT_TASKLIST',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )
@@ -258,7 +255,7 @@ describe('GET /tasklist/', () => {
           'INITIAL_CAT_TASKLIST',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345' },
           }),
         )

@@ -123,7 +123,7 @@ describe('open conditions', () => {
           'OPEN_CONDITIONS_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: { bookingId: '12345', form: path },
           }),
         )
@@ -165,7 +165,7 @@ describe('open conditions', () => {
           'OPEN_CONDITIONS_FURTHER_CHARGES',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: expect.objectContaining({ bookingId: '12345' }),
           }),
         )
@@ -431,7 +431,7 @@ describe('open conditions', () => {
             'OPEN_CONDITIONS_RISK_LEVELS',
             expect.objectContaining({
               who: 'me',
-              subjectType: 'PRISONER_NUMBER',
+              subjectType: 'PRISONER_ID',
               details: { bookingId: '12345', form: 'riskLevels' },
             }),
           )
@@ -544,7 +544,7 @@ describe('open conditions', () => {
           'OPEN_CONDITIONS_PROVISIONAL_CATEGORY_FORM',
           expect.objectContaining({
             who: 'me',
-            subjectType: 'PRISONER_NUMBER',
+            subjectType: 'PRISONER_ID',
             details: expect.objectContaining({ bookingId: '12345' }),
           }),
         )
