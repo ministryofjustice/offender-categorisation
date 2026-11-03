@@ -55,4 +55,46 @@ describe('Audit service', () => {
       })
     })
   })
+
+  describe('logEditEvent', () => {
+    it('sends edit event audit message using audit client', async () => {
+      await auditService.logEditEvent(Page.SUPERVISOR_REVIEW_CATEGORISATION, {
+        who: 'user1',
+        subjectId: 'subject123',
+        subjectType: 'PRISONER_ID',
+        correlationId: 'request123',
+        details: { extraDetails: 'example' },
+      })
+
+      expect(authAuditService.logAuditEvent).toHaveBeenCalledWith({
+        what: 'EDIT_SUPERVISOR_REVIEW_CATEGORISATION',
+        who: 'user1',
+        subjectId: 'subject123',
+        subjectType: 'PRISONER_ID',
+        correlationId: 'request123',
+        details: { extraDetails: 'example' },
+      })
+    })
+  })
+
+  describe('logDeleteEvent', () => {
+    it('sends delete event audit message using audit client', async () => {
+      await auditService.logDeleteEvent(Page.CANCEL_CATEGORISATION, {
+        who: 'user1',
+        subjectId: 'subject123',
+        subjectType: 'PRISONER_ID',
+        correlationId: 'request123',
+        details: { extraDetails: 'example' },
+      })
+
+      expect(authAuditService.logAuditEvent).toHaveBeenCalledWith({
+        what: 'DELETE_CANCEL_CATEGORISATION',
+        who: 'user1',
+        subjectId: 'subject123',
+        subjectType: 'PRISONER_ID',
+        correlationId: 'request123',
+        details: { extraDetails: 'example' },
+      })
+    })
+  })
 })

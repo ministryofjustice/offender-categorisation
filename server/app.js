@@ -260,6 +260,7 @@ module.exports = function createApp({
       authenticationMiddleware,
       pathfinderService,
       alertService,
+      auditService,
     }),
   )
   app.use(
@@ -278,6 +279,7 @@ module.exports = function createApp({
     formService,
     offendersService,
     userService,
+    auditService,
     authenticationMiddleware,
   })
   app.use('/form/openConditions/', openConditionsRouter)
@@ -316,6 +318,7 @@ module.exports = function createApp({
     authenticationMiddleware,
     pathfinderService,
     alertService,
+    auditService,
   })
   app.use('/form/', formRouter)
   app.use('/supervisor/', formRouter)
