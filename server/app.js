@@ -17,6 +17,8 @@ const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
 const createTasklistRecatRouter = require('./routes/tasklistRecat')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
+const setUpCurrentUser = require('./middleware/setUpCurrentUser').default
+const { captureRequestSpan, addUserMetadataToRequestSpan } = require('./middleware/userTelemetry')
 const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
 const setUpCsrf = require('./middleware/setUpCsrf').default
 const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
@@ -68,6 +70,7 @@ module.exports = function createApp({
 
   setUpEnvironmentName(app)
   nunjucksSetup(app, path)
+  app.use(captureRequestSpan())
   app.use(setUpWebSecurity())
 
   app.use((req, res, next) => {
@@ -184,6 +187,8 @@ module.exports = function createApp({
   }
 
   app.use(addTemplateVariables)
+  app.use(setUpCurrentUser())
+  app.use(addUserMetadataToRequestSpan())
 
   // Don't cache dynamic resources
   app.use(noCache())
@@ -255,6 +260,7 @@ module.exports = function createApp({
       authenticationMiddleware,
       pathfinderService,
       alertService,
+      auditService,
     }),
   )
   app.use(
@@ -273,6 +279,7 @@ module.exports = function createApp({
     formService,
     offendersService,
     userService,
+    auditService,
     authenticationMiddleware,
   })
   app.use('/form/openConditions/', openConditionsRouter)
@@ -311,6 +318,7 @@ module.exports = function createApp({
     authenticationMiddleware,
     pathfinderService,
     alertService,
+    auditService,
   })
   app.use('/form/', formRouter)
   app.use('/supervisor/', formRouter)
