@@ -4,6 +4,7 @@ const appSetup = require('./utils/appSetup')
 const createRouter = require('../../server/routes/tasklistRecat')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const db = require('../../server/data/dataAccess/db')
+const { SUBJECT_TYPE_PRISONER_NUMBER, Page } = require('../../server/services/auditService')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
@@ -39,6 +40,10 @@ const pathfinderService = {
   getExtremismProfile: jest.fn(),
 }
 
+const auditService = {
+  logPageView: jest.fn(),
+}
+
 const tasklistRoute = createRouter({
   formService,
   offendersService,
@@ -46,6 +51,7 @@ const tasklistRoute = createRouter({
   authenticationMiddleware,
   alertService,
   pathfinderService,
+  auditService,
 })
 
 let app
@@ -112,6 +118,15 @@ describe('GET /tasklistRecat/', () => {
         expect(res.text).toContain('Set next category review date')
         expect(res.text).toContain('Check and submit')
         expect(res.text).toContain('Not yet started')
+        expect(auditService.logPageView).toBeCalledWith(
+          Page.RECAT_TASKLIST,
+          expect.objectContaining({
+            who: 'me',
+            subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+            subjectId: 'GN123',
+            details: { bookingId: '12345' },
+          }),
+        )
         expect(formService.updateStatusForOutstandingRiskChange).toBeCalledWith({
           offenderNo: 'GN123',
           userId: 'CA_USER_TEST',
