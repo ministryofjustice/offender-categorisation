@@ -9,6 +9,7 @@ const createTokenForUser = ({ user }: { user: UserAccount }): AccessToken => {
     user_name: user.username,
     scope: ['read'],
     auth_source: 'nomis',
+    user_uuid: '11111111-1111-1111-1111-111111111111',
     authorities: user.roles,
     jti: '83b50a10-cca6-41db-985f-e87efb303ddb',
     client_id: 'clientid',
