@@ -6,6 +6,7 @@ const CatType = require('../utils/catTypeEnum')
 const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
 const RiskChange = require('../utils/riskChangeStatusEnum')
 const { isFemalePrisonId } = require('../utils/utils')
+const { SUBJECT_TYPE_PRISONER_NUMBER, Page } = require('../services/auditService')
 
 const calculateNextReviewDate = details => {
   // Endpoint only returns the latest assessment for each type
@@ -41,6 +42,7 @@ module.exports = function Index({
   authenticationMiddleware,
   pathfinderService,
   alertService,
+  auditService,
 }) {
   const router = express.Router()
 
@@ -54,6 +56,15 @@ module.exports = function Index({
       const { bookingId } = req.params
       const { reason } = req.query
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+
+      await auditService.logPageView(Page.RECAT_TASKLIST, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       let categorisationRecord = await formService.createOrRetrieveCategorisationRecord(
         bookingId,
         req.user.username,

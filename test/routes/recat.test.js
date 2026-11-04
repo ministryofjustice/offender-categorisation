@@ -19,6 +19,7 @@ const { makeTestViperDto } = require('../../server/data/formApi/viper/viper.dto.
 const {
   makeTestCountOfAssaultIncidents,
 } = require('../../server/services/incidents/countOfAssaultIncidents.test-factory')
+const { Page, SUBJECT_TYPE_PRISONER_NUMBER } = require('../../server/services/auditService')
 
 const formConfig = {
   recat,
@@ -70,6 +71,11 @@ const alertService = {
   getEscapeProfile: jest.fn(),
 }
 
+const auditService = {
+  logPageView: jest.fn(),
+  logEditEvent: jest.fn(),
+}
+
 const mockFemalePrison = () => {
   offendersService.getOffenderDetails.mockResolvedValue({
     displayName: 'Claire Dent',
@@ -97,6 +103,7 @@ const formRoute = createRouter({
   userService,
   pathfinderService,
   alertService,
+  auditService,
   authenticationMiddleware,
 })
 
@@ -157,6 +164,15 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
+        expect(auditService.logPageView).toBeCalledWith(
+          Page.RECAT_FORM_PAGE,
+          expect.objectContaining({
+            who: 'me',
+            subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+            subjectId: 'GH123',
+            details: { bookingId: '12345', form: path },
+          }),
+        )
       }),
   )
 
@@ -171,6 +187,15 @@ describe('recat', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           expect(res.text).toContain(expectedContent)
+          expect(auditService.logPageView).toBeCalledWith(
+            Page.RECAT_SECURITY_INPUT_FORM,
+            expect.objectContaining({
+              who: 'me',
+              subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+              subjectId: 'GH123',
+              details: { bookingId: '12345' },
+            }),
+          )
         }),
     )
     test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
@@ -329,6 +354,15 @@ describe('recat', () => {
         expect(res.text).toContain('/prisoner/GH123/alerts')
         expect(res.text).toContain('/prisoner/GH123/adjudications')
         expect(res.text).toContain('/categoryHistory/12345')
+        expect(auditService.logPageView).toBeCalledWith(
+          Page.RECAT_PRISONER_BACKGROUND,
+          expect.objectContaining({
+            who: 'me',
+            subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+            subjectId: 'GH123',
+            details: { bookingId: '12345' },
+          }),
+        )
       }))
 
   test('GET /form/recat/review violence profile - displayAssault', () => {
@@ -353,6 +387,15 @@ describe('recat', () => {
           /This person has been reported as involved in 5 assaults in custody. In the past 12 months, there have been\s+2 serious assaults and 4 non-serious assaults./,
         )
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Category task list/s)
+        expect(auditService.logPageView).toBeCalledWith(
+          Page.RECAT_REVIEW,
+          expect.objectContaining({
+            who: 'me',
+            subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+            subjectId: 'GH123',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 
@@ -486,6 +529,15 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
         )
         expect(res.text).toContain('There are no reported assaults during this sentence')
         expect(res.text).toContain('Do you want to start an early category review?')
+        expect(auditService.logPageView).toBeCalledWith(
+          Page.RISK_PROFILE_CHANGE_DETAIL,
+          expect.objectContaining({
+            who: 'me',
+            subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+            subjectId: 'GH123',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 
@@ -641,19 +693,45 @@ describe('POST /form/recat/review', () => {
 })
 
 describe('Testing previous risk assessments routing', () => {
+  test('GET /form/recat/previousRiskAssessments logs audit page view', () =>
+    request(app)
+      .get('/previousRiskAssessments/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(() => {
+        expect(auditService.logPageView).toBeCalledWith(
+          Page.RECAT_PREVIOUS_RISK_ASSESSMENT,
+          expect.objectContaining({
+            who: 'me',
+            subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+            subjectId: 'GH123',
+            details: { bookingId: '12345' },
+          }),
+        )
+      }))
+
   test.each`
-    path                               | expectedContent
-    ${'previousRiskAssessments/12345'} | ${'Previous risk assessments'}
-    ${'oasysInput/12345'}              | ${'Check their OASys assessment'}
-    ${'bcstInput/12345'}               | ${'Check their Basic Custody Screening Tool part 1 assessment'}
-    ${'oasysRequired/12345'}           | ${'You must complete an OASys for this person'}
-  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
+    path                               | expectedContent                                                 | auditPage                              | auditDetails
+    ${'previousRiskAssessments/12345'} | ${'Previous risk assessments'}                                  | ${Page.RECAT_PREVIOUS_RISK_ASSESSMENT} | ${{ bookingId: '12345' }}
+    ${'oasysInput/12345'}              | ${'Check their OASys assessment'}                               | ${Page.RECAT_FORM_PAGE}                | ${{ bookingId: '12345', form: 'oasysInput' }}
+    ${'bcstInput/12345'}               | ${'Check their Basic Custody Screening Tool part 1 assessment'} | ${Page.RECAT_FORM_PAGE}                | ${{ bookingId: '12345', form: 'bcstInput' }}
+    ${'oasysRequired/12345'}           | ${'You must complete an OASys for this person'}                 | ${Page.RECAT_OASYS_REQUIRED}           | ${{ bookingId: '12345' }}
+  `('should render $expectedContent for $path', ({ path, expectedContent, auditPage, auditDetails }) =>
     request(app)
       .get(`/${path}`)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
+        expect(auditService.logPageView).toBeCalledWith(
+          auditPage,
+          expect.objectContaining({
+            who: 'me',
+            subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+            subjectId: 'GH123',
+            details: auditDetails,
+          }),
+        )
       }),
   )
 

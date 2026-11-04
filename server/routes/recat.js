@@ -17,6 +17,7 @@ const Status = require('../utils/statusEnum')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const log = require('../../log')
 const { mapDataToViolenceProfile } = require('../utils/violenceProfile/violenceProfileMapper')
+const { Page, SUBJECT_TYPE_PRISONER_NUMBER } = require('../services/auditService')
 
 const formConfig = {
   recat,
@@ -29,6 +30,7 @@ module.exports = function Index({
   authenticationMiddleware,
   pathfinderService,
   alertService,
+  auditService,
 }) {
   const router = express.Router()
 
@@ -40,6 +42,14 @@ module.exports = function Index({
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'securityInput', bookingId, transactionalDbClient)
+
+      await auditService.logPageView(Page.RECAT_SECURITY_INPUT_FORM, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: result.data.details.offenderNo,
+        details: { bookingId },
+      })
 
       if (
         result.status === Status.SECURITY_MANUAL.name ||
@@ -59,6 +69,14 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
+
+      await auditService.logPageView(Page.RECAT_PRISONER_BACKGROUND, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: offenderNo,
+        details: { bookingId },
+      })
 
       const [assaultIncidents, viper, extremismProfile, escapeProfile, categorisations] = await Promise.all([
         offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
@@ -94,6 +112,14 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
+
+      await auditService.logPageView(Page.RECAT_REVIEW, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: offenderNo,
+        details: { bookingId },
+      })
 
       const [assaultIncidents, viper, extremismProfile, escapeProfile, categorisations] = await Promise.all([
         offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
@@ -133,6 +159,15 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logPageView(Page.RISK_PROFILE_CHANGE_DETAIL, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       const data = await offendersService.getRiskChangeForOffender(res.locals, bookingId, transactionalDbClient)
       const errors = req.flash('errors')
       const backLink = req.get('Referrer')
@@ -147,6 +182,15 @@ module.exports = function Index({
       const errors = req.flash('errors')
 
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+
+      await auditService.logPageView(Page.RECAT_PREVIOUS_RISK_ASSESSMENT, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
       const data = { details, bookingId, formData }
@@ -160,6 +204,14 @@ module.exports = function Index({
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
     const data = { details, bookingId }
 
+    await auditService.logPageView(Page.RECAT_OASYS_REQUIRED, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+      subjectId: details.offenderNo,
+      details: { bookingId },
+    })
+
     res.render('formPages/recat/oasysRequired', { data })
   })
 
@@ -169,6 +221,15 @@ module.exports = function Index({
       const { form, bookingId } = req.params
       const section = 'recat'
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
+
+      await auditService.logPageView(Page.RECAT_FORM_PAGE, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: result.data.details.offenderNo,
+        details: { bookingId, form },
+      })
+
       res.render(`formPages/${section}/${form}`, result)
     }),
   )
@@ -240,6 +301,15 @@ module.exports = function Index({
         return
       }
 
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logEditEvent(Page.RECAT_SECURITY_INPUT_FORM, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       const updatedFormObject = await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
@@ -275,6 +345,15 @@ module.exports = function Index({
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logEditEvent(Page.RISK_PROFILE_CHANGE_DETAIL, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
 
       const bookingIdInt = parseInt(bookingId, 10)
       const status =
@@ -314,6 +393,15 @@ module.exports = function Index({
       if (!valid) {
         return
       }
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logEditEvent(Page.RECAT_DECISION, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
 
       const bookingIdInt = parseInt(bookingId, 10)
 
@@ -375,6 +463,15 @@ module.exports = function Index({
         return
       }
 
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logEditEvent(Page.RECAT_HIGHER_SECURITY_REVIEW, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
@@ -410,6 +507,15 @@ module.exports = function Index({
       if (!valid) {
         return
       }
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logEditEvent(Page.RECAT_MINI_HIGHER_SECURITY_REVIEW, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
 
       await formService.update({
         bookingId: parseInt(bookingId, 10),
@@ -447,6 +553,15 @@ module.exports = function Index({
       return
     }
 
+    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+    await auditService.logEditEvent(Page.RECAT_PREVIOUS_RISK_ASSESSMENT, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+      subjectId: details.offenderNo,
+      details: { bookingId },
+    })
+
     const { sentence } = await offendersService.getOffenderDetails(res.locals, bookingId)
     const sentenceLength = sentence?.list?.[0] ? formatLength(sentence.list[0]) : ''
 
@@ -475,6 +590,16 @@ module.exports = function Index({
       const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
       const suggestedCategory = R.path(['formObject', 'recat', 'decision', 'category'], formData)
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logEditEvent(Page.RECAT_REVIEW, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId, suggestedCategory },
+      })
+
       if (suggestedCategory) {
         log.info(`Categoriser creating recat categorisation record:`)
         await formService.categoriserDecision(bookingId, req.user.username, transactionalDbClient)
@@ -512,6 +637,15 @@ module.exports = function Index({
       if (!valid) {
         return
       }
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logEditEvent(Page.RECAT_FORM_PAGE, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId, form },
+      })
 
       await formService.update({
         bookingId: parseInt(bookingId, 10),
