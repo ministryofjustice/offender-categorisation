@@ -102,7 +102,7 @@ describe('recat', () => {
             who: 'me',
             subjectType: 'PRISONER_ID',
             subjectId: 'A1234BC',
-            details: { bookingId: '12' },
+            details: { bookingId: '12', form: 'nextReviewDateQuestion' },
           }),
         )
       })
@@ -132,7 +132,7 @@ describe('recat', () => {
             who: 'me',
             subjectType: 'PRISONER_ID',
             subjectId: 'A1234BC',
-            details: { bookingId: '12' },
+            details: { bookingId: '12', form: 'nextReviewDateQuestion' },
           }),
         )
       })
@@ -173,7 +173,7 @@ describe('recat', () => {
             who: 'me',
             subjectType: 'PRISONER_ID',
             subjectId: 'A1234BC',
-            details: { bookingId: '12345' },
+            details: { bookingId: '12345', form: 'nextReviewDate' },
           }),
         )
       })
@@ -214,7 +214,7 @@ describe('recat', () => {
             who: 'me',
             subjectType: 'PRISONER_ID',
             subjectId: 'A1234BC',
-            details: { bookingId: '12345' },
+            details: { bookingId: '12345', form: 'nextReviewDate' },
           }),
         )
       })
