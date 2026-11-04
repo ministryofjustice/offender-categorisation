@@ -112,7 +112,7 @@
     "govuk-frontend": "^6.5.1",
     "helmet": "^8.2.0",
     "http-errors": "~1.8.1",
-    "joi": "17.13.9",
+    "joi": "^17.13.9",
     "jquery": "^3.7.1",
     "jwt-decode": "^2.2.0",
     "knex": "^2.4.2",
