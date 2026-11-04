@@ -47,11 +47,17 @@ const userService = {
   getUser: jest.fn(),
 }
 
+const auditService = {
+  logPageView: jest.fn(),
+  logEditEvent: jest.fn(),
+}
+
 const formRoute = createRouter({
   formService,
   offendersService,
   userService,
   authenticationMiddleware,
+  auditService,
 })
 
 let app
@@ -81,6 +87,7 @@ describe('recat', () => {
     })
     offendersService.getOffenderDetails.mockResolvedValue({
       bookingId: 12,
+      offenderNo: 'A1234BC',
     })
     return request(app)
       .get(`/nextReviewDateQuestion/12`)
@@ -89,6 +96,15 @@ describe('recat', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Category task list/s)
         expect(res.text).toContain('<a class="govuk-breadcrumbs__link" href="/tasklistRecat/12">Category task list</a>')
+        expect(auditService.logPageView).toBeCalledWith(
+          expect.any(String),
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_ID',
+            subjectId: 'A1234BC',
+            details: { bookingId: '12' },
+          }),
+        )
       })
   })
 
@@ -102,6 +118,7 @@ describe('recat', () => {
     })
     offendersService.getOffenderDetails.mockResolvedValue({
       bookingId: 12,
+      offenderNo: 'A1234BC',
     })
     return request(app)
       .get(`/nextReviewDateQuestion/12`)
@@ -109,6 +126,15 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
+        expect(auditService.logPageView).toBeCalledWith(
+          expect.any(String),
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_ID',
+            subjectId: 'A1234BC',
+            details: { bookingId: '12' },
+          }),
+        )
       })
   })
 
@@ -121,6 +147,10 @@ describe('recat', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12345,
       formObject: {},
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      bookingId: 12345,
+      offenderNo: 'A1234BC',
     })
     return request(app)
       .post(`/${formName}/12345`)
@@ -137,6 +167,15 @@ describe('recat', () => {
           formName,
           transactionalClient: mockTransactionalClient,
         })
+        expect(auditService.logEditEvent).toBeCalledWith(
+          expect.any(String),
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_ID',
+            subjectId: 'A1234BC',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 
@@ -149,6 +188,10 @@ describe('recat', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12345,
       formObject: {},
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      bookingId: 12345,
+      offenderNo: 'A1234BC',
     })
     return request(app)
       .post(`/${formName}/12345`)
@@ -165,6 +208,15 @@ describe('recat', () => {
           formName,
           transactionalClient: mockTransactionalClient,
         })
+        expect(auditService.logEditEvent).toBeCalledWith(
+          expect.any(String),
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_ID',
+            subjectId: 'A1234BC',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 })
