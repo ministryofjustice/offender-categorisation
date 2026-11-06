@@ -1414,31 +1414,161 @@ module.exports = function createOffendersService(
     const catRecords = await formService.getHistoricalCategorisationRecords(details.offenderNo, transactionalDbClient)
     const nomisRecords = await getAllApprovedCategorisationsForOffender(nomisClient, details.offenderNo)
 
-    const uniqueAgencies = [...new Set(nomisRecords.map(o => o.assessmentAgencyId))]
+    const uniqueAgencies = [
+      ...new Set([
+        ...nomisRecords.map(record => record.assessmentAgencyId),
+        ...catRecords.map(record => record.prisonId),
+      ]),
+    ]
     const agencyMap = new Map(
       await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)])),
     )
 
-    const dataDecorated = await Promise.all(
+    const matchedLocalRecordKeys = new Set()
+
+    const approvedRowsFromNomis = await Promise.all(
       nomisRecords.map(async nomisRecord => {
         const foundCatRecord = catRecords.find(
-          o => o.bookingId === nomisRecord.bookingId && o.nomisSeq === nomisRecord.assessmentSeq,
+          record => record.bookingId === nomisRecord.bookingId && record.nomisSeq === nomisRecord.assessmentSeq,
         )
+
+        if (foundCatRecord) {
+          matchedLocalRecordKeys.add(`${foundCatRecord.bookingId}-${foundCatRecord.nomisSeq}`)
+        }
+
+        let approvedCategory
+
+        if (!foundCatRecord) {
+          approvedCategory = nomisRecord.classificationCode
+        } else if (foundCatRecord.status !== Status.APPROVED.name) {
+          approvedCategory = undefined
+        } else {
+          approvedCategory = getApprovedCategory(foundCatRecord.formObject)
+        }
+
         return {
           ...nomisRecord,
           prisonDescription: agencyMap.get(nomisRecord.assessmentAgencyId),
           recordExists: !!foundCatRecord,
           approvalDateDisplay: dateConverter(nomisRecord.approvalDate),
           sequence: foundCatRecord && foundCatRecord.sequence,
+          calculatedCategory: foundCatRecord ? getCalculatedCategory(foundCatRecord) : undefined,
+          approvedCategory,
+          // Should we be displaying Approved status only for rows from Nomis?
+          displayStatus: Status.APPROVED.value,
+          nextReviewDate: dateConverter(nomisRecord.nextReviewDate),
+          viewUrl: getViewUrl({
+            bookingId: nomisRecord.bookingId,
+            sequence: foundCatRecord?.sequence,
+            status: Status.APPROVED.name,
+            catType: foundCatRecord?.catType,
+            roles: context.user.roles,
+          }),
           tprsSelected: foundCatRecord?.formObject?.openConditions?.tprs?.tprsSelected === 'Yes' || false,
         }
       }),
     )
 
+    const inProgressRowsFromApp = catRecords
+      .filter(record => record.status !== Status.APPROVED.name)
+      .filter(record => !matchedLocalRecordKeys.has(`${record.bookingId}-${record.nomisSeq}`))
+      .map(record => ({
+        bookingId: record.bookingId,
+        offenderNo: record.offenderNo,
+        sequence: record.sequence,
+        assessmentDate: record.formObject?.assessmentDate,
+        approvalDateDisplay: record.approvalDate ? dateConverter(record.approvalDate) : '-',
+        prisonDescription: agencyMap.get(record.prisonId),
+        calculatedCategory: getCalculatedCategory(record),
+        approvedCategory: undefined,
+        displayStatus: Status[record.status]?.value || record.status,
+        nextReviewDate: getNextReviewDate(record) || '-',
+        viewUrl: getViewUrl({
+          bookingId: record.bookingId,
+          sequence: record.sequence,
+          status: record.status,
+          catType: record.catType,
+          roles: context.user.roles,
+        }),
+        recordExists: true,
+        tprsSelected: record.formObject?.openConditions?.tprs?.tprsSelected === 'Yes' || false,
+      }))
+
+    const dataDecorated = [...approvedRowsFromNomis, ...inProgressRowsFromApp]
+
     return {
       details,
-      history: dataDecorated.sort((a, b) => sortByDateTime(a.approvalDateDisplay, b.approvalDateDisplay)),
+      history: dataDecorated.sort((a, b) =>
+        sortByDateTime(
+          a.approvalDateDisplay !== '-' ? a.approvalDateDisplay : dateConverter(a.assessmentDate),
+          b.approvalDateDisplay !== '-' ? b.approvalDateDisplay : dateConverter(b.assessmentDate),
+        ),
+      ),
     }
+  }
+
+  function getCalculatedCategory(record) {
+    const formObject = record.formObject || {}
+
+    if (record.catType === 'RECAT') {
+      return formObject?.recat?.decision?.category
+    }
+
+    return (
+      formObject?.categoriser?.provisionalCategory?.overriddenCategory ||
+      formObject?.categoriser?.provisionalCategory?.suggestedCategory
+    )
+  }
+
+  function getApprovedCategory(formObject) {
+    const supervisorReview = formObject?.supervisor?.review
+
+    const supervisorCategory =
+      supervisorReview?.supervisorCategoryAppropriate === 'No'
+        ? supervisorReview.supervisorOverriddenCategory
+        : undefined
+
+    const initialCategory =
+      formObject?.categoriser?.provisionalCategory?.overriddenCategory ||
+      formObject?.categoriser?.provisionalCategory?.suggestedCategory
+
+    const recategorisationCategory = formObject?.recat?.decision?.category
+
+    return supervisorCategory || initialCategory || recategorisationCategory
+  }
+
+  function getNextReviewDate(record) {
+    const formObject = record.formObject || {}
+
+    if (formObject.catType === 'RECAT') {
+      return formObject.recat?.nextReviewDate?.date
+    }
+
+    return formObject.ratings?.nextReviewDate?.date
+  }
+
+  function getViewUrl({ bookingId, sequence, status, catType, roles }) {
+    if (roles?.supervisor) {
+      return undefined
+    }
+
+    if (status === Status.APPROVED.name && sequence) {
+      return `/form/approvedView/${bookingId}?sequenceNo=${sequence}`
+    }
+
+    if (roles?.security) {
+      return `/securityLanding/${bookingId}`
+    }
+
+    if (catType === 'RECAT' && roles?.recategoriser) {
+      return `/tasklistRecat/${bookingId}`
+    }
+
+    if (catType === 'INITIAL' && roles?.categoriser) {
+      return `/tasklist/${bookingId}`
+    }
+
+    return undefined
   }
 
   async function getOptionalAssessmentAgencyDescription(context, agencyId) {

@@ -10,7 +10,14 @@ const { LEGAL_STATUS_REMAND } = require('../../server/data/prisonerSearch/prison
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
-const context = { user: { token: 'token', username: 'username', activeCaseLoad: { caseLoadId: 'LEI' } } }
+const context = {
+  user: {
+    token: 'token',
+    username: 'username',
+    activeCaseLoad: { caseLoadId: 'LEI' },
+    roles: { categoriser: true, recategoriser: false, security: false, supervisor: false },
+  },
+}
 
 const nomisClient = {
   getUncategorisedOffenders: jest.fn(),
@@ -2329,6 +2336,11 @@ describe('getCategorisationHistory', () => {
         catType: 'INITIAL',
         status: Status.APPROVED.name,
         formObject: {
+          categoriser: {
+            provisionalCategory: {
+              suggestedCategory: 'B',
+            },
+          },
           openConditions: {
             tprs: {
               tprsSelected: 'Yes',
@@ -2397,6 +2409,124 @@ describe('getCategorisationHistory', () => {
     expect(nomisClient.getAgencyDetail).toBeCalledTimes(3) // once per unique agency
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result.history).toMatchObject(expected)
+
+    const matchedApprovedRow = result.history.find(row => row.assessmentSeq === 10)
+    const nomisOnlyApprovedRow = result.history.find(row => row.assessmentSeq === 9)
+
+    expect(matchedApprovedRow.calculatedCategory).toBe('B')
+    expect(matchedApprovedRow.approvedCategory).toBe('B')
+    expect(matchedApprovedRow.displayStatus).toBe(Status.APPROVED.value)
+    expect(matchedApprovedRow.viewUrl).toBe('/form/approvedView/-45?sequenceNo=1')
+    expect(nomisOnlyApprovedRow.calculatedCategory).toBeUndefined()
+    expect(nomisOnlyApprovedRow.approvedCategory).toBe('B')
+    expect(nomisOnlyApprovedRow.viewUrl).toBeUndefined()
+  })
+
+  const getHistoryForInProgressRecord = async (testContext, catType = 'INITIAL') => {
+    nomisClient.getOffenderDetails.mockResolvedValue({ bookingId: 45, offenderNo: 'ABC1' })
+    nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockResolvedValue([])
+    nomisClient.getMainOffence.mockResolvedValue({ mainOffence: 'stuff' })
+    nomisClient.getCategoryHistory.mockResolvedValue([])
+    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
+    formService.getHistoricalCategorisationRecords.mockResolvedValue([
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        sequence: 4,
+        catType,
+        status: Status.STARTED.name,
+        prisonId: 'LEI',
+        formObject:
+          catType === 'RECAT'
+            ? {
+                assessmentDate: '2024-01-01',
+                recat: {
+                  decision: {
+                    category: 'C',
+                  },
+                },
+              }
+            : {
+                assessmentDate: '2024-01-01',
+                categoriser: {
+                  provisionalCategory: {
+                    suggestedCategory: 'C',
+                  },
+                },
+              },
+      },
+    ])
+
+    const result = await service.getCategoryHistory(testContext, -45, mockTransactionalClient)
+    return result.history[0]
+  }
+
+  test('it should return an in-progress categoriser task-list link', async () => {
+    const row = await getHistoryForInProgressRecord(context)
+
+    expect(row.calculatedCategory).toBe('C')
+    expect(row.approvedCategory).toBeUndefined()
+    expect(row.displayStatus).toBe(Status.STARTED.value)
+    expect(row.viewUrl).toBe('/tasklist/-45')
+  })
+
+  test('it should return an in-progress recategoriser task-list link', async () => {
+    const recategoriserContext = {
+      ...context,
+      user: {
+        ...context.user,
+        roles: {
+          categoriser: false,
+          recategoriser: true,
+          security: false,
+          supervisor: false,
+        },
+      },
+    }
+
+    const row = await getHistoryForInProgressRecord(recategoriserContext, 'RECAT')
+
+    expect(row.calculatedCategory).toBe('C')
+    expect(row.viewUrl).toBe('/tasklistRecat/-45')
+  })
+
+  test('it should return the security page link for an in-progress categorisation', async () => {
+    const securityContext = {
+      ...context,
+      user: {
+        ...context.user,
+        roles: {
+          categoriser: false,
+          recategoriser: false,
+          security: true,
+          supervisor: false,
+        },
+      },
+    }
+
+    const row = await getHistoryForInProgressRecord(securityContext)
+
+    expect(row.viewUrl).toBe('/securityLanding/-45')
+  })
+
+  test('it should not return a view link for a supervisor', async () => {
+    const supervisorContext = {
+      ...context,
+      user: {
+        ...context.user,
+        roles: {
+          categoriser: false,
+          recategoriser: false,
+          security: false,
+          supervisor: true,
+        },
+      },
+    }
+
+    const row = await getHistoryForInProgressRecord(supervisorContext)
+
+    expect(row.viewUrl).toBeUndefined()
   })
 })
 
@@ -3149,6 +3279,8 @@ describe('getDueRecats', () => {
         nextReviewDate: '2018-09-20',
         displayName: 'Summain, Dehicey',
         displayStatus: 'Not started',
+        dbStatus: undefined,
+        dbRecordExists: undefined,
         reason: { name: 'DUE', value: 'Review due' },
         nextReviewDateDisplay: '20/09/2018',
         overdue: true,
@@ -3201,6 +3333,8 @@ describe('getDueRecats', () => {
         nextReviewDate: '2017-09-23',
         displayName: 'Khaliam, Obinins',
         displayStatus: 'Not started',
+        dbStatus: undefined,
+        dbRecordExists: undefined,
         reason: { name: 'DUE', value: 'Review due' },
         nextReviewDateDisplay: '23/09/2017',
         overdue: true,
@@ -3322,6 +3456,8 @@ describe('getDueRecats', () => {
         nextReviewDate: '2017-09-23',
         displayName: 'Khaliam, Obinins',
         displayStatus: 'Not started',
+        dbStatus: undefined,
+        dbRecordExists: undefined,
         reason: { name: 'DUE', value: 'Review due' },
         nextReviewDateDisplay: '10/03/2019',
         overdue: true,
