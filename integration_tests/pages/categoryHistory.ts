@@ -19,26 +19,35 @@ export default class CategoryHistoryPage extends Page {
     index: number,
     {
       date,
-      category,
+      calculatedCategory,
+      approvedCategory,
+      status,
+      nextReviewDate,
       location,
       hasViewLink = false,
       hrefContains,
     }: {
       date: string
-      category: string
+      calculatedCategory: string
+      approvedCategory: string
+      status: string
+      nextReviewDate: string
       location: string
       hasViewLink?: boolean
       hrefContains?: string
     },
   ): void => {
     this.rowCells(index).eq(0).should('contain.text', date)
-    this.rowCells(index).eq(1).should('contain.text', category)
-    this.rowCells(index).eq(2).should('contain.text', location)
+    this.rowCells(index).eq(1).should('contain.text', calculatedCategory)
+    this.rowCells(index).eq(2).should('contain.text', approvedCategory)
+    this.rowCells(index).eq(3).should('contain.text', status)
+    this.rowCells(index).eq(4).should('contain.text', nextReviewDate)
+    this.rowCells(index).eq(5).should('contain.text', location)
 
     if (hasViewLink) {
-      this.rowCells(index).eq(3).find('a').should('have.attr', 'href').and('contain', hrefContains)
+      this.rowCells(index).eq(6).find('a').should('have.attr', 'href').and('contain', hrefContains)
     } else {
-      this.rowCells(index).eq(3).should('not.have.descendants', 'a')
+      this.rowCells(index).eq(6).should('not.have.descendants', 'a')
     }
   }
 
