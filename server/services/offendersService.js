@@ -1444,7 +1444,7 @@ module.exports = function createOffendersService(
 
   async function getOptionalAssessmentAgencyDescription(context, agencyId) {
     if (agencyId) {
-      const prisonRegisterApiClient = prisonRegisterApiClientBuilder(context)
+      const prisonRegisterApiClient = prisonRegisterApiClientBuilder(context.user)
       const agency = await prisonRegisterApiClient.getPrison(agencyId)
       return agency.prisonName
     }
@@ -1452,7 +1452,7 @@ module.exports = function createOffendersService(
   }
 
   function getPrisons(context) {
-    const prisonRegisterApiClient = prisonRegisterApiClientBuilder(context)
+    const prisonRegisterApiClient = prisonRegisterApiClientBuilder(context.user)
     return prisonRegisterApiClient.getPrisons()
   }
 

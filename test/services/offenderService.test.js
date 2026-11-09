@@ -58,6 +58,12 @@ const adjudicationsApiClientClient = {
   getAdjudications: jest.fn(),
 }
 
+const incidentReportingApiClient = {
+  getTotalNumberOfIncidents: jest.fn(),
+  getIncidentIds: jest.fn(),
+  getDetailedIncidentReport: jest.fn(),
+}
+
 const prisonRegisterApiClient = {
   getPrisons: jest.fn(),
   getPrison: jest.fn(),
@@ -91,6 +97,7 @@ const prisonerSearchClientBuilder = () => prisonerSearchClient
 const risksAndNeedsClientBuilder = () => risksAndNeedsClient
 const probationOffenderSearchClientBuilder = () => probationOffenderSearchApiClient
 const adjudicationsApiClientBuilder = () => adjudicationsApiClientClient
+const incidentReportingApiClientBuilder = () => incidentReportingApiClient
 const prisonRegisterApiClientBuilder = () => prisonRegisterApiClient
 let service
 
@@ -103,6 +110,7 @@ beforeEach(() => {
     risksAndNeedsClientBuilder,
     probationOffenderSearchClientBuilder,
     adjudicationsApiClientBuilder,
+    incidentReportingApiClientBuilder,
     prisonRegisterApiClientBuilder,
   )
   formService.getCategorisationRecord.mockReturnValue({})
@@ -143,6 +151,9 @@ afterEach(() => {
   formService.updatePrisonSecurityReferral.mockReset()
   risksAndNeedsClient.getRisksSummary.mockReset()
   probationOffenderSearchApiClient.matchPrisoners.mockReset()
+  incidentReportingApiClient.getTotalNumberOfIncidents.mockReset()
+  incidentReportingApiClient.getIncidentIds.mockReset()
+  incidentReportingApiClient.getDetailedIncidentReport.mockReset()
   prisonRegisterApiClient.getPrison.mockReset()
 })
 
