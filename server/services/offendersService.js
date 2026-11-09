@@ -1571,6 +1571,18 @@ module.exports = function createOffendersService(
       return `/securityLanding/${bookingId}`
     }
 
+    if (status === Status.AWAITING_APPROVAL.name) {
+      if (catType === 'RECAT' && roles?.recategoriser) {
+        return `/tasklistRecat/recategoriserSubmitted/${bookingId}`
+      }
+
+      if (catType === 'INITIAL' && roles?.categoriser) {
+        return `/tasklist/categoriserSubmitted/${bookingId}`
+      }
+
+      return undefined
+    }
+
     if (catType === 'RECAT' && roles?.recategoriser) {
       return `/tasklistRecat/${bookingId}`
     }
