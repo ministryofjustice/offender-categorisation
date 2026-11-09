@@ -38,7 +38,7 @@ describe('Lite Categories', () => {
     let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
 
     beforeEach(() => {
-      cy.task('stubAgencyDetails', { agency: CASELOAD.LPI.id })
+      cy.task('stubGetPrison', { prisonId: CASELOAD.LPI.id })
       cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
 
       cy.task('stubUncategorised')
@@ -60,7 +60,7 @@ describe('Lite Categories', () => {
         indeterminateSentence: false,
       })
 
-      cy.task('stubAgenciesPrison')
+      cy.task('stubGetPrisons')
 
       cy.stubLogin({
         user: CATEGORISER_USER,
@@ -321,7 +321,7 @@ describe('Lite Categories', () => {
     beforeEach(() => {
       dbSeederLiteCategory(supervisorViewSeedData)
 
-      cy.task('stubAgenciesPrison')
+      cy.task('stubGetPrisons')
       cy.task('stubGetOffenderDetails', {
         bookingId,
         offenderNo: 'B2345YZ',
@@ -546,7 +546,7 @@ describe('Lite Categories', () => {
         youngOffender: false,
         indeterminateSentence: false,
       })
-      cy.task('stubAgenciesPrison')
+      cy.task('stubGetPrisons')
       cy.task('stubUncategorised')
 
       cy.stubLogin({
@@ -619,7 +619,7 @@ describe('Lite Categories', () => {
         },
       ])
 
-      cy.task('stubAgenciesPrison')
+      cy.task('stubGetPrisons')
 
       cy.task('stubUncategorisedAwaitingApproval')
 

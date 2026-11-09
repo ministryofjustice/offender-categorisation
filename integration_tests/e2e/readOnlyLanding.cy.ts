@@ -24,12 +24,12 @@ describe('Read-only user - category history', () => {
     })
 
     cy.task('stubGetOcgmAlert', { offenderNo, transferToSecurity: false })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
     cy.task('stubAssessmentsWithCurrent', { offenderNo })
 
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
-    cy.task('stubAgencyDetails', { agency: 'BXI' })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'BXI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
   })
 
   it('A read-only user can view previous categorisations and next review date if prisoner is in their prison', () => {
@@ -95,9 +95,9 @@ describe('Read-only user - category history', () => {
     landingPage.nextReviewDateText().should('have.text', 'They are due to be reviewed by Thursday 16 January 2020.')
 
     cy.task('stubAssessmentsWithCurrent', { offenderNo })
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
-    cy.task('stubAgencyDetails', { agency: 'BXI' })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'BXI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
     cy.task('stubGetCategoryHistory')
 
     landingPage.historyButton().click()

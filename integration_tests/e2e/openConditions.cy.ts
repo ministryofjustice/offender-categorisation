@@ -979,7 +979,7 @@ describe('Open conditions', () => {
       bookingIds: [12],
       startDates: [moment().subtract(1, 'days').format('yyyy-MM-dd')],
     })
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
   }
 
   function setUpProfiles() {

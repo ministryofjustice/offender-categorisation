@@ -27,7 +27,7 @@ describe('Dashboard - Womens', () => {
 
     cy.task('stubGetOffenderDetailsWomen', { bookingId: 700, category: 'ON700' })
     cy.task('stubAssessmentsWomen', { offenderNo: 'ON700' })
-    cy.task('stubAgencyDetails', { agency: 'PFI' })
+    cy.task('stubGetPrison', { prisonId: 'PFI' })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'ON700', formattedReleaseDate: '2014-11-23' })
 
     cy.stubLogin({

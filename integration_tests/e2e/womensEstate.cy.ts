@@ -636,7 +636,7 @@ describe("Women's Estate", () => {
         band: 4,
       })
       cy.task('stubAssessmentsWomen', { offenderNo })
-      cy.task('stubAgencyDetails', { agency: CASELOAD.PFI.id })
+      cy.task('stubGetPrison', { prisonId: CASELOAD.PFI.id })
       cy.task('stubSentenceDataGetSingle', { offenderNumber: offenderNo, formattedReleaseDate: '2014-11-23' })
 
       cy.stubLogin({

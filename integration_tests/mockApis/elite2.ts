@@ -5,40 +5,6 @@ import { UserAccount } from '../factory/user'
 import { CASELOAD } from '../factory/caseload'
 import { AgencyLocation } from '../factory/agencyLocation'
 
-const stubAgencyDetails = ({ agency }: { agency: string }): SuperAgentRequest =>
-  stubFor({
-    request: {
-      method: 'GET',
-      url: `/elite2/api/agencies/${agency}?activeOnly=false`,
-    },
-    response: {
-      status: 200,
-      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-      jsonBody: {
-        agencyId: agency,
-        description: `${agency} prison`,
-        agencyType: 'INST',
-      },
-    },
-  })
-
-const stubAgenciesPrison = (): SuperAgentRequest =>
-  stubFor({
-    request: {
-      method: 'GET',
-      url: `/elite2/api/agencies/prison`,
-    },
-    response: {
-      status: 200,
-      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-      jsonBody: [
-        { agencyId: 'SYI', description: 'SHREWSBURY (HMP)' },
-        { agencyId: 'BXI', description: 'BRIXTON (HMP)' },
-        { agencyId: 'MDI', description: 'MOORLAND' },
-      ],
-    },
-  })
-
 const stubAssessments = ({
   offenderNumber,
   emptyResponse = false,
@@ -1750,8 +1716,6 @@ const stubSetInactive = ({ bookingId, status }: { bookingId: number; status: str
   })
 
 export default {
-  stubAgencyDetails,
-  stubAgenciesPrison,
   stubAssessments,
   stubAssessmentsActiveOnly,
   stubAssessmentsWithCurrent,
