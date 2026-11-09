@@ -30,7 +30,7 @@ describe('Categoriser Landing page', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345XY',
-      band: 1,
+      band: 4,
     })
 
     cy.task('stubAssessments', { offenderNumber: 'B2345XY', emptyResponse: true, bookingId: 12 })

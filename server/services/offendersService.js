@@ -1454,7 +1454,7 @@ module.exports = function createOffendersService(
           sequence: foundCatRecord && foundCatRecord.sequence,
           calculatedCategory: foundCatRecord ? getCalculatedCategory(foundCatRecord) : undefined,
           approvedCategory,
-          // Should we be displaying Approved status only for rows from Nomis?
+          // For rows from Nomis, should we be displaying only Approved status?
           displayStatus: Status.APPROVED.value,
           nextReviewDate: dateConverter(nomisRecord.nextReviewDate),
           viewUrl: getViewUrl({
@@ -1788,7 +1788,7 @@ module.exports = function createOffendersService(
     if (/[UXZ]/.test(classificationCodeFromNomis)) {
       const catExistsForThisBooking = categoryHistory
         .filter(c => c.bookingId === bookingId)
-        .some(c => !/[UXZ]/.test(c.classificationCode))
+        .some(c => c.classificationCode && !/[UXZ]/.test(c.classificationCode))
       return catExistsForThisBooking ? CatType.RECAT.name : CatType.INITIAL.name
     }
     if (/[BCDIJTR]/.test(classificationCodeFromNomis)) {
