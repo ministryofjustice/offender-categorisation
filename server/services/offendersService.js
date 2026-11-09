@@ -1436,11 +1436,13 @@ module.exports = function createOffendersService(
           matchedLocalRecordKeys.add(`${foundCatRecord.bookingId}-${foundCatRecord.nomisSeq}`)
         }
 
+        const isLocalInProgress = foundCatRecord && foundCatRecord.status !== Status.APPROVED.name
+
         let approvedCategory
 
         if (!foundCatRecord) {
           approvedCategory = nomisRecord.classificationCode
-        } else if (foundCatRecord.status !== Status.APPROVED.name) {
+        } else if (isLocalInProgress) {
           approvedCategory = undefined
         } else {
           approvedCategory = getApprovedCategory(foundCatRecord.formObject)
@@ -1450,17 +1452,26 @@ module.exports = function createOffendersService(
           ...nomisRecord,
           prisonDescription: agencyMap.get(nomisRecord.assessmentAgencyId),
           recordExists: !!foundCatRecord,
-          approvalDateDisplay: dateConverter(nomisRecord.approvalDate),
+          approvalDateDisplay: isLocalInProgress
+            ? dateConverter(foundCatRecord.formObject?.assessmentDate)
+            : dateConverter(nomisRecord.approvalDate),
+
           sequence: foundCatRecord && foundCatRecord.sequence,
           calculatedCategory: foundCatRecord ? getCalculatedCategory(foundCatRecord) : undefined,
           approvedCategory,
-          // For rows from Nomis, should we be displaying only Approved status?
-          displayStatus: Status.APPROVED.value,
-          nextReviewDate: dateConverter(nomisRecord.nextReviewDate),
+
+          displayStatus: isLocalInProgress
+            ? Status[foundCatRecord.status]?.value || foundCatRecord.status
+            : Status.APPROVED.value,
+
+          nextReviewDate: isLocalInProgress
+            ? getNextReviewDate(foundCatRecord) || '-'
+            : dateConverter(nomisRecord.nextReviewDate),
+
           viewUrl: getViewUrl({
             bookingId: nomisRecord.bookingId,
             sequence: foundCatRecord?.sequence,
-            status: Status.APPROVED.name,
+            status: isLocalInProgress ? foundCatRecord.status : Status.APPROVED.name,
             catType: foundCatRecord?.catType,
             roles: context.user.roles,
           }),

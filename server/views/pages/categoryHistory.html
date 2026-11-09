@@ -37,13 +37,17 @@
         {% for row in data.history %}
           <tr class="govuk-table__row ">
             <td class="govuk-table__cell"> {{ row.approvalDateDisplay }}</td>
+
             <td class="govuk-table__cell">
               {{ catMappings(row.calculatedCategory) if row.calculatedCategory else '-' }}
+            </td>
+
+            <td class="govuk-table__cell">
+              {{ catMappings(row.approvedCategory) if row.approvedCategory else '-' }}
               {% if isOpenCategory(row.approvedCategory) and row.tprsSelected %}
                 <strong class="govuk-tag govuk-tag--red govuk-!-margin-left-5">TPRS</strong>
               {% endif %}
             </td>
-            <td class="govuk-table__cell"> {{ catMappings(row.approvedCategory) if row.approvedCategory else '-' }}</td>
             <td class="govuk-table__cell">{{ row.displayStatus }}</td>
             <td class="govuk-table__cell">{{ row.nextReviewDate or '-' }}</td>
             <td class="govuk-table__cell">{{ row.prisonDescription }}</td>
