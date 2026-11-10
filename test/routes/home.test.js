@@ -49,12 +49,19 @@ const formService = {
   isYoungOffender: jest.fn(),
 }
 
+const auditService = {
+  logPageView: jest.fn(),
+  logCreateEvent: jest.fn(),
+  logDeleteEvent: jest.fn(),
+}
+
 const homeRoute = createRouter({
   authenticationMiddleware,
   userService,
   offendersService,
   statsService,
   formService,
+  auditService,
 })
 
 const userServiceGetUser = () => {
@@ -137,6 +144,9 @@ afterEach(() => {
   userService.getUser.mockReset()
   userService.getUserByUserId.mockReset()
   formService.createSecurityReferral.mockReset()
+  auditService.logPageView.mockReset()
+  auditService.logCreateEvent.mockReset()
+  auditService.logDeleteEvent.mockReset()
 })
 
 describe('GET /categoriserDone', () => {
@@ -163,6 +173,12 @@ describe('GET /categoriserDone', () => {
       .expect(res => {
         expect(res.text).toContain('Tim Handle')
         expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          'COMPLETED_INITIAL_CATS',
+          expect.objectContaining({
+            who: 'me',
+          }),
+        )
       })
   })
 
@@ -195,6 +211,12 @@ describe('GET /supervisorHome', () => {
       .expect(res => {
         expect(res.text).toContain('PNOMIS') // should not display start button
         expect(offendersService.getUnapprovedOffenders).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          'SUPERVISOR_CAT_DASHBOARD',
+          expect.objectContaining({
+            who: 'me',
+          }),
+        )
       })
   })
 })
@@ -311,6 +333,12 @@ describe('TPRS label tests', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('TPRS')
+        expect(auditService.logPageView).toBeCalledWith(
+          'CATEGORY_HISTORY',
+          expect.objectContaining({
+            who: 'me',
+          }),
+        )
       })
   })
 
@@ -357,6 +385,12 @@ describe('GET /categoriserHome', () => {
         expect(res.text).not.toContain('locked')
         expect(res.text).toMatch(/Digital Prison Services/s)
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          'INITIAL_CAT_DASHBOARD',
+          expect.objectContaining({
+            who: 'me',
+          }),
+        )
       })
   })
   test('button is view for awaiting approval records (with cat tool dbrecord)', () => {
@@ -500,6 +534,12 @@ describe('Recategoriser home', () => {
         expect(res.text).toMatch(/Digital Prison Services/s)
         expect(res.text).toMatch(/Potential reviews.*4<\/span.*/)
         expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          'RECAT_DASHBOARD',
+          expect.objectContaining({
+            who: 'me',
+          }),
+        )
       })
   })
   test('total is not displayed on Potential reviews tab if equal to 0', () => {
@@ -581,6 +621,12 @@ describe('security home', () => {
         expect(res.text).toMatch(/Digital Prison Services/s)
         expect(res.text).toMatch(/G9964UP.+G0581UW/s)
         expect(offendersService.getReferredOffenders).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          'SECURITY_DASHBOARD',
+          expect.objectContaining({
+            who: 'me',
+          }),
+        )
       })
   })
 })
@@ -639,6 +685,12 @@ describe('security upcoming', () => {
         expect(res.text).toMatch(/Digital Prison Services/s)
         expect(res.text).toMatch(/.+G9084UJ.+G0242GG.+G2996UX/s)
         expect(offendersService.getUpcomingReferredOffenders).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          'SECURITY_UPCOMING_REVIEW',
+          expect.objectContaining({
+            who: 'me',
+          }),
+        )
       })
   })
 })
@@ -666,6 +718,15 @@ describe('Security Landing page', () => {
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(userService.getUserByUserId).toBeCalledTimes(0)
         expect(offendersService.requiredCatType).toBeCalledTimes(1)
+        expect(auditService.logPageView).toBeCalledWith(
+          'MANAGE_CATEGORY_LANDING_PAGE',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_ID',
+            subjectId: 'B2345XY',
+            details: { bookingId: '12345', role: 'security' },
+          }),
+        )
       })
   })
 
@@ -853,6 +914,15 @@ describe('Security Landing page', () => {
         expect(res.text).toContain('Automatic referral setup successful')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(formService.createSecurityReferral).toBeCalledWith('BXI', 'B2345XY', 'meee', mockTransactionalClient)
+        expect(auditService.logCreateEvent).toBeCalledWith(
+          'SECURITY_REFERRAL',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_ID',
+            subjectId: 'B2345XY',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 
@@ -909,6 +979,15 @@ describe('Security Landing page', () => {
         expect(res.text).toContain('Dexter Spaniel')
         expect(res.text).toContain('Confirm cancellation')
         expect(res.text).toContain('Are you sure you want to cancel this referral?')
+        expect(auditService.logPageView).toBeCalledWith(
+          'SECURITY_CANCEL_REFERRAL',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_ID',
+            subjectId: 'B2345XY',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 
@@ -937,6 +1016,34 @@ describe('Security Landing page', () => {
       .expect(res => {
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(formService.cancelSecurityReferral).toBeCalledWith('B2345XY', mockTransactionalClient)
+        expect(auditService.logDeleteEvent).toBeCalledWith(
+          'SECURITY_CANCEL_REFERRAL',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_ID',
+            subjectId: 'B2345XY',
+            details: { bookingId: '12345' },
+          }),
+        )
+      })
+  })
+
+  test('recategoriser user post - starts manual recategorisation', () => {
+    offendersService.getOffenderDetails.mockResolvedValue({ offenderNo: 'B2345XY', bookingId: 12 })
+    return request(app)
+      .post('/recategoriserLanding/12345')
+      .expect(302)
+      .expect('Location', '/tasklistRecat/12345?reason=MANUAL')
+      .expect(() => {
+        expect(auditService.logCreateEvent).toBeCalledWith(
+          'START_MANUAL_RECATEGORISATION',
+          expect.objectContaining({
+            who: 'me',
+            subjectType: 'PRISONER_ID',
+            subjectId: 'B2345XY',
+            details: { bookingId: '12345' },
+          }),
+        )
       })
   })
 })

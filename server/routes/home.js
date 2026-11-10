@@ -20,6 +20,7 @@ const {
   categorisationHomeSchema,
   recategorisationHomeSchema,
 } = require('../services/filter/homeFilterValidationSchema')
+const { Page, SUBJECT_TYPE_PRISONER_NUMBER } = require('../services/auditService')
 
 const formConfig = {
   security: securityConfig,
@@ -43,6 +44,7 @@ module.exports = function Index({
   offendersService,
   statsService,
   formService,
+  auditService,
 }) {
   const router = express.Router()
 
@@ -76,6 +78,11 @@ module.exports = function Index({
 
     const user = await userService.getUser(res.locals)
     res.locals.user = { ...user, ...res.locals.user }
+
+    await auditService.logPageView(Page.INITIAL_CAT_DASHBOARD, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
 
     // Can be removed after pilot of categorisation filter
     if (validation.value.filterRemoved) {
@@ -128,6 +135,11 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
+      await auditService.logPageView(Page.COMPLETED_INITIAL_CATS, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
+
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getCategorisedOffenders(res.locals, user, CatType.INITIAL.name, transactionalDbClient)
         : []
@@ -140,6 +152,11 @@ module.exports = function Index({
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+
+      await auditService.logPageView(Page.COMPLETED_APPROVED_CATS_SUPERVISOR, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
 
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getCategorisedOffenders(res.locals, user, null, transactionalDbClient)
@@ -154,6 +171,11 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
+      await auditService.logPageView(Page.COMPLETED_SECURITY_CATS, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
+
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getSecurityReviewedOffenders(res.locals, transactionalDbClient)
         : []
@@ -165,6 +187,11 @@ module.exports = function Index({
     const user = await userService.getUser(res.locals)
     res.locals.user = { ...user, ...res.locals.user }
 
+    await auditService.logPageView(Page.SUPERVISOR_CAT_DASHBOARD, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
     const offenders = res.locals.user.activeCaseLoad ? await offendersService.getUnapprovedOffenders(res.locals) : []
     res.render('pages/supervisorHome', { offenders })
   })
@@ -172,6 +199,11 @@ module.exports = function Index({
   router.get('/securityHome', async (req, res) => {
     const user = await userService.getUser(res.locals)
     res.locals.user = { ...user, ...res.locals.user }
+
+    await auditService.logPageView(Page.SECURITY_DASHBOARD, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
 
     const offenders = res.locals.user.activeCaseLoad ? await offendersService.getReferredOffenders(res.locals) : []
     res.render('pages/securityHome', { offenders })
@@ -182,6 +214,11 @@ module.exports = function Index({
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+
+      await auditService.logPageView(Page.SECURITY_UPCOMING_REVIEW, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
 
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getUpcomingReferredOffenders(res.locals, transactionalDbClient)
@@ -209,6 +246,11 @@ module.exports = function Index({
         message: 'Invalid recategoriser home filters',
       })
     }
+
+    await auditService.logPageView(Page.RECAT_DASHBOARD, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
 
     if (validation.value.filterRemoved) {
       delete validation.value.filterRemoved
@@ -262,6 +304,11 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
+      await auditService.logPageView(Page.COMPLETED_RECATS, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
+
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getCategorisedOffenders(res.locals, user, CatType.RECAT.name, transactionalDbClient)
         : []
@@ -278,6 +325,11 @@ module.exports = function Index({
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+
+      await auditService.logPageView(Page.POTENTIAL_REVIEWS, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
 
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getRiskChanges(res.locals, transactionalDbClient)
@@ -318,6 +370,11 @@ module.exports = function Index({
       if (errors.length) {
         res.render('pages/dashboardInitial', { errors, ...req.query })
       } else {
+        await auditService.logPageView(Page.INITIAL_CAT_STATISTICS, {
+          who: res.locals.user.username,
+          correlationId: req.id,
+        })
+
         const { start, end, prisonId } = await getParams(req, res)
         const initial = await statsService.getInitialCategoryOutcomes(start, end, prisonId, transactionalDbClient)
         const security = await statsService.getSecurityReferrals(INIT, start, end, prisonId, transactionalDbClient)
@@ -356,6 +413,10 @@ module.exports = function Index({
       if (errors.length) {
         res.render('pages/dashboardRecat', { errors, ...req.query })
       } else {
+        await auditService.logPageView(Page.RECAT_STATISTICS, {
+          who: res.locals.user.username,
+          correlationId: req.id,
+        })
         const { start, end, prisonId } = await getParams(req, res)
         const table = await statsService.getRecatFromTo(
           start,
@@ -397,6 +458,12 @@ module.exports = function Index({
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+
+      await auditService.logPageView(Page.CATEGORY_HISTORY, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
+
       const { bookingId } = req.params
       const data = await offendersService.getCategoryHistory(res.locals, bookingId, transactionalDbClient)
       res.render(`pages/categoryHistory`, { data })
@@ -458,6 +525,14 @@ module.exports = function Index({
           formService.getCategorisationRecord(bookingId, transactionalDbClient),
         ])
 
+        await auditService.logPageView(Page.MANAGE_CATEGORY_LANDING_PAGE, {
+          who: res.locals.user.username,
+          correlationId: req.id,
+          subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+          subjectId: details.offenderNo,
+          details: { bookingId, role },
+        })
+
         const [securityReferral, categorisationUser, categoryHistory] = await Promise.all([
           getSecurityReferral(res.locals, details.offenderNo, transactionalDbClient),
           getCategorisationUserForSecurityDisplay(res.locals, categorisationRecord),
@@ -499,6 +574,14 @@ module.exports = function Index({
       const { bookingId } = req.params
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
       const nextReviewDate = extractNextReviewDate(details)
+
+      await auditService.logPageView(Page.MANAGE_CATEGORY_LANDING_PAGE, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId, role: 'no role' },
+      })
 
       res.render(`pages/landing`, { data: { details, nextReviewDate } })
     }),
@@ -543,6 +626,16 @@ module.exports = function Index({
     '/recategoriserLanding/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const { bookingId } = req.params
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logCreateEvent(Page.START_MANUAL_RECATEGORISATION, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       res.redirect(`/tasklistRecat/${bookingId}?reason=MANUAL`)
     }),
   )
@@ -567,6 +660,14 @@ module.exports = function Index({
         })
       }
 
+      await auditService.logCreateEvent(Page.SECURITY_REFERRAL, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       await formService.createSecurityReferral(
         details.agencyId,
         details.offenderNo,
@@ -584,6 +685,15 @@ module.exports = function Index({
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+
+      await auditService.logPageView(Page.SECURITY_CANCEL_REFERRAL, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       const errors = req.flash('errors')
       res.render(`pages/securityCancel`, { data: { details }, errors })
     }),
@@ -607,6 +717,13 @@ module.exports = function Index({
       }
 
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logDeleteEvent(Page.SECURITY_CANCEL_REFERRAL, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
 
       formService.cancelSecurityReferral(details.offenderNo, transactionalDbClient)
 

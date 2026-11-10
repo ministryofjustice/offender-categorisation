@@ -6,12 +6,19 @@ const { getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const nextReviewDate = require('../config/nextReviewDate')
 const Status = require('../utils/statusEnum')
+const { Page, SUBJECT_TYPE_PRISONER_NUMBER } = require('../services/auditService')
 
 const formConfig = {
   nextReviewDate,
 }
 
-module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
+module.exports = function Index({
+  formService,
+  offendersService,
+  userService,
+  authenticationMiddleware,
+  auditService,
+}) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -24,6 +31,15 @@ module.exports = function Index({ formService, offendersService, userService, au
       const { nextDateChoice } = req.query
       const form = 'nextReviewDate'
       const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
+
+      await auditService.logPageView(Page.NEXT_REVIEW_DATE_FORM, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: result.data.details.offenderNo,
+        details: { bookingId },
+      })
+
       res.render(`formPages/nextReviewDate/${form}`, { ...result, date: calculateNextReviewDate(nextDateChoice) })
     }),
   )
@@ -41,6 +57,13 @@ module.exports = function Index({ formService, offendersService, userService, au
           backLink: `/${bookingId}`,
         })
       }
+      await auditService.logPageView(Page.NEXT_REVIEW_DATE_STANDALONE_FORM, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: result.data.details.offenderNo,
+        details: { bookingId },
+      })
       return res.render(`formPages/nextReviewDate/${form}`, result)
     }),
   )
@@ -60,6 +83,13 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
       const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
+      await auditService.logPageView(Page.NEXT_REVIEW_DATE_FORM_PAGE, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: result.data.details.offenderNo,
+        details: { bookingId, form },
+      })
       res.render(`formPages/nextReviewDate/${form}`, result)
     }),
   )
@@ -123,6 +153,15 @@ module.exports = function Index({ formService, offendersService, userService, au
         return
       }
 
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logEditEvent(Page.NEXT_REVIEW_DATE_QUESTION, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId, form },
+      })
+
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}?nextDateChoice=${userInput.nextDateChoice}`)
     }),
@@ -148,10 +187,17 @@ module.exports = function Index({ formService, offendersService, userService, au
         return
       }
 
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      await auditService.logEditEvent(Page.NEXT_REVIEW_DATE_FORM, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId, form },
+      })
+
       if (form === 'nextReviewDateStandalone') {
         // Handle the possibility that there is no Postgres form entry: still allow Nomis update for standalone
-
-        const details = await offendersService.getOffenderDetails(res.locals, bookingId)
 
         await formService.recordNextReview(
           res.locals,
