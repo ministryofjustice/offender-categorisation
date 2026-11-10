@@ -1488,7 +1488,9 @@ module.exports = function createOffendersService(
         offenderNo: record.offenderNo,
         sequence: record.sequence,
         assessmentDate: record.formObject?.assessmentDate,
-        approvalDateDisplay: record.approvalDate ? dateConverter(record.approvalDate) : '-',
+        approvalDateDisplay: record.approvalDate
+          ? dateConverter(record.approvalDate)
+          : dateConverter(record.formObject?.assessmentDate) || '-',
         prisonDescription: agencyMap.get(record.prisonId),
         calculatedCategory: getCalculatedCategory(record),
         approvedCategory: undefined,
@@ -1551,7 +1553,7 @@ module.exports = function createOffendersService(
   function getNextReviewDate(record) {
     const formObject = record.formObject || {}
 
-    if (formObject.catType === 'RECAT') {
+    if (record.catType === 'RECAT') {
       return formObject.recat?.nextReviewDate?.date
     }
 

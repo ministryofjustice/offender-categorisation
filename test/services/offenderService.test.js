@@ -2422,7 +2422,7 @@ describe('getCategorisationHistory', () => {
     expect(nomisOnlyApprovedRow.viewUrl).toBeUndefined()
   })
 
-  const getHistoryForInProgressRecord = async (testContext, catType = 'INITIAL') => {
+  const getHistoryForInProgressRecord = async (testContext, catType = 'INITIAL', status = Status.STARTED.name) => {
     nomisClient.getOffenderDetails.mockResolvedValue({ bookingId: 45, offenderNo: 'ABC1' })
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue([])
@@ -2435,7 +2435,7 @@ describe('getCategorisationHistory', () => {
         offenderNo: 'ABC1',
         sequence: 4,
         catType,
-        status: Status.STARTED.name,
+        status,
         prisonId: 'LEI',
         formObject:
           catType === 'RECAT'
@@ -2445,6 +2445,9 @@ describe('getCategorisationHistory', () => {
                   decision: {
                     category: 'C',
                   },
+                  nextReviewDate: {
+                    date: '2024-02-01',
+                  },
                 },
               }
             : {
@@ -2452,6 +2455,11 @@ describe('getCategorisationHistory', () => {
                 categoriser: {
                   provisionalCategory: {
                     suggestedCategory: 'C',
+                  },
+                },
+                ratings: {
+                  nextReviewDate: {
+                    date: '2024-03-01',
                   },
                 },
               },
@@ -2468,6 +2476,8 @@ describe('getCategorisationHistory', () => {
     expect(row.calculatedCategory).toBe('C')
     expect(row.approvedCategory).toBeUndefined()
     expect(row.displayStatus).toBe(Status.STARTED.value)
+    expect(row.approvalDateDisplay).toBe('01/01/2024')
+    expect(row.nextReviewDate).toBe('2024-03-01')
     expect(row.viewUrl).toBe('/tasklist/-45')
   })
 
@@ -2488,6 +2498,8 @@ describe('getCategorisationHistory', () => {
     const row = await getHistoryForInProgressRecord(recategoriserContext, 'RECAT')
 
     expect(row.calculatedCategory).toBe('C')
+    expect(row.approvalDateDisplay).toBe('01/01/2024')
+    expect(row.nextReviewDate).toBe('2024-02-01')
     expect(row.viewUrl).toBe('/tasklistRecat/-45')
   })
 
@@ -2505,9 +2517,9 @@ describe('getCategorisationHistory', () => {
       },
     }
 
-    const row = await getHistoryForInProgressRecord(securityContext)
+    const row = await getHistoryForInProgressRecord(securityContext, 'INITIAL', Status.SECURITY_MANUAL.name)
 
-    expect(row.viewUrl).toBe('/securityLanding/-45')
+    expect(row.viewUrl).toBe('/form/security/review/-45')
   })
 
   test('it should not return a view link for a supervisor', async () => {
