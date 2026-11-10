@@ -1453,7 +1453,11 @@ module.exports = function createOffendersService(
           prisonDescription: agencyMap.get(nomisRecord.assessmentAgencyId),
           recordExists: !!foundCatRecord,
           approvalDateDisplay: isLocalInProgress
-            ? dateConverter(foundCatRecord.formObject?.assessmentDate)
+            ? dateConverter(
+                foundCatRecord.assessmentDate ||
+                  foundCatRecord.formObject?.assessmentDate ||
+                  nomisRecord.assessmentDate,
+              )
             : dateConverter(nomisRecord.approvalDate),
 
           sequence: foundCatRecord && foundCatRecord.sequence,
@@ -1487,10 +1491,10 @@ module.exports = function createOffendersService(
         bookingId: record.bookingId,
         offenderNo: record.offenderNo,
         sequence: record.sequence,
-        assessmentDate: record.formObject?.assessmentDate,
+        assessmentDate: record.assessmentDate || record.formObject?.assessmentDate,
         approvalDateDisplay: record.approvalDate
           ? dateConverter(record.approvalDate)
-          : dateConverter(record.formObject?.assessmentDate) || '-',
+          : dateConverter(record.assessmentDate || record.formObject?.assessmentDate) || '-',
         prisonDescription: agencyMap.get(record.prisonId),
         calculatedCategory: getCalculatedCategory(record),
         approvedCategory: undefined,

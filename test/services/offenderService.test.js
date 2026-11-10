@@ -2422,7 +2422,12 @@ describe('getCategorisationHistory', () => {
     expect(nomisOnlyApprovedRow.viewUrl).toBeUndefined()
   })
 
-  const getHistoryForInProgressRecord = async (testContext, catType = 'INITIAL', status = Status.STARTED.name) => {
+  const getHistoryForInProgressRecord = async (
+    testContext,
+    catType = 'INITIAL',
+    status = Status.STARTED.name,
+    useFormObjectAssessmentDate = false,
+  ) => {
     nomisClient.getOffenderDetails.mockResolvedValue({ bookingId: 45, offenderNo: 'ABC1' })
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue([])
@@ -2437,10 +2442,11 @@ describe('getCategorisationHistory', () => {
         catType,
         status,
         prisonId: 'LEI',
+        assessmentDate: useFormObjectAssessmentDate ? undefined : '2024-01-01',
         formObject:
           catType === 'RECAT'
             ? {
-                assessmentDate: '2024-01-01',
+                ...(useFormObjectAssessmentDate && { assessmentDate: '2024-01-01' }),
                 recat: {
                   decision: {
                     category: 'C',
@@ -2451,7 +2457,7 @@ describe('getCategorisationHistory', () => {
                 },
               }
             : {
-                assessmentDate: '2024-01-01',
+                ...(useFormObjectAssessmentDate && { assessmentDate: '2024-01-01' }),
                 categoriser: {
                   provisionalCategory: {
                     suggestedCategory: 'C',
@@ -2501,6 +2507,12 @@ describe('getCategorisationHistory', () => {
     expect(row.approvalDateDisplay).toBe('01/01/2024')
     expect(row.nextReviewDate).toBe('2024-02-01')
     expect(row.viewUrl).toBe('/tasklistRecat/-45')
+  })
+
+  test('it should fall back to the form JSON assessment date', async () => {
+    const row = await getHistoryForInProgressRecord(context, 'INITIAL', Status.STARTED.name, true)
+
+    expect(row.approvalDateDisplay).toBe('01/01/2024')
   })
 
   test('it should return the security page link for an in-progress categorisation', async () => {
