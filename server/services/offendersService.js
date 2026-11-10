@@ -1568,7 +1568,13 @@ module.exports = function createOffendersService(
     }
 
     if (roles?.security) {
-      return `/securityLanding/${bookingId}`
+      if ([Status.SECURITY_MANUAL.name, Status.SECURITY_AUTO.name, Status.SECURITY_FLAGGED.name].includes(status)) {
+        return `/form/security/review/${bookingId}`
+      }
+
+      if (status === Status.SECURITY_BACK.name) {
+        return `/form/security/view/${bookingId}`
+      }
     }
 
     if (status === Status.AWAITING_APPROVAL.name) {
