@@ -1452,13 +1452,7 @@ module.exports = function createOffendersService(
           ...nomisRecord,
           prisonDescription: agencyMap.get(nomisRecord.assessmentAgencyId),
           recordExists: !!foundCatRecord,
-          approvalDateDisplay: isLocalInProgress
-            ? dateConverter(
-                foundCatRecord.assessmentDate ||
-                  foundCatRecord.formObject?.assessmentDate ||
-                  nomisRecord.assessmentDate,
-              )
-            : dateConverter(nomisRecord.approvalDate),
+          approvalDateDisplay: isLocalInProgress ? '-' : dateConverter(nomisRecord.approvalDate),
 
           sequence: foundCatRecord && foundCatRecord.sequence,
           calculatedCategory: foundCatRecord ? getCalculatedCategory(foundCatRecord) : undefined,
@@ -1491,10 +1485,7 @@ module.exports = function createOffendersService(
         bookingId: record.bookingId,
         offenderNo: record.offenderNo,
         sequence: record.sequence,
-        assessmentDate: record.assessmentDate || record.formObject?.assessmentDate,
-        approvalDateDisplay: record.approvalDate
-          ? dateConverter(record.approvalDate)
-          : dateConverter(record.assessmentDate || record.formObject?.assessmentDate) || '-',
+        approvalDateDisplay: '-',
         prisonDescription: agencyMap.get(record.prisonId),
         calculatedCategory: getCalculatedCategory(record),
         approvedCategory: undefined,
@@ -1515,12 +1506,7 @@ module.exports = function createOffendersService(
 
     return {
       details,
-      history: dataDecorated.sort((a, b) =>
-        sortByDateTime(
-          a.approvalDateDisplay !== '-' ? a.approvalDateDisplay : dateConverter(a.assessmentDate),
-          b.approvalDateDisplay !== '-' ? b.approvalDateDisplay : dateConverter(b.assessmentDate),
-        ),
-      ),
+      history: dataDecorated.sort((a, b) => sortByDateTime(a.approvalDateDisplay, b.approvalDateDisplay)),
     }
   }
 

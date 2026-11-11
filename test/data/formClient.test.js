@@ -27,7 +27,6 @@ describe('getFormDataForUser', () => {
                     user_id                as "userId",
                     status,
                     form_response          as "formObject",
-                    assessment_date        as "assessmentDate",
                     risk_profile           as "riskProfile",
                     assigned_user_id       as "assignedUserId",
                     referred_date          as "securityReferredDate",
