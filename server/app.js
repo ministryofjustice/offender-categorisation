@@ -250,6 +250,7 @@ module.exports = function createApp({
     authenticationMiddleware,
     statsService,
     formService,
+    auditService,
   })
   app.use('/', homeRouter)
   app.use(
@@ -302,6 +303,7 @@ module.exports = function createApp({
     offendersService,
     userService,
     authenticationMiddleware,
+    auditService,
   })
   app.use('/form/nextReviewDate/', nextReviewDateRouter)
 
