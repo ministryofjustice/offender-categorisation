@@ -1463,7 +1463,7 @@ module.exports = function createOffendersService(
             : Status.APPROVED.value,
 
           nextReviewDate: isLocalInProgress
-            ? getNextReviewDate(foundCatRecord) || '-'
+            ? dateConverter(getNextReviewDate(foundCatRecord)) || '-'
             : dateConverter(nomisRecord.nextReviewDate),
 
           viewUrl: getViewUrl({
@@ -1490,7 +1490,7 @@ module.exports = function createOffendersService(
         calculatedCategory: getCalculatedCategory(record),
         approvedCategory: undefined,
         displayStatus: Status[record.status]?.value || record.status,
-        nextReviewDate: getNextReviewDate(record) || '-',
+        nextReviewDate: dateConverter(getNextReviewDate(record)) || '-',
         viewUrl: getViewUrl({
           bookingId: record.bookingId,
           sequence: record.sequence,

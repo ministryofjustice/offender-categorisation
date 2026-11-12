@@ -2475,7 +2475,7 @@ describe('getCategorisationHistory', () => {
     expect(row.approvedCategory).toBeUndefined()
     expect(row.displayStatus).toBe(Status.STARTED.value)
     expect(row.approvalDateDisplay).toBe('-')
-    expect(row.nextReviewDate).toBe('2024-03-01')
+    expect(row.nextReviewDate).toBe('01/03/2024')
     expect(row.viewUrl).toBe('/tasklist/-45')
   })
 
@@ -2497,7 +2497,7 @@ describe('getCategorisationHistory', () => {
 
     expect(row.calculatedCategory).toBe('C')
     expect(row.approvalDateDisplay).toBe('-')
-    expect(row.nextReviewDate).toBe('2024-02-01')
+    expect(row.nextReviewDate).toBe('01/02/2024')
     expect(row.viewUrl).toBe('/tasklistRecat/-45')
   })
 
