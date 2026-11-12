@@ -76,7 +76,7 @@ describe('Categoriser Home page', () => {
       prisonerNumber: 'B2345YZ',
       assaultIncidents: [],
     })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
 
     cy.stubLogin({ user: CATEGORISER_USER })
 

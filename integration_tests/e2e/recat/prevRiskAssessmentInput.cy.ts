@@ -55,7 +55,7 @@ describe('Previous Risk Assessments', () => {
       prisonerNumber: 'B2345YZ',
       assaultIncidents: [],
     })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
   })
 
   const stubLoginAndBrowseToPreviousRiskAssessmentsPage = () => {

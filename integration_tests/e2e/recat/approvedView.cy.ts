@@ -124,7 +124,7 @@ describe('Approved View', () => {
     cy.task('stubCategorised', {
       bookingIds: [12],
     })
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
     cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
     cy.task('stubGetOffenderDetails', {
       bookingId: 12,
@@ -133,7 +133,7 @@ describe('Approved View', () => {
       indeterminateSentence: false,
     })
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
 
     cy.stubLogin({
@@ -311,7 +311,7 @@ describe('Approved View', () => {
     cy.task('stubCategorised', {
       bookingIds: [12],
     })
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
     cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
 
     cy.stubLogin({
@@ -331,7 +331,7 @@ describe('Approved View', () => {
     const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
     supervisorHomePage.doneTabLink().click()
 
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 1 }).click()
@@ -457,8 +457,8 @@ describe('Approved View', () => {
       indeterminateSentence: false,
     })
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
 
     cy.signIn()

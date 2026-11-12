@@ -85,7 +85,7 @@ describe('Recat tasklist DB sequencing and cancellation behaviour', () => {
   it('cancels and resets any security flag to NEW', () => {
     cy.task('insertSecurityReferralTableDbRow', { offenderNumber: 'B2345YZ', bookingId: 12 })
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ', emptyResponse: false, bookingId: 12 })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
 
     cy.stubLogin({ user: RECATEGORISER_USER })
     cy.signIn()
