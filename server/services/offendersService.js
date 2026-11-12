@@ -1506,7 +1506,12 @@ module.exports = function createOffendersService(
 
     return {
       details,
-      history: dataDecorated.sort((a, b) => sortByDateTime(a.approvalDateDisplay, b.approvalDateDisplay)),
+      history: dataDecorated.sort((a, b) =>
+        sortByDateTime(
+          a.approvalDateDisplay === '-' ? undefined : a.approvalDateDisplay,
+          b.approvalDateDisplay === '-' ? undefined : b.approvalDateDisplay,
+        ),
+      ),
     }
   }
 
