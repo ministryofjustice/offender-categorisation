@@ -1506,12 +1506,16 @@ module.exports = function createOffendersService(
 
     return {
       details,
-      history: dataDecorated.sort((a, b) =>
-        sortByDateTime(
-          a.approvalDateDisplay === '-' ? undefined : a.approvalDateDisplay,
-          b.approvalDateDisplay === '-' ? undefined : b.approvalDateDisplay,
-        ),
-      ),
+      history: dataDecorated.sort((a, b) => {
+        const aHasNoDate = a.approvalDateDisplay === '-'
+        const bHasNoDate = b.approvalDateDisplay === '-'
+
+        if (aHasNoDate && bHasNoDate) return 0
+        if (aHasNoDate && !bHasNoDate) return -1
+        if (!aHasNoDate && bHasNoDate) return 1
+
+        return sortByDateTime(a.approvalDateDisplay, b.approvalDateDisplay)
+      }),
     }
   }
 
@@ -1556,12 +1560,12 @@ module.exports = function createOffendersService(
   }
 
   function getViewUrl({ bookingId, sequence, status, catType, roles }) {
-    if (roles?.supervisor) {
-      return undefined
-    }
-
     if (status === Status.APPROVED.name && sequence) {
       return `/form/approvedView/${bookingId}?sequenceNo=${sequence}`
+    }
+
+    if (roles?.supervisor) {
+      return undefined
     }
 
     if (roles?.security) {

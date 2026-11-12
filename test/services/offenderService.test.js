@@ -2420,6 +2420,55 @@ describe('getCategorisationHistory', () => {
     expect(nomisOnlyApprovedRow.calculatedCategory).toBeUndefined()
     expect(nomisOnlyApprovedRow.approvedCategory).toBe('B')
     expect(nomisOnlyApprovedRow.viewUrl).toBeUndefined()
+
+    const supervisorContext = {
+      ...context,
+      user: {
+        ...context.user,
+        roles: {
+          categoriser: false,
+          recategoriser: false,
+          security: false,
+          supervisor: true,
+        },
+      },
+    }
+    const supervisorResult = await service.getCategoryHistory(supervisorContext, -45, mockTransactionalClient)
+    const supervisorApprovedRow = supervisorResult.history.find(row => row.assessmentSeq === 10)
+
+    expect(supervisorApprovedRow.viewUrl).toBe('/form/approvedView/-45?sequenceNo=1')
+  })
+
+  test('it should sort in-progress rows without dates before approved rows', async () => {
+    nomisClient.getOffenderDetails.mockResolvedValue({ bookingId: 45, offenderNo: 'ABC1' })
+    nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockResolvedValue([])
+    nomisClient.getMainOffence.mockResolvedValue({ mainOffence: 'stuff' })
+    nomisClient.getCategoryHistory.mockResolvedValue([
+      {
+        bookingId: -45,
+        assessmentSeq: 1,
+        classificationCode: 'C',
+        approvalDate: '2020-01-01',
+        assessmentAgencyId: 'LEI',
+        assessmentStatus: 'A',
+      },
+    ])
+    formService.getHistoricalCategorisationRecords.mockResolvedValue([
+      {
+        bookingId: -45,
+        sequence: 2,
+        catType: 'INITIAL',
+        status: Status.STARTED.name,
+        prisonId: 'LEI',
+        formObject: {},
+      },
+    ])
+    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
+
+    const result = await service.getCategoryHistory(context, -45, mockTransactionalClient)
+
+    expect(result.history.map(row => row.approvalDateDisplay)).toEqual(['-', '01/01/2020'])
   })
 
   const getHistoryForInProgressRecord = async (testContext, catType = 'INITIAL', status = Status.STARTED.name) => {
