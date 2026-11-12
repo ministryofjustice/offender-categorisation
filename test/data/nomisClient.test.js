@@ -42,16 +42,6 @@ describe('nomisClient', () => {
     })
   })
 
-  describe('getAgencyDetail', () => {
-    it('should construct an api call', async () => {
-      const agencyResponse = { description: 'Moorlands' }
-      fakeElite2Api.get(`/api/agencies/LEI?activeOnly=false`).reply(200, agencyResponse)
-
-      const output = await nomisClient.getAgencyDetail('LEI')
-      return expect(output).toEqual(agencyResponse)
-    })
-  })
-
   describe('getCategoryHistory', () => {
     it('should construct an api call', async () => {
       fakeElite2Api

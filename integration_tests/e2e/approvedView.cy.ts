@@ -51,7 +51,7 @@ describe('Approved view', () => {
 
     cy.task('stubUncategorisedAwaitingApproval')
     cy.task('stubCategorised', { bookingIds: [12] })
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
     cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
 
     cy.stubLogin({
@@ -308,8 +308,8 @@ describe('Approved view', () => {
   })
 
   it('should allow the display of a previous / older categorisation', () => {
-    cy.task('stubAgencyDetails', { agency: 'BXI' })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'BXI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
 
     const threeMonthsAgo = moment().subtract(3, 'months')
     const threeMonthsAgoPlusOneDay = threeMonthsAgo.add(1, 'day')

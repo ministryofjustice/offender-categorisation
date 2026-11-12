@@ -84,7 +84,7 @@ describe('Supervisor Review', () => {
       notifyRegionalCTLead: false,
     })
     cy.task('stubAssessments', { offenderNumber: offenderNo, bookingId })
-    cy.task('stubAgencyDetails', { agency: CASELOAD.LPI.id })
+    cy.task('stubGetPrison', { prisonId: CASELOAD.LPI.id })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: offenderNo, formattedReleaseDate: '2014-11-23' })
 
     cy.stubLogin({

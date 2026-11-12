@@ -163,6 +163,7 @@ module.exports = function createApp({
     config.apis.pathfinderApi.url,
     config.apis.alertsApi.url,
     config.apis.adjudicationsApi.url,
+    config.apis.prisonRegisterApi.url,
   )
   app.get('/health', (req, res, next) => {
     health((err, result) => {
@@ -249,6 +250,7 @@ module.exports = function createApp({
     authenticationMiddleware,
     statsService,
     formService,
+    auditService,
   })
   app.use('/', homeRouter)
   app.use(
@@ -301,6 +303,7 @@ module.exports = function createApp({
     offendersService,
     userService,
     authenticationMiddleware,
+    auditService,
   })
   app.use('/form/nextReviewDate/', nextReviewDateRouter)
 

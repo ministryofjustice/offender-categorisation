@@ -22,7 +22,7 @@ const formService = {
 
 const offendersService = {
   getOffenderDetails: jest.fn(),
-  getAgencies: jest.fn(),
+  getPrisons: jest.fn(),
   createLiteCategorisation: jest.fn(),
   approveLiteCategorisation: jest.fn(),
 }
@@ -55,9 +55,9 @@ beforeEach(() => {
     offenderNo: 'A1000EE',
   })
   userService.getUser.mockResolvedValue({})
-  offendersService.getAgencies.mockResolvedValue([
-    { agencyId: 'SYI', description: 'SHREWSBURY (HMP)' },
-    { agencyId: 'MDI', description: 'MOORLAND' },
+  offendersService.getPrisons.mockResolvedValue([
+    { prisonId: 'SYI', prisonName: 'SHREWSBURY (HMP)' },
+    { prisonId: 'MDI', prisonName: 'MOORLAND' },
   ])
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)

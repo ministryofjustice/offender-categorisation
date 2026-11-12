@@ -34,7 +34,6 @@ const nomisClient = {
   createSupervisorApproval: jest.fn(),
   createSupervisorRejection: jest.fn(),
   getCategoryHistory: jest.fn(),
-  getAgencyDetail: jest.fn(),
   getCategorisedOffenders: jest.fn(),
   getLatestCategorisationForOffenders: jest.fn(),
   getLatestActiveCategorisationForOffenders: jest.fn(),
@@ -66,6 +65,17 @@ const adjudicationsApiClientClient = {
   getAdjudications: jest.fn(),
 }
 
+const incidentReportingApiClient = {
+  getTotalNumberOfIncidents: jest.fn(),
+  getIncidentIds: jest.fn(),
+  getDetailedIncidentReport: jest.fn(),
+}
+
+const prisonRegisterApiClient = {
+  getPrisons: jest.fn(),
+  getPrison: jest.fn(),
+}
+
 const formService = {
   getCategorisationRecord: jest.fn(),
   getSecurityReferredOffenders: jest.fn(),
@@ -94,7 +104,8 @@ const prisonerSearchClientBuilder = () => prisonerSearchClient
 const risksAndNeedsClientBuilder = () => risksAndNeedsClient
 const probationOffenderSearchClientBuilder = () => probationOffenderSearchApiClient
 const adjudicationsApiClientBuilder = () => adjudicationsApiClientClient
-
+const incidentReportingApiClientBuilder = () => incidentReportingApiClient
+const prisonRegisterApiClientBuilder = () => prisonRegisterApiClient
 let service
 
 beforeEach(() => {
@@ -106,6 +117,8 @@ beforeEach(() => {
     risksAndNeedsClientBuilder,
     probationOffenderSearchClientBuilder,
     adjudicationsApiClientBuilder,
+    incidentReportingApiClientBuilder,
+    prisonRegisterApiClientBuilder,
   )
   formService.getCategorisationRecord.mockReturnValue({})
   formService.getLiteCategorisation.mockReturnValue({})
@@ -133,7 +146,6 @@ afterEach(() => {
   formService.getHistoricalCategorisationRecords.mockReset()
   formService.getCategorisationRecords.mockReset()
   nomisClient.getCategoryHistory.mockReset()
-  nomisClient.getAgencyDetail.mockReset()
   nomisClient.getCategorisedOffenders.mockReset()
   nomisClient.getLatestCategorisationForOffenders.mockReset()
   nomisClient.getLatestActiveCategorisationForOffenders.mockReset()
@@ -146,6 +158,10 @@ afterEach(() => {
   formService.updatePrisonSecurityReferral.mockReset()
   risksAndNeedsClient.getRisksSummary.mockReset()
   probationOffenderSearchApiClient.matchPrisoners.mockReset()
+  incidentReportingApiClient.getTotalNumberOfIncidents.mockReset()
+  incidentReportingApiClient.getIncidentIds.mockReset()
+  incidentReportingApiClient.getDetailedIncidentReport.mockReset()
+  prisonRegisterApiClient.getPrison.mockReset()
 })
 
 moment.now = jest.fn()
@@ -2125,7 +2141,7 @@ describe('getPrisonerBackground', () => {
 
   test('it should return a list of historical categorisations, filtering out any pending, cancelled and future categorisations, sorted by approval date', async () => {
     nomisClient.getCategoryHistory.mockResolvedValue(cats)
-    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
+    prisonRegisterApiClient.getPrison.mockResolvedValue({ prisonName: 'Moorlands' })
 
     const expected = [
       {
@@ -2167,14 +2183,14 @@ describe('getPrisonerBackground', () => {
 
     const result = await service.getPrisonerBackground(context, 'ABC1', moment('2019-04-16'))
 
-    expect(nomisClient.getAgencyDetail).toBeCalledTimes(2) // 1 for each unique agency
+    expect(prisonRegisterApiClient.getPrison).toBeCalledTimes(2) // 1 for each unique agency
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
 
   test('it should return a list of historical categorisations, filtering out any pending or cancelled categorisations, sorted by approval date', async () => {
     nomisClient.getCategoryHistory.mockResolvedValue(cats)
-    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
+    prisonRegisterApiClient.getPrison.mockResolvedValue({ prisonName: 'Moorlands' })
 
     const expected = [
       {
@@ -2227,7 +2243,7 @@ describe('getPrisonerBackground', () => {
 
     const result = await service.getPrisonerBackground(context, 'ABC1')
 
-    expect(nomisClient.getAgencyDetail).toBeCalledTimes(3)
+    expect(prisonRegisterApiClient.getPrison).toBeCalledTimes(3)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
@@ -2243,7 +2259,7 @@ describe('getPrisonerBackground', () => {
         approvalDate: '2012-04-04',
       },
     ])
-    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
+    prisonRegisterApiClient.getPrison.mockResolvedValue({ prisonName: 'Moorlands' })
 
     const expected = [
       {
@@ -2258,7 +2274,7 @@ describe('getPrisonerBackground', () => {
 
     const result = await service.getPrisonerBackground(context, 'ABC1')
 
-    expect(nomisClient.getAgencyDetail).toBeCalledTimes(0)
+    expect(prisonRegisterApiClient.getPrison).toBeCalledTimes(0)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
@@ -2350,7 +2366,7 @@ describe('getCategorisationHistory', () => {
       },
       { bookingId: -45, sequence: 3, nomisSeq: 7, catType: 'INITIAL', status: Status.APPROVED.name },
     ])
-    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
+    prisonRegisterApiClient.getPrison.mockResolvedValue({ prisonName: 'Moorlands' })
 
     const expected = [
       {
@@ -2406,7 +2422,7 @@ describe('getCategorisationHistory', () => {
 
     const result = await service.getCategoryHistory(context, -45, mockTransactionalClient)
 
-    expect(nomisClient.getAgencyDetail).toBeCalledTimes(3) // once per unique agency
+    expect(prisonRegisterApiClient.getPrison).toBeCalledTimes(3) // once per unique agency
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result.history).toMatchObject(expected)
 

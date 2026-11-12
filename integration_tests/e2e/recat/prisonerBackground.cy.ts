@@ -40,6 +40,7 @@ describe('Prisoner background page', () => {
     })
     cy.task('stubAgencyDetails', { agency: 'LPI' })
     cy.task('stubAgencyDetails', { agency: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
 
     cy.stubLogin({
       user: RECATEGORISER_USER,
