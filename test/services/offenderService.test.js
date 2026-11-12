@@ -34,6 +34,7 @@ const nomisClient = {
   createSupervisorApproval: jest.fn(),
   createSupervisorRejection: jest.fn(),
   getCategoryHistory: jest.fn(),
+  getAgencyDetail: jest.fn(),
   getCategorisedOffenders: jest.fn(),
   getLatestCategorisationForOffenders: jest.fn(),
   getLatestActiveCategorisationForOffenders: jest.fn(),
@@ -146,6 +147,7 @@ afterEach(() => {
   formService.getHistoricalCategorisationRecords.mockReset()
   formService.getCategorisationRecords.mockReset()
   nomisClient.getCategoryHistory.mockReset()
+  nomisClient.getAgencyDetail.mockReset()
   nomisClient.getCategorisedOffenders.mockReset()
   nomisClient.getLatestCategorisationForOffenders.mockReset()
   nomisClient.getLatestActiveCategorisationForOffenders.mockReset()
@@ -2480,7 +2482,7 @@ describe('getCategorisationHistory', () => {
         formObject: {},
       },
     ])
-    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
+    prisonRegisterApiClient.getPrison.mockResolvedValue({ prisonName: 'Moorlands' })
 
     const result = await service.getCategoryHistory(context, -45, mockTransactionalClient)
 
@@ -2493,7 +2495,7 @@ describe('getCategorisationHistory', () => {
     nomisClient.getSentenceTerms.mockResolvedValue([])
     nomisClient.getMainOffence.mockResolvedValue({ mainOffence: 'stuff' })
     nomisClient.getCategoryHistory.mockResolvedValue([])
-    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
+    prisonRegisterApiClient.getPrison.mockResolvedValue({ prisonName: 'Moorlands' })
     formService.getHistoricalCategorisationRecords.mockResolvedValue([
       {
         bookingId: -45,

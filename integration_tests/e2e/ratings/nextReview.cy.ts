@@ -66,9 +66,8 @@ describe('Next Review', () => {
       band: 1,
     })
 
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
     cy.task('stubGetPrison', { prisonId: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
   })
 

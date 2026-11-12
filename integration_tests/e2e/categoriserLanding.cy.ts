@@ -34,9 +34,8 @@ describe('Categoriser Landing page', () => {
     })
 
     cy.task('stubAssessments', { offenderNumber: 'B2345XY', emptyResponse: true, bookingId: 12 })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
     cy.task('stubGetPrison', { prisonId: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
     cy.task('stubUncategorised')
   })
 
