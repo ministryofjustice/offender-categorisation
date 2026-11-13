@@ -37,6 +37,7 @@ describe('Supervisor Landing page', () => {
       categoryCode: 'C',
       nextReviewDate: '2020-01-16',
     })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
   })
 
   it('A supervisor user sees a prisoner with no cat data', () => {

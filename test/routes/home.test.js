@@ -318,10 +318,8 @@ describe('TPRS label tests', () => {
     offendersService.getCategoryHistory.mockResolvedValue({
       history: [
         {
-          classificationCode: 'D',
           bookingId: 12,
-          recordExists: true,
-          approvalDate: '2023-03-13',
+          approvedCategory: 'D',
           tprsSelected: true,
         },
       ],
@@ -346,10 +344,8 @@ describe('TPRS label tests', () => {
     offendersService.getCategoryHistory.mockResolvedValue({
       history: [
         {
-          classificationCode: 'C',
           bookingId: 12,
-          recordExists: true,
-          approvalDate: '2023-03-13',
+          approvedCategory: 'C',
           tprsSelected: true,
         },
       ],
