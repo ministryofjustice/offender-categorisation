@@ -67,6 +67,7 @@ describe('Next Review', () => {
     })
 
     cy.task('stubGetPrison', { prisonId: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
   })
 

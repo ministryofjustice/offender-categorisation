@@ -1415,31 +1415,191 @@ module.exports = function createOffendersService(
     const catRecords = await formService.getHistoricalCategorisationRecords(details.offenderNo, transactionalDbClient)
     const nomisRecords = await getAllApprovedCategorisationsForOffender(nomisClient, details.offenderNo)
 
-    const uniqueAgencies = [...new Set(nomisRecords.map(o => o.assessmentAgencyId))]
+    const uniqueAgencies = [
+      ...new Set([
+        ...nomisRecords.map(record => record.assessmentAgencyId),
+        ...catRecords.map(record => record.prisonId),
+      ]),
+    ]
     const agencyMap = new Map(
       await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)])),
     )
 
-    const dataDecorated = await Promise.all(
+    const matchedLocalRecordKeys = new Set()
+
+    const approvedRowsFromNomis = await Promise.all(
       nomisRecords.map(async nomisRecord => {
         const foundCatRecord = catRecords.find(
-          o => o.bookingId === nomisRecord.bookingId && o.nomisSeq === nomisRecord.assessmentSeq,
+          record => record.bookingId === nomisRecord.bookingId && record.nomisSeq === nomisRecord.assessmentSeq,
         )
+
+        if (foundCatRecord) {
+          matchedLocalRecordKeys.add(`${foundCatRecord.bookingId}-${foundCatRecord.nomisSeq}`)
+        }
+
+        const isLocalInProgress = foundCatRecord && foundCatRecord.status !== Status.APPROVED.name
+
+        let approvedCategory
+
+        if (!foundCatRecord) {
+          approvedCategory = nomisRecord.classificationCode
+        } else if (isLocalInProgress) {
+          approvedCategory = undefined
+        } else {
+          approvedCategory = getApprovedCategory(foundCatRecord.formObject)
+        }
+
         return {
           ...nomisRecord,
           prisonDescription: agencyMap.get(nomisRecord.assessmentAgencyId),
           recordExists: !!foundCatRecord,
-          approvalDateDisplay: dateConverter(nomisRecord.approvalDate),
+          approvalDateDisplay: isLocalInProgress ? '-' : dateConverter(nomisRecord.approvalDate),
+
           sequence: foundCatRecord && foundCatRecord.sequence,
+          calculatedCategory: foundCatRecord ? getCalculatedCategory(foundCatRecord) : undefined,
+          approvedCategory,
+
+          displayStatus: isLocalInProgress
+            ? Status[foundCatRecord.status]?.value || foundCatRecord.status
+            : Status.APPROVED.value,
+
+          nextReviewDate: isLocalInProgress
+            ? dateConverter(getNextReviewDate(foundCatRecord)) || '-'
+            : dateConverter(nomisRecord.nextReviewDate),
+
+          viewUrl: getViewUrl({
+            bookingId: nomisRecord.bookingId,
+            sequence: foundCatRecord?.sequence,
+            status: isLocalInProgress ? foundCatRecord.status : Status.APPROVED.name,
+            catType: foundCatRecord?.catType,
+            roles: context.user.roles,
+          }),
           tprsSelected: foundCatRecord?.formObject?.openConditions?.tprs?.tprsSelected === 'Yes' || false,
         }
       }),
     )
 
+    const inProgressRowsFromApp = catRecords
+      .filter(record => record.status !== Status.APPROVED.name)
+      .filter(record => !matchedLocalRecordKeys.has(`${record.bookingId}-${record.nomisSeq}`))
+      .map(record => ({
+        bookingId: record.bookingId,
+        offenderNo: record.offenderNo,
+        sequence: record.sequence,
+        approvalDateDisplay: '-',
+        prisonDescription: agencyMap.get(record.prisonId),
+        calculatedCategory: getCalculatedCategory(record),
+        approvedCategory: undefined,
+        displayStatus: Status[record.status]?.value || record.status,
+        nextReviewDate: dateConverter(getNextReviewDate(record)) || '-',
+        viewUrl: getViewUrl({
+          bookingId: record.bookingId,
+          sequence: record.sequence,
+          status: record.status,
+          catType: record.catType,
+          roles: context.user.roles,
+        }),
+        recordExists: true,
+        tprsSelected: record.formObject?.openConditions?.tprs?.tprsSelected === 'Yes' || false,
+      }))
+
+    const dataDecorated = [...approvedRowsFromNomis, ...inProgressRowsFromApp]
+
     return {
       details,
-      history: dataDecorated.sort((a, b) => sortByDateTime(a.approvalDateDisplay, b.approvalDateDisplay)),
+      history: dataDecorated.sort((a, b) => {
+        const aHasNoDate = a.approvalDateDisplay === '-'
+        const bHasNoDate = b.approvalDateDisplay === '-'
+
+        if (aHasNoDate && bHasNoDate) return 0
+        if (aHasNoDate && !bHasNoDate) return -1
+        if (!aHasNoDate && bHasNoDate) return 1
+
+        return sortByDateTime(a.approvalDateDisplay, b.approvalDateDisplay)
+      }),
     }
+  }
+
+  function getCalculatedCategory(record) {
+    const formObject = record.formObject || {}
+
+    if (record.catType === 'RECAT') {
+      return formObject?.recat?.decision?.category
+    }
+
+    return (
+      formObject?.categoriser?.provisionalCategory?.overriddenCategory ||
+      formObject?.categoriser?.provisionalCategory?.suggestedCategory
+    )
+  }
+
+  function getApprovedCategory(formObject) {
+    const supervisorReview = formObject?.supervisor?.review
+
+    const supervisorCategory =
+      supervisorReview?.supervisorCategoryAppropriate === 'No'
+        ? supervisorReview.supervisorOverriddenCategory
+        : undefined
+
+    const initialCategory =
+      formObject?.categoriser?.provisionalCategory?.overriddenCategory ||
+      formObject?.categoriser?.provisionalCategory?.suggestedCategory
+
+    const recategorisationCategory = formObject?.recat?.decision?.category
+
+    return supervisorCategory || initialCategory || recategorisationCategory
+  }
+
+  function getNextReviewDate(record) {
+    const formObject = record.formObject || {}
+
+    if (record.catType === 'RECAT') {
+      return formObject.recat?.nextReviewDate?.date
+    }
+
+    return formObject.ratings?.nextReviewDate?.date
+  }
+
+  function getViewUrl({ bookingId, sequence, status, catType, roles }) {
+    if (status === Status.APPROVED.name && sequence) {
+      return `/form/approvedView/${bookingId}?sequenceNo=${sequence}`
+    }
+
+    if (roles?.supervisor) {
+      return undefined
+    }
+
+    if (roles?.security) {
+      if ([Status.SECURITY_MANUAL.name, Status.SECURITY_AUTO.name, Status.SECURITY_FLAGGED.name].includes(status)) {
+        return `/form/security/review/${bookingId}`
+      }
+
+      if (status === Status.SECURITY_BACK.name) {
+        return `/form/security/view/${bookingId}`
+      }
+    }
+
+    if (status === Status.AWAITING_APPROVAL.name) {
+      if (catType === 'RECAT' && roles?.recategoriser) {
+        return `/tasklistRecat/recategoriserSubmitted/${bookingId}`
+      }
+
+      if (catType === 'INITIAL' && roles?.categoriser) {
+        return `/tasklist/categoriserSubmitted/${bookingId}`
+      }
+
+      return undefined
+    }
+
+    if (catType === 'RECAT' && roles?.recategoriser) {
+      return `/tasklistRecat/${bookingId}`
+    }
+
+    if (catType === 'INITIAL' && roles?.categoriser) {
+      return `/tasklist/${bookingId}`
+    }
+
+    return undefined
   }
 
   async function getOptionalAssessmentAgencyDescription(context, agencyId) {
@@ -1659,7 +1819,7 @@ module.exports = function createOffendersService(
     if (/[UXZ]/.test(classificationCodeFromNomis)) {
       const catExistsForThisBooking = categoryHistory
         .filter(c => c.bookingId === bookingId)
-        .some(c => !/[UXZ]/.test(c.classificationCode))
+        .some(c => c.classificationCode && !/[UXZ]/.test(c.classificationCode))
       return catExistsForThisBooking ? CatType.RECAT.name : CatType.INITIAL.name
     }
     if (/[BCDIJTR]/.test(classificationCodeFromNomis)) {

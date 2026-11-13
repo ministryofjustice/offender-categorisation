@@ -28,8 +28,14 @@ describe('Categoriser Landing page', () => {
       transferToSecurity: false,
     })
 
+    cy.task('stubGetExtremismProfile', {
+      offenderNo: 'B2345XY',
+      band: 4,
+    })
+
     cy.task('stubAssessments', { offenderNumber: 'B2345XY', emptyResponse: true, bookingId: 12 })
     cy.task('stubGetPrison', { prisonId: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
     cy.task('stubUncategorised')
   })
 

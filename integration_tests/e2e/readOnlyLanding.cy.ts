@@ -45,7 +45,13 @@ describe('Read-only user - category history', () => {
       assignedUserId: 'RECATEGORISER_USER',
       approvedBy: 'RECATEGORISER_USER',
       startDate: today,
-      formResponse: {},
+      formResponse: {
+        recat: {
+          decision: {
+            category: 'P',
+          },
+        },
+      },
     })
 
     cy.task('insertFormTableDbRow', {
@@ -60,7 +66,13 @@ describe('Read-only user - category history', () => {
       assignedUserId: 'CATEGORISER_USER',
       approvedBy: 'CATEGORISER_USER',
       startDate: today,
-      formResponse: {},
+      formResponse: {
+        categoriser: {
+          provisionalCategory: {
+            suggestedCategory: 'U',
+          },
+        },
+      },
     })
 
     cy.task('updateNomisSequenceNumber', {
@@ -108,7 +120,10 @@ describe('Read-only user - category history', () => {
 
     historyPage.assertRow(0, {
       date: '18/06/2019',
-      category: 'Unsentenced',
+      calculatedCategory: 'Unsentenced',
+      approvedCategory: 'Unsentenced',
+      status: 'Approved',
+      nextReviewDate: '-',
       location: 'LPI prison',
       hasViewLink: true,
       hrefContains: '/form/approvedView/12?sequenceNo=3',
@@ -116,7 +131,10 @@ describe('Read-only user - category history', () => {
 
     historyPage.assertRow(1, {
       date: '08/06/2018',
-      category: 'P',
+      calculatedCategory: 'P',
+      approvedCategory: 'P',
+      status: 'Approved',
+      nextReviewDate: '-',
       location: 'LPI prison',
       hasViewLink: true,
       hrefContains: '/form/approvedView/12?sequenceNo=2',
@@ -124,14 +142,20 @@ describe('Read-only user - category history', () => {
 
     historyPage.assertRow(2, {
       date: '24/03/2013',
-      category: 'B',
+      calculatedCategory: '-',
+      approvedCategory: 'B',
+      status: 'Approved',
+      nextReviewDate: '-',
       location: 'LPI prison',
       hasViewLink: false,
     })
 
     historyPage.assertRow(3, {
       date: '08/06/2012',
-      category: 'A',
+      calculatedCategory: '-',
+      approvedCategory: 'A',
+      status: 'Approved',
+      nextReviewDate: '-',
       location: 'LPI prison',
       hasViewLink: false,
     })

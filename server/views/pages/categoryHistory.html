@@ -20,12 +20,15 @@
 </div>
 
 <div>
-  {% if data | length > 0 %}
+  {% if data.history | length > 0 %}
     <table class="govuk-table" id="initialTable">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th class="govuk-table__header" scope="col">Categorisation date</th>
-          <th class="govuk-table__header" scope="col">Category decision</th>
+          <th class="govuk-table__header" scope="col">Calculated category</th>
+          <th class="govuk-table__header" scope="col">Approved category</th>
+          <th class="govuk-table__header" scope="col">Status</th>
+          <th class="govuk-table__header" scope="col">Next review date</th>
           <th class="govuk-table__header" scope="col">Review location</th>
           <th class="govuk-table__header" scope="col"></th>
         </tr>
@@ -34,22 +37,33 @@
         {% for row in data.history %}
           <tr class="govuk-table__row ">
             <td class="govuk-table__cell"> {{ row.approvalDateDisplay }}</td>
-            <td class="govuk-table__cell">{{ catMappings(row.classificationCode) }}
-              {% if isOpenCategory(row.classificationCode) and row.tprsSelected %}
-              <strong class="govuk-tag govuk-tag--red govuk-!-margin-left-5">TPRS</strong>
+
+            <td class="govuk-table__cell">
+              {{ catMappings(row.calculatedCategory) if row.calculatedCategory else '-' }}
+            </td>
+
+            <td class="govuk-table__cell">
+              {{ catMappings(row.approvedCategory) if row.approvedCategory else '-' }}
+              {% if isOpenCategory(row.approvedCategory) and row.tprsSelected %}
+                <strong class="govuk-tag govuk-tag--red govuk-!-margin-left-5">TPRS</strong>
               {% endif %}
             </td>
+            <td class="govuk-table__cell">{{ row.displayStatus }}</td>
+            <td class="govuk-table__cell">{{ row.nextReviewDate or '-' }}</td>
             <td class="govuk-table__cell">{{ row.prisonDescription }}</td>
             <td class="govuk-table__cell">
-              {% if row.recordExists %}
-              <a target="_blank" href="/form/approvedView/{{ row.bookingId }}?sequenceNo={{ row.sequence }}">View (opens in new tab)</a></td>
+              {% if row.viewUrl %}
+                <a target="_blank" href="{{ row.viewUrl }}">
+                  View (opens in new tab)
+                </a>
               {% endif %}
+            </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   {% else %}
-    No completed categorisations found.
+    No categorisations found.
   {% endif %}
 
 </div>

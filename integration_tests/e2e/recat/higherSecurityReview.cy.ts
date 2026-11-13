@@ -31,6 +31,11 @@ describe('Higher security review', () => {
       transferToSecurity: false,
     })
 
+    cy.task('stubGetExtremismProfile', {
+      offenderNo: 'B2345YZ',
+      band: 4,
+    })
+
     cy.stubLogin({
       user: RECATEGORISER_USER,
     })

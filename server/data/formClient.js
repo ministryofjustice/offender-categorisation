@@ -54,9 +54,11 @@ module.exports = {
                     approval_date as "approvalDate",
                     form_response as "formObject",
                     prison_id     as "prisonId",
-                    nomis_sequence_no as "nomisSeq"
+                    nomis_sequence_no as "nomisSeq",
+                    status        as "status",
+                    cat_type       as "catType"
              from form f
-             where f.offender_no = $1 and f.status = 'APPROVED'
+             where f.offender_no = $1
              ${ignoreCancelledClause}
              order by sequence_no`,
       values: [offenderNo],
