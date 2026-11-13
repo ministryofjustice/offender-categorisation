@@ -34,11 +34,11 @@ const getPrisonList = (prisonListFromApi, isWomensEstatePrisoner, current) => {
   }
   prisonList.push(
     ...prisonListFromApi
-      .filter(p => (isWomensEstatePrisoner ? isFemalePrisonId(p.agencyId) : !isFemalePrisonId(p.agencyId)))
+      .filter(p => (isWomensEstatePrisoner ? isFemalePrisonId(p.prisonId) : !isFemalePrisonId(p.prisonId)))
       .map(p => ({
-        value: p.agencyId,
-        text: sanitisePrisonName(p.description),
-        selected: current === p.agencyId,
+        value: p.prisonId,
+        text: sanitisePrisonName(p.prisonName),
+        selected: current === p.prisonId,
       }))
       .sort((a, b) => (a.text < b.text ? -1 : 1)),
   )
@@ -148,7 +148,7 @@ module.exports = function Index({
         offendersService.getOffenderDetails(res.locals, bookingId),
         formService.getCategorisationRecord(bookingId, transactionalDbClient),
         formService.getLiteCategorisation(bookingId, transactionalDbClient),
-        offendersService.getAgencies(res.locals),
+        offendersService.getPrisons(res.locals),
       ])
 
       await auditService.logPageView(Page.NEW_LITE_CAT, {
@@ -198,7 +198,7 @@ module.exports = function Index({
       const [details, rawAssessmentData, prisonListFromApi] = await Promise.all([
         offendersService.getOffenderDetails(res.locals, bookingId),
         formService.getLiteCategorisation(bookingId, transactionalDbClient),
-        offendersService.getAgencies(res.locals),
+        offendersService.getPrisons(res.locals),
       ])
 
       await auditService.logPageView(Page.APPROVE_LITE_CAT, {
@@ -275,7 +275,7 @@ module.exports = function Index({
 
       const existingCategory = details?.categoryCode
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
-      const prisonListFromApi = await offendersService.getAgencies(res.locals)
+      const prisonListFromApi = await offendersService.getPrisons(res.locals)
       const { nextReviewDate } = req.body
       const catListForValidation = getCatList(isInWomensEstate, undefined, existingCategory)
 
@@ -375,7 +375,7 @@ module.exports = function Index({
       const assessmentData = await formService.getLiteCategorisation(bookingId, transactionalDbClient)
       const [details, prisonListFromApi] = await Promise.all([
         offendersService.getOffenderDetails(res.locals, bookingIdInt),
-        offendersService.getAgencies(res.locals),
+        offendersService.getPrisons(res.locals),
       ])
 
       const isInWomensEstate = isFemalePrisonId(details.prisonId)

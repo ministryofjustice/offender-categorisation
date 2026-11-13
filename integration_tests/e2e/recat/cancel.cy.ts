@@ -145,7 +145,7 @@ describe('Cancel recategorisation', () => {
       prisonerNumber: 'B2345YZ',
       assaultIncidents: [],
     })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
 
     cy.stubLogin({ user: RECATEGORISER_USER })
 

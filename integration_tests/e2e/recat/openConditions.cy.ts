@@ -116,7 +116,7 @@ describe('Open Conditions', () => {
       prisonerNumber: 'B2345YZ',
       assaultIncidents: [],
     })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
 
     cy.stubLogin({
       user: RECATEGORISER_USER,
@@ -689,7 +689,7 @@ describe('Open Conditions', () => {
     Page.verifyOnPage(SupervisorHomePage)
     supervisorHomePage.doneTabLink().click()
 
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 1 }).click()
@@ -1012,7 +1012,7 @@ describe('Open Conditions', () => {
     Page.verifyOnPage(SupervisorHomePage)
     supervisorHomePage.doneTabLink().click()
 
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 1 }).click()
@@ -1485,7 +1485,7 @@ describe('Open Conditions', () => {
 
     supervisorHomePage.doneTabLink().click()
 
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
+    cy.task('stubGetPrison', { prisonId: 'LEI' })
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 1 }).click()

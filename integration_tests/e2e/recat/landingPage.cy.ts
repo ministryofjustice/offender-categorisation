@@ -33,7 +33,7 @@ describe('Recategoriser Landing page', () => {
 
     cy.task('stubAssessments', { offenderNumber: 'B2345XY', emptyResponse: false, bookingId: 12 })
 
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
+    cy.task('stubGetPrison', { prisonId: 'LPI' })
   })
 
   it('A recategoriser user can start a recat from the landing page', () => {

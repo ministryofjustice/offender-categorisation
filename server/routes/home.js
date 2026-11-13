@@ -667,6 +667,14 @@ module.exports = function Index({
         })
       }
 
+      await auditService.logCreateEvent(Page.SECURITY_REFERRAL, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SUBJECT_TYPE_PRISONER_NUMBER,
+        subjectId: details.offenderNo,
+        details: { bookingId },
+      })
+
       await formService.createSecurityReferral(
         details.agencyId,
         details.offenderNo,

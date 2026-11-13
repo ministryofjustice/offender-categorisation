@@ -142,6 +142,7 @@ module.exports = function createOffendersService(
   probationOffenderSearchClientBuilder,
   adjudicationsApiClientBuilder,
   incidentReportingApiClientBuilder,
+  prisonRegisterApiClientBuilder,
 ) {
   async function getUncategorisedOffenders(context, user, filters = {}) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
@@ -1443,16 +1444,16 @@ module.exports = function createOffendersService(
 
   async function getOptionalAssessmentAgencyDescription(context, agencyId) {
     if (agencyId) {
-      const nomisClient = nomisClientBuilder(context)
-      const agency = await nomisClient.getAgencyDetail(agencyId)
-      return agency.description
+      const prisonRegisterApiClient = prisonRegisterApiClientBuilder(context.user)
+      const agency = await prisonRegisterApiClient.getPrison(agencyId)
+      return agency.prisonName
     }
     return ''
   }
 
-  function getAgencies(context) {
-    const nomisClient = nomisClientBuilder(context)
-    return nomisClient.getAgencies()
+  function getPrisons(context) {
+    const prisonRegisterApiClient = prisonRegisterApiClientBuilder(context.user)
+    return prisonRegisterApiClient.getPrisons()
   }
 
   async function createOrUpdateCategorisation({
@@ -1857,7 +1858,7 @@ module.exports = function createOffendersService(
     backToCategoriser,
     requiredCatType,
     getOptionalAssessmentAgencyDescription,
-    getAgencies,
+    getPrisons,
     createOrUpdateCategorisation,
     createLiteCategorisation,
     createSupervisorApproval,
