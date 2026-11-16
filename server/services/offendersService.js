@@ -466,9 +466,7 @@ module.exports = function createOffendersService(
             let securityReferredBy
             if (o.userId) {
               const referrer = userDetailFromElite.find(record => record.username === o.userId)
-              securityReferredBy = referrer
-                ? referrer.name
-                : o.userId
+              securityReferredBy = referrer ? referrer.name : o.userId
             }
 
             const entry = sentenceMap.get(offenderDetail.bookingId)

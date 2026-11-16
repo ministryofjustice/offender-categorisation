@@ -55,7 +55,6 @@ describe('Categoriser Done page', () => {
         bookingIds: [11, 12],
         startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
       })
-
     })
 
     beforeEach(() => {
