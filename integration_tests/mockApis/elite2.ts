@@ -524,48 +524,6 @@ const stubElite2Ping = (statusCode = 200): SuperAgentRequest =>
     },
   })
 
-const stubGetMyCaseloads = ({ caseloads } = { caseloads: [CASELOAD.LEI] }): SuperAgentRequest =>
-  stubFor({
-    request: {
-      method: 'GET',
-      url: '/elite2/api/users/me/caseLoads',
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: caseloads.map(caseload => ({
-        caseLoadId: caseload.id,
-        description: caseload.description,
-        type: caseload.type,
-        caseloadFunction: 'DUMMY',
-      })),
-    },
-  })
-
-const stubGetMyDetails = ({ user, caseloadId }: { user: UserAccount; caseloadId: string }): SuperAgentRequest =>
-  stubFor({
-    request: {
-      method: 'GET',
-      url: '/elite2/api/users/me',
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: {
-        staffId: user.staffMember.id,
-        username: user.username,
-        firstName: user.staffMember.firstName,
-        lastName: user.staffMember.lastName,
-        email: 'itaguser@syscon.net',
-        activeCaseLoadId: caseloadId,
-      },
-    },
-  })
-
 const stubGetOffenderDetails = ({
   bookingId,
   offenderNo = 'B2345YZ',
@@ -1033,52 +991,6 @@ const stubGetOffenderDetailsWomenYOI = ({
 
   return Promise.all([stubBasicInfo(), stubSentenceDetail(), stubSentenceTerms(), stubMainOffence()])
 }
-
-const stubGetUserDetails = ({ user, caseloadId }: { user: UserAccount; caseloadId: string }): SuperAgentRequest =>
-  stubFor({
-    request: {
-      method: 'GET',
-      url: `/elite2/api/users/${user.username}`,
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      jsonBody: {
-        staffId: user.staffMember.id,
-        username: user.username,
-        firstName: user.staffMember.firstName,
-        lastName: user.staffMember.lastName,
-        email: 'itaguser@syscon.net',
-        activeCaseLoadId: caseloadId,
-      },
-    },
-  })
-
-const stubGetStaffDetailsByUsernameList = ({ usernames } = { usernames: [] }): SuperAgentRequest =>
-  stubFor({
-    request: {
-      method: 'POST',
-      url: '/elite2/api/users/list',
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(
-        usernames.map(username => ({
-          staffId: 123,
-          username: username,
-          firstName: `firstName_${username}`,
-          lastName: `lastName_${username}`,
-          email: 'itaguser@syscon.net',
-          activeCaseLoadId: 'LEI',
-        })),
-      ),
-    },
-  })
 
 const stubOffenceHistory = ({ offenderNumber }: { offenderNumber: string }): SuperAgentRequest =>
   stubFor({
@@ -1726,14 +1638,10 @@ export default {
   stubCategorised,
   stubCategorisedMultiple,
   stubElite2Ping,
-  stubGetMyCaseloads,
-  stubGetMyDetails,
   stubGetOffenderDetails,
   stubGetOffenderDetailsByOffenderNoList,
   stubGetOffenderDetailsWomen,
   stubGetOffenderDetailsWomenYOI,
-  stubGetUserDetails,
-  stubGetStaffDetailsByUsernameList,
   stubOffenceHistory,
   stubSentenceDataGetSingle,
   stubSupervisorApprove,

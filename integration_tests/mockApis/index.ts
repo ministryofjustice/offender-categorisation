@@ -11,6 +11,7 @@ import alertsApi from './alertsApi'
 import adjudicationsApi from './adjudicationsApi'
 import incidentReportingApi from './incidentReportingApi'
 import prisonRegisterApi from './prisonRegisterApi'
+import manageUsersApi from './manageUsersApi'
 
 export default {
   ...allocationManager,
@@ -26,4 +27,5 @@ export default {
   ...adjudicationsApi,
   ...incidentReportingApi,
   ...prisonRegisterApi,
+  ...manageUsersApi,
 }

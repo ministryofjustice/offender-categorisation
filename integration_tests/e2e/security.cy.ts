@@ -92,13 +92,13 @@ context('Security', () => {
 
     cy.task('stubUncategorisedAwaitingApproval')
     cy.task('stubUncategorised')
-    cy.task('stubGetMyDetails', { user: SECURITY_USER, caseloadId: 'LEI' })
-    cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.LEI] })
-    cy.task('stubGetUserDetails', { user: SECURITY_USER, caseloadId: 'LEI' })
+    cy.task('stubGetUser', { user: SECURITY_USER, caseloadId: 'LEI' })
+    cy.task('stubGetUserCaseload', { caseloads: [CASELOAD.LEI] })
+    cy.task('stubGetUserByUsername', { user: SECURITY_USER, caseloadId: 'LEI' })
 
     cy.task('stubCategorised', { bookingIds: [11, 12] })
     cy.task('stubGetOffenderDetailsByOffenderNoList', { offenderNumbers: ['B2345XY', 'B2345YZ'] })
-    cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SECURITY_USER.username] })
+    cy.task('stubGetUsersByUsername', { usernames: [SECURITY_USER.username] })
   })
 
   beforeEach(() => {

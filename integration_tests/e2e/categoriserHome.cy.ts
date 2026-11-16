@@ -29,8 +29,8 @@ describe('Categoriser Home page', () => {
 
   describe('when the user has the required role', () => {
     beforeEach(() => {
-      cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.LEI] })
-      cy.task('stubGetStaffDetailsByUsernameList', {
+      cy.task('stubGetUserCaseload', { caseloads: [CASELOAD.LEI] })
+      cy.task('stubGetUsersByUsername', {
         usernames: [CATEGORISER_USER.username, SUPERVISOR_USER.username],
       })
     })
@@ -92,7 +92,7 @@ describe('Categoriser Home page', () => {
             'Engelbert Humperdinck',
             'Edit',
           ],
-          [reviewDatesDict.B0040AA, 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
+          [reviewDatesDict.B0040AA, 'Hillmob, AntB0040AA', '70', 'Started (API User)', '', 'Edit'],
           [
             reviewDatesDict.B0031AA,
             'Missing, AwaitingB0031AA',
@@ -105,7 +105,7 @@ describe('Categoriser Home page', () => {
             reviewDatesDict.B0032AA,
             'Started, AwaitingB0032AA',
             '50',
-            'Started (Api User)',
+            'Started (API User)',
             'Engelbert Humperdinck',
             'PNOMIS',
           ],
@@ -130,7 +130,7 @@ describe('Categoriser Home page', () => {
             reviewDatesDict.B0036AA,
             'Started, UncategorisedB0036AA',
             '15',
-            'Started (Api User)',
+            'Started (API User)',
             'Engelbert Humperdinck',
             'Edit',
           ],
@@ -157,7 +157,7 @@ describe('Categoriser Home page', () => {
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         cy.get('th button[data-index="0"]').click({ force: true })
         categoriserHomePage.validateToDoTableData([
-          [reviewDatesDict.B0040AA, 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
+          [reviewDatesDict.B0040AA, 'Hillmob, AntB0040AA', '70', 'Started (API User)', '', 'Edit'],
           [
             reviewDatesDict.B0031AA,
             'Missing, AwaitingB0031AA',
@@ -170,7 +170,7 @@ describe('Categoriser Home page', () => {
             reviewDatesDict.B0032AA,
             'Started, AwaitingB0032AA',
             '50',
-            'Started (Api User)',
+            'Started (API User)',
             'Engelbert Humperdinck',
             'PNOMIS',
           ],
@@ -195,7 +195,7 @@ describe('Categoriser Home page', () => {
             reviewDatesDict.B0036AA,
             'Started, UncategorisedB0036AA',
             '15',
-            'Started (Api User)',
+            'Started (API User)',
             'Engelbert Humperdinck',
             'Edit',
           ],

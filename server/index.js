@@ -16,11 +16,12 @@ const probationOffenderSearchClientBuilder =
 const { adjudicationsApiClientBuilder } = require('./data/adjudicationsApi/adjudicationsApiClient')
 const { incidentReportingApiClientBuilder } = require('./data/incidentReportingApi/incidentReportingApiClient')
 const { prisonRegisterApiClientBuilder } = require('./data/prisonRegisterApi/prisonRegisterApiClient')
+const { manageUsersApiClientBuilder } = require('./data/manageUsersApi/manageUsersApiClient')
 
 const createFormService = require('./services/formService')
 const createStatsService = require('./services/statsService')
 const createOffendersService = require('./services/offendersService')
-const createUserService = require('./services/userService')
+const createUserService = require('./services/userService').default
 const createSqsService = require('./services/sqsService')
 const createDpsFeComponentService = require('./services/dpsFeComponentService')
 const AuditService = require('./services/auditService').default
@@ -42,8 +43,9 @@ const offendersService = createOffendersService(
   adjudicationsApiClientBuilder,
   incidentReportingApiClientBuilder,
   prisonRegisterApiClientBuilder,
+  manageUsersApiClientBuilder,
 )
-const userService = createUserService(nomisClientBuilder)
+const userService = createUserService(manageUsersApiClientBuilder)
 const sqsService = createSqsService(offendersService, formService)
 const frontEndComponentsService = createDpsFeComponentService(dpsFeComponentsClientBuilder)
 const pathfinderService = new CreatePathfinderService(pathfinderApiClientBuilder)

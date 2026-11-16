@@ -344,7 +344,7 @@ describe('Lite Categories', () => {
         bookingId: [11, 12],
         offenderNumbers: ['B2345XY', 'B2345YZ'],
       })
-      cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+      cy.task('stubGetUsersByUsername', { usernames: [SUPERVISOR_USER.username] })
 
       cy.stubLogin({
         user: SUPERVISOR_USER,
@@ -358,7 +358,7 @@ describe('Lite Categories', () => {
         ['23/06/2023', 'Dent, JaneB2345YZ', 'CATEGORISER_USER', 'V', 'Approve'],
       ])
 
-      cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
+      cy.task('stubGetUserByUsername', { user: CATEGORISER_USER, caseloadId: 'SYI' })
 
       supervisorDashboardHomePage.approveOtherCategoriesApprovalButton({ bookingId }).click()
 
@@ -391,7 +391,7 @@ describe('Lite Categories', () => {
       supervisorDashboardHomePage = Page.verifyOnPage(SupervisorDashboardHomePage)
       supervisorDashboardHomePage.otherCategoriesTabLink().click()
 
-      cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
+      cy.task('stubGetUserByUsername', { user: CATEGORISER_USER, caseloadId: 'SYI' })
 
       supervisorDashboardHomePage.approveOtherCategoriesApprovalButton({ bookingId }).click()
 
@@ -416,7 +416,7 @@ describe('Lite Categories', () => {
       supervisorDashboardHomePage = Page.verifyOnPage(SupervisorDashboardHomePage)
       supervisorDashboardHomePage.otherCategoriesTabLink().click()
 
-      cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
+      cy.task('stubGetUserByUsername', { user: CATEGORISER_USER, caseloadId: 'SYI' })
 
       supervisorDashboardHomePage.approveOtherCategoriesApprovalButton({ bookingId }).click()
 
@@ -534,8 +534,8 @@ describe('Lite Categories', () => {
         bookingIds: [12],
         startDates: ['28/03/2019'],
       })
-      cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
-      cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+      cy.task('stubGetUserByUsername', { user: CATEGORISER_USER, caseloadId: 'SYI' })
+      cy.task('stubGetUsersByUsername', { usernames: [SUPERVISOR_USER.username] })
       cy.task('stubGetOffenderDetailsByOffenderNoList', {
         bookingId: [12],
         offenderNumbers: ['B2345YZ'],
@@ -627,7 +627,7 @@ describe('Lite Categories', () => {
         bookingId: [11, 12],
         offenderNumbers: ['B2345XY', 'B2345YZ'],
       })
-      cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+      cy.task('stubGetUsersByUsername', { usernames: [SUPERVISOR_USER.username] })
 
       cy.stubLogin({
         user: SUPERVISOR_USER,

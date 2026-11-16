@@ -65,18 +65,6 @@ module.exports = context => {
       const path = `${apiUrl}api/offender-sentences/booking/${bookingId}/sentenceTerms`
       return nomisClientGet({ path })
     },
-    getUser() {
-      const path = `${apiUrl}api/users/me`
-      return nomisUserGet({ path })
-    },
-    getUserByUserId(userId) {
-      const path = `${apiUrl}api/users/${userId}`
-      return nomisUserGet({ path })
-    },
-    getUserCaseLoads() {
-      const path = `${apiUrl}api/users/me/caseLoads`
-      return nomisUserGet({ path })
-    },
     getImageData(imageId) {
       const path = `${apiUrl}api/images/${imageId}/data`
       return nomisUserGet({ path, responseType: 'stream', raw: true })
@@ -124,10 +112,6 @@ module.exports = context => {
     getOffenderDetailList(offenderNos) {
       const path = `${apiUrl}api/bookings/offenders?activeOnly=false`
       return nomisClientPost({ path, body: offenderNos })
-    },
-    getUserDetailList(usernames) {
-      const path = `${apiUrl}api/users/list`
-      return nomisClientPost({ path, body: usernames })
     },
     updateNextReviewDate(bookingId, nextReviewDate) {
       const path = `${apiUrl}api/offender-assessments/category/${bookingId}/nextReviewDate/${nextReviewDate}`

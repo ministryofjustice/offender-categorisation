@@ -125,7 +125,6 @@ describe('Approved View', () => {
       bookingIds: [12],
     })
     cy.task('stubGetPrison', { prisonId: 'LEI' })
-    cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
     cy.task('stubGetOffenderDetails', {
       bookingId: 12,
       offenderNo: 'B2345YZ',
@@ -140,6 +139,7 @@ describe('Approved View', () => {
       user: SUPERVISOR_USER,
     })
     cy.signIn()
+    cy.task('stubGetUsersByUsername', { usernames: [SUPERVISOR_USER.username] })
 
     const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
     supervisorHomePage.doneTabLink().click()
@@ -150,7 +150,7 @@ describe('Approved View', () => {
         'B2345YZ',
         moment().subtract(2, 'months').format('DD/MM/YYYY'),
         '',
-        'Lastname_supervisor_user, Firstname_supervisor_user',
+        'lastName_SUPERVISOR_USER, firstName_SUPERVISOR_USER',
         '',
         'Recat',
         'View',
@@ -159,7 +159,7 @@ describe('Approved View', () => {
         'Scramble, TimB2345XY',
         '21/02/2019',
         'Lamb, John',
-        'Lastname_supervisor_user, Firstname_supervisor_user',
+        'lastName_SUPERVISOR_USER, firstName_SUPERVISOR_USER',
         'C',
         'Recat',
         'View',
@@ -312,13 +312,13 @@ describe('Approved View', () => {
       bookingIds: [12],
     })
     cy.task('stubGetPrison', { prisonId: 'LEI' })
-    cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
 
     cy.stubLogin({
       user: SUPERVISOR_USER,
     })
     cy.signIn()
 
+    cy.task('stubGetUsersByUsername', { usernames: [SUPERVISOR_USER.username] })
     cy.task('stubGetOffenderDetails', {
       bookingId: 12,
       offenderNo: 'B2345YZ',
@@ -449,7 +449,7 @@ describe('Approved View', () => {
     cy.task('stubCategorised', {
       bookingIds: [12],
     })
-    cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+    cy.task('stubGetUsersByUsername', { usernames: [SUPERVISOR_USER.username] })
     cy.task('stubGetOffenderDetails', {
       bookingId: 12,
       offenderNo: 'B2345YZ',
