@@ -50,7 +50,7 @@ describe('getUserByUserId', () => {
 
 describe('getUser', () => {
   test('should set female flag in case loads', async () => {
-    const caseLoads = [{ caseLoadId: 'FKI' }, { caseLoadId: 'PFI' }]
+    const caseLoads = { caseloads: [{ id: 'FKI' }, { id: 'PFI' }] }
     caseLoads.activeCaseload = 'PFI'
     manageUsersApiClient.getUser.mockResolvedValue({ username: 'user1', name: 'First Last' })
     manageUsersApiClient.getUserCaseload.mockResolvedValue(caseLoads)

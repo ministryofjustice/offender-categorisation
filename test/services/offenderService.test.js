@@ -1484,11 +1484,13 @@ describe('Lite', () => {
     manageUsersApiClient.getUsersByUsername.mockResolvedValue([
       {
         username: 'JSMITH',
+        name: 'John Smith',
         firstName: 'John',
         lastName: 'Smith',
       },
       {
         username: 'BMAY',
+        name: 'Brian May',
         firstName: 'Brian',
         lastName: 'May',
       },
@@ -1602,11 +1604,13 @@ describe('getReferredOffenders', () => {
   const userDetailsList = [
     {
       username: 'JSMITH',
+      name: 'John Smith',
       firstName: 'John',
       lastName: 'Smith',
     },
     {
       username: 'BMAY',
+      name: 'Brian May',
       firstName: 'Brian',
       lastName: 'May',
     },
@@ -4181,7 +4185,13 @@ describe('decorateWithCategorisationData', () => {
 
   beforeEach(() => {
     mockOffender = { bookingId: 12345, status: 'status' }
-    mockUser = { username: 'username', token: 'token', firstName: 'firstname', lastName: 'lastname' }
+    mockUser = {
+      username: 'username',
+      token: 'token',
+      name: 'Firstname Lastname',
+      firstName: 'firstname',
+      lastName: 'lastname',
+    }
     mockNomisClient = {}
   })
 
