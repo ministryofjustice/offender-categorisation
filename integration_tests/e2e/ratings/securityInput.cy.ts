@@ -251,7 +251,7 @@ describe('Security Input', () => {
             },
             {
               columnName: 'Referred by',
-              expectedValues: ['Firstname_categoriser_user Lastname_categoriser_user'],
+              expectedValues: ['lastName_CATEGORISER_USER, firstName_CATEGORISER_USER'],
             },
           ])
           securityHomePage.getStartButton({ bookingId }).click()

@@ -60,7 +60,9 @@ const stubGetUserCaseload = (
       },
       jsonBody: {
         username: user?.username,
-        activeCaseload: user?.workingCaseload?.id ?? caseloads[0]?.id,
+        activeCaseload: {
+          id: user?.workingCaseload?.id ?? caseloads[0]?.id,
+        },
         caseloads: caseloads.map(caseload => ({
           id: caseload.id,
           name: caseload.description,

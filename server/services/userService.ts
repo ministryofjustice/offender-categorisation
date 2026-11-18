@@ -24,14 +24,17 @@ export default function createUserService(manageUsersApiClientBuilder: ManageUse
         })),
       )
 
+      const activeCaseLoadId = activeCaseloads.activeCaseload?.id
+
       const activeCaseload = decoratedActiveCaseloads.find(
-        (caseload: { caseLoadId: string }) => caseload.caseLoadId === activeCaseloads.activeCaseload,
+        (caseload: { caseLoadId: string }) => caseload.caseLoadId === activeCaseLoadId,
       )
       return {
         ...user,
         displayName: user.name,
         displayNameAlternative: user.name,
         activeCaseLoad: activeCaseload,
+        activeCaseLoadId,
         activeCaseLoads: decoratedActiveCaseloads,
       }
     } catch (error) {

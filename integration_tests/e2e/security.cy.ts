@@ -160,8 +160,8 @@ context('Security', () => {
         {
           columnName: 'Reviewed by',
           expectedValues: [
-            'Lastname_security_user, Firstname_security_user',
-            'Lastname_security_user, Firstname_security_user',
+            'lastName_SECURITY_USER, firstName_SECURITY_USER',
+            'lastName_SECURITY_USER, firstName_SECURITY_USER',
           ],
         },
         { columnName: 'Type', expectedValues: ['Initial', 'Recat'] },
