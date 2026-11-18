@@ -147,10 +147,6 @@ module.exports = function createApp({
   app.use('/favicon.ico', express.static(path.join(process.cwd(), '/assets/images/favicon.ico'), cacheControl))
 
   app.use(
-    '/assets/js/jquery.min.js',
-    express.static(path.join(process.cwd(), '/node_modules/jquery/dist/jquery.min.js'), cacheControl),
-  )
-  app.use(
     '/assets/moj-frontend/moj/all.js',
     express.static(path.join(process.cwd(), '/node_modules/@ministryofjustice/frontend/moj/all.js'), cacheControl),
   )
