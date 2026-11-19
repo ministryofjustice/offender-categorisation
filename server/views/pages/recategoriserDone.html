@@ -40,7 +40,7 @@
   <section class="govuk-tabs__panel">
 
   {% if offenders | length > 0 %}
-  <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
+  <table class="govuk-table" id="offenderTable" >
     <thead class="govuk-table__head">
 
     <tr class="govuk-table__row">
@@ -83,8 +83,8 @@
     </tbody>
   </table>
   {% else %}
-  <div class="govuk-!-padding-top-7">
-    <div id="no-results-message" class="govuk-heading-m">No category review prisoners found</div>
+    <div class="govuk-!-padding-top-4">
+    <div id="no-results-message">No category review prisoners found</div>
   </div>
   {% endif %}
   </section>
