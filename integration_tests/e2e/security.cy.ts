@@ -105,6 +105,7 @@ context('Security', () => {
     cy.stubLogin({
       user: SECURITY_USER,
     })
+    cy.task('stubGetUsersByUsername', { usernames: [SECURITY_USER.username] })
   })
 
   describe(`'To do' Page`, () => {
@@ -258,8 +259,8 @@ context('Security', () => {
         {
           columnName: 'Referred by',
           expectedValues: [
-            'Lastname_security_user, Firstname_security_user',
-            'Lastname_security_user, Firstname_security_user',
+            'lastName_SECURITY_USER, firstName_SECURITY_USER',
+            'lastName_SECURITY_USER, firstName_SECURITY_USER',
           ],
         },
       ].forEach(cy.checkTableColumnTextValues)
