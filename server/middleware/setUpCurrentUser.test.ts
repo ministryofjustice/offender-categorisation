@@ -1,8 +1,7 @@
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { trace } from '@ministryofjustice/hmpps-azure-telemetry'
+import { telemetryMiddleware, trace } from '@ministryofjustice/hmpps-azure-telemetry'
 import setUpCurrentUser from './setUpCurrentUser'
-import { addUserMetadataToRequestSpan, captureRequestSpan } from './userTelemetry'
 
 const uuid = '11111111-1111-1111-1111-111111111111'
 const request = {} as Request
@@ -71,10 +70,7 @@ describe('setUpCurrentUser', () => {
     expect(res.locals.user.userUuid).toBe(uuid)
     expect(next).toHaveBeenCalled()
 
-    captureRequestSpan()(request, res, next)
-    // the active span is lost after the session store, but the captured span is still used
-    jest.spyOn(trace, 'getActiveSpan').mockReturnValue(undefined)
-    addUserMetadataToRequestSpan()(request, res, next)
+    telemetryMiddleware.addUserMetadataToTelemetry<Request, Response>()(request, res, next)
 
     expect(setAttribute).toHaveBeenCalledWith('userUuid', uuid)
   })
@@ -88,8 +84,7 @@ describe('setUpCurrentUser', () => {
     expect(res.locals.user.userUuid).toBeUndefined()
     expect(next).toHaveBeenCalled()
 
-    captureRequestSpan()(request, res, next)
-    addUserMetadataToRequestSpan()(request, res, next)
+    telemetryMiddleware.addUserMetadataToTelemetry<Request, Response>()(request, res, next)
 
     expect(setAttribute).not.toHaveBeenCalled()
   })
