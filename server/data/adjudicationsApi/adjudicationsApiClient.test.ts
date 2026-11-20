@@ -8,14 +8,9 @@ import { makeTestAdjudicationsDto } from './adjudications.dto.test-factory'
 jest.mock('redis', () => ({
   createClient: jest.fn().mockImplementation(() => ({
     on: jest.fn(),
-    get: jest.fn().mockImplementation((key, callback) => {
-      callback(null, 'redis-token')
-      return true
-    }),
-    set: jest.fn().mockImplementation((key, value, command, ttl, callback) => {
-      callback(null, 'redis-token')
-      return true
-    }),
+    connect: jest.fn().mockResolvedValue(undefined),
+    get: jest.fn().mockResolvedValue('redis-token'),
+    set: jest.fn().mockResolvedValue('OK'),
   })),
 }))
 
