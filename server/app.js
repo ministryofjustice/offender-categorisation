@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser')
 const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis').default
+const { telemetryMiddleware } = require('@ministryofjustice/hmpps-azure-telemetry')
 require('./catToolSerialisers') // do not remove, logging requires it!
 const auth = require('./authentication/auth').default
 const healthFactory = require('./services/healthCheck')
@@ -18,7 +19,6 @@ const createTasklistRouter = require('./routes/tasklist')
 const createTasklistRecatRouter = require('./routes/tasklistRecat')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 const setUpCurrentUser = require('./middleware/setUpCurrentUser').default
-const { captureRequestSpan, addUserMetadataToRequestSpan } = require('./middleware/userTelemetry')
 const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
 const setUpCsrf = require('./middleware/setUpCsrf').default
 const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
@@ -71,7 +71,6 @@ module.exports = function createApp({
 
   setUpEnvironmentName(app)
   nunjucksSetup(app, path)
-  app.use(captureRequestSpan())
   app.use(setUpWebSecurity())
 
   app.use((req, res, next) => {
@@ -193,7 +192,7 @@ module.exports = function createApp({
 
   app.use(addTemplateVariables)
   app.use(setUpCurrentUser())
-  app.use(addUserMetadataToRequestSpan())
+  app.use(telemetryMiddleware.addUserMetadataToTelemetry())
 
   // Don't cache dynamic resources
   app.use(noCache())
