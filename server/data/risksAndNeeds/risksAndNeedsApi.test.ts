@@ -11,24 +11,19 @@ const testResponseFromRedis = JSON.stringify(makeTestRiskSummaryDto())
 jest.mock('redis', () => ({
   createClient: jest.fn().mockImplementation(() => ({
     on: jest.fn(),
-    get: jest.fn().mockImplementation((key, callback) => {
+    connect: jest.fn().mockResolvedValue(undefined),
+    get: jest.fn().mockImplementation(async key => {
       switch (key) {
         case 'riskSummary_AN1234':
-          callback(null, testResponseFromRedis)
-          return true
+          return testResponseFromRedis
         case 'riskSummary_AN1235':
         case 'riskSummary_AN1236':
-          callback(null, null)
-          return true
+          return null
         default:
-          callback(null, 'redis-token')
+          return 'redis-token'
       }
-      return true
     }),
-    set: jest.fn().mockImplementation((key, value, command, ttl, callback) => {
-      callback(null, 'redis-token')
-      return true
-    }),
+    set: jest.fn().mockResolvedValue('OK'),
   })),
 }))
 

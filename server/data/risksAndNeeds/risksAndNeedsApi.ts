@@ -1,7 +1,6 @@
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import superagent from 'superagent'
-import redis from 'redis'
-import { promisify } from 'util'
+import { createClient } from 'redis'
 import { config } from '../../config'
 import { getApiClientToken } from '../../authentication/clientCredentials'
 import { getSanitisedError } from '../../getSanitisedError'
@@ -18,19 +17,20 @@ export interface RisksAndNeedsApiClient {
   getRisksSummary: (crn) => Promise<RiskSummaryDto>
 }
 
-const client = redis.createClient({
-  port: config.redis.port,
+const client = createClient({
   password: config.redis.auth_token,
-  host: config.redis.host,
-  tls: config.redis.tls_enabled === 'true' ? {} : false,
+  socket: {
+    host: config.redis.host,
+    port: Number(config.redis.port),
+    tls: config.redis.tls_enabled === 'true',
+  },
 })
 
 client.on('error', error => {
   logger.error(error, `Redis error`)
 })
 
-const getRedisAsync = promisify(client.get).bind(client)
-const setRedisAsync = promisify(client.set).bind(client)
+client.connect().catch(error => logger.error(error, `Error connecting to Redis`))
 
 const timeoutSpec = {
   response: config.apis.risksAndNeeds.timeout.response,
@@ -51,7 +51,7 @@ const builder: RisksAndNeedsApiClientBuilder = user => {
   return {
     async getRisksSummary(crn): Promise<RiskSummaryDto> {
       const redisKey = `${REDIS_KEY_PREFIX}_${crn}`
-      const cached = await getRedisAsync(redisKey)
+      const cached = await client.get(redisKey)
       if (cached) {
         return JSON.parse(cached)
       }
@@ -59,7 +59,7 @@ const builder: RisksAndNeedsApiClientBuilder = user => {
       const path = `${apiUrl}risks/crn/${crn}/summary`
       const value = await apiGet({ path })
 
-      await setRedisAsync(redisKey, JSON.stringify(value), 'EX', REDIS_EXPIRY)
+      await client.set(redisKey, JSON.stringify(value), { EX: REDIS_EXPIRY })
       return value
     },
   }

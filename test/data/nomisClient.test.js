@@ -1,9 +1,14 @@
 const nock = require('nock')
 const redis = require('redis')
 
-const redisFunctions = { on: jest.fn(), get: jest.fn(), set: jest.fn() }
+const redisFunctions = {
+  on: jest.fn(),
+  connect: jest.fn().mockResolvedValue(undefined),
+  get: jest.fn(),
+  set: jest.fn(),
+}
 redis.createClient = jest.fn().mockReturnValue(redisFunctions)
-redisFunctions.get.mockImplementation((key, callback) => callback(null, 'redis-token'))
+redisFunctions.get.mockResolvedValue('redis-token')
 
 const { config } = require('../../server/config')
 const nomisClientBuilder = require('../../server/data/nomisClientBuilder')
