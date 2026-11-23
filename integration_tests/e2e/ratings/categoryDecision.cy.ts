@@ -46,7 +46,7 @@ describe('Category Decision', () => {
       cy.signIn()
 
       categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-      categoriserHomePage.selectPrisonerWithBookingId(bookingId, /Start|Edit/)
+      categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
       taskListPage.categoryDecisionLink().click()
@@ -136,7 +136,7 @@ describe('Category Decision', () => {
       cy.signIn()
 
       categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-      categoriserHomePage.selectPrisonerWithBookingId(bookingId, /Start|Edit/)
+      categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
       taskListPage.categoryDecisionLink().click()

@@ -5,7 +5,7 @@ export default class SecurityDonePage extends BaseSecurityPage {
   static baseUrl: string = '/securityDone'
 
   constructor() {
-    super()
+    super('Prisoner Categorisation')
   }
 
   viewOffenderDetails = (bookingId: number): PageElement =>
