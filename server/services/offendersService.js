@@ -143,6 +143,7 @@ module.exports = function createOffendersService(
   adjudicationsApiClientBuilder,
   incidentReportingApiClientBuilder,
   prisonRegisterApiClientBuilder,
+  manageUsersApiClientBuilder,
 ) {
   async function getUncategorisedOffenders(context, user, filters = {}) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
@@ -314,23 +315,31 @@ module.exports = function createOffendersService(
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
+      const manageUsersApiClient = manageUsersApiClientBuilder(context.user.token)
 
       const categorisedFromDB = await formService.getCategorisedOffenders(agencyId, catType, transactionalDbClient)
       if (!isNilOrEmpty(categorisedFromDB)) {
         const [categorisedFromElite, userDetailFromElite] = await Promise.all([
           nomisClient.getCategorisedOffenders(categorisedFromDB.map(c => c.bookingId)),
-          nomisClient.getUserDetailList(categorisedFromDB.map(c => c.approvedBy)),
+          manageUsersApiClient.getUsersByUsername(categorisedFromDB.map(c => c.approvedBy)),
         ])
 
         const matchedCategorisations = matchEliteAndDBCategorisations(categorisedFromElite, categorisedFromDB)
 
         const decoratedResults = await Promise.all(
           matchedCategorisations.map(async o => {
+            const approverNameFromNomis =
+              o.approverLastName && o.approverFirstName
+                ? `${properCaseName(o.approverLastName)}, ${properCaseName(o.approverFirstName)}`
+                : null
+
             // For the approver, preferably use the username stored in PG, and fallback
             // to the unreliable Nomis modify_username for early cats before the approved_by column was created
             const approver = o.dbRecord.approvedBy
-              ? userDetailFromElite.find(record => record.username === o.dbRecord.approvedBy)
-              : { lastName: o.approverLastName, firstName: o.approverFirstName }
+              ? userDetailFromElite.find(record => record.username === o.dbRecord.approvedBy)?.name ||
+                approverNameFromNomis ||
+                o.dbRecord.approvedBy
+              : approverNameFromNomis
 
             return {
               ...o,
@@ -340,8 +349,7 @@ module.exports = function createOffendersService(
               displayCategoriserName:
                 o.categoriserLastName &&
                 `${properCaseName(o.categoriserLastName)}, ${properCaseName(o.categoriserFirstName)}`, //* **
-              displayApproverName:
-                approver.lastName && `${properCaseName(approver.lastName)}, ${properCaseName(approver.firstName)}`,
+              displayApproverName: approver,
               catTypeDisplay: CatType[o.dbRecord.catType].value,
               sequence: o.dbRecord.sequence,
             }
@@ -362,6 +370,7 @@ module.exports = function createOffendersService(
     try {
       const nomisClient = nomisClientBuilder(context)
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
+      const manageUsersApiClient = manageUsersApiClientBuilder(context.user.token)
 
       const securityReferredFromDB = await formService.getSecurityReferredOffenders(agencyId, transactionalDbClient)
 
@@ -370,7 +379,7 @@ module.exports = function createOffendersService(
 
         const [offenderDetailsFromNomis, userDetailFromElite, nomisCatData] = await Promise.all([
           nomisClient.getOffenderDetailList(securityReferredFromDB.map(c => c.offenderNo)),
-          nomisClient.getUserDetailList(securityReferredFromDB.map(c => c.securityReferredBy)),
+          manageUsersApiClient.getUsersByUsername(securityReferredFromDB.map(c => c.securityReferredBy)),
           nomisClient.getLatestActiveCategorisationForOffenders(
             securityReferredFromDB.filter(c => c.catType === CatType.RECAT.name).map(c => c.offenderNo),
           ),
@@ -387,9 +396,7 @@ module.exports = function createOffendersService(
             let securityReferredBy
             if (o.securityReferredBy) {
               const referrer = userDetailFromElite.find(record => record.username === o.securityReferredBy)
-              securityReferredBy = referrer
-                ? `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`
-                : o.securityReferredBy
+              securityReferredBy = referrer ? referrer.name : o.securityReferredBy
             }
 
             let sentenceAndDate
@@ -428,6 +435,7 @@ module.exports = function createOffendersService(
     try {
       const nomisClient = nomisClientBuilder(context)
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
+      const manageUsersApiClient = manageUsersApiClientBuilder(context.user.token)
 
       const securityReferred = await formService.getSecurityReferrals(agencyId, transactionalDbClient)
       const newSecurityReferred = securityReferred.filter(s => s.status === 'NEW')
@@ -435,7 +443,7 @@ module.exports = function createOffendersService(
       if (!isNilOrEmpty(newSecurityReferred)) {
         const [offenderDetailsFromNomis, userDetailFromElite] = await Promise.all([
           nomisClient.getOffenderDetailList(newSecurityReferred.map(c => c.offenderNo)),
-          nomisClient.getUserDetailList(newSecurityReferred.map(c => c.userId)),
+          manageUsersApiClient.getUsersByUsername(newSecurityReferred.map(c => c.userId)),
         ])
         const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(
           offenderDetailsFromNomis.map(o => o.bookingId),
@@ -458,9 +466,7 @@ module.exports = function createOffendersService(
             let securityReferredBy
             if (o.userId) {
               const referrer = userDetailFromElite.find(record => record.username === o.userId)
-              securityReferredBy = referrer
-                ? `${properCaseName(referrer.lastName)}, ${properCaseName(referrer.firstName)}`
-                : o.userId
+              securityReferredBy = referrer ? referrer.name : o.userId
             }
 
             const entry = sentenceMap.get(offenderDetail.bookingId)
@@ -539,12 +545,13 @@ module.exports = function createOffendersService(
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
+      const manageUsersApiClient = manageUsersApiClientBuilder(context.user.token)
 
       const securityReviewedFromDB = await formService.getSecurityReviewedOffenders(agencyId, transactionalDbClient)
       if (!isNilOrEmpty(securityReviewedFromDB)) {
         const [offenderDetailsFromElite, userDetailFromElite] = await Promise.all([
           nomisClient.getOffenderDetailList(securityReviewedFromDB.map(c => c.offenderNo)),
-          nomisClient.getUserDetailList(securityReviewedFromDB.map(c => c.securityReviewedBy)),
+          manageUsersApiClient.getUsersByUsername(securityReviewedFromDB.map(c => c.securityReviewedBy)),
         ])
 
         const decoratedResults = securityReviewedFromDB.map(o => {
@@ -556,7 +563,7 @@ module.exports = function createOffendersService(
             offenderNo: offenderDetail.offenderNo,
             displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
             displayReviewedDate: reviewedMoment.format('DD/MM/YYYY'),
-            displayReviewerName: `${properCaseName(userDetail.lastName)}, ${properCaseName(userDetail.firstName)}`,
+            displayReviewerName: userDetail.name,
             catTypeDisplay: CatType[o.catType].value,
           }
         })
@@ -675,9 +682,11 @@ module.exports = function createOffendersService(
         return []
       }
 
+      const manageUsersApiClient = manageUsersApiClientBuilder(context.user.token)
+
       const [offenderDetailsFromElite, userDetailFromElite] = await Promise.all([
         nomisClient.getOffenderDetailList(unapprovedLite.map(c => c.offenderNo)),
-        nomisClient.getUserDetailList([...new Set(unapprovedLite.map(c => c.assessedBy))]),
+        manageUsersApiClient.getUsersByUsername([...new Set(unapprovedLite.map(c => c.assessedBy))]),
       ])
 
       // cannot merge with promise.all as only one concurrent call can be sent to prisoner search api
@@ -697,9 +706,7 @@ module.exports = function createOffendersService(
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
           const assessedDate = moment(o.createdDate).format('DD/MM/YYYY')
           const assessor = userDetailFromElite.find(record => record.username === o.assessedBy)
-          const categoriserDisplayName = assessor
-            ? `${properCaseName(assessor.firstName)} ${properCaseName(assessor.lastName)}`
-            : o.assessedBy
+          const categoriserDisplayName = assessor ? assessor.name : o.assessedBy
 
           if (!offenderDetail) {
             logger.error(`getUnapprovedLite: Offender ${o.offenderNo} in DB not found in NOMIS`)
@@ -1218,13 +1225,14 @@ module.exports = function createOffendersService(
         if (categorisation.assignedUserId !== user.username) {
           // need to retrieve name details for non-current user
           try {
-            const assignedUser = await nomisClient.getUserByUserId(categorisation.assignedUserId)
-            statusText += ` (${properCaseName(assignedUser.firstName)} ${properCaseName(assignedUser.lastName)})`
+            const manageUsersApiClient = manageUsersApiClientBuilder(user.token)
+            const assignedUser = await manageUsersApiClient.getUserByUsername(categorisation.assignedUserId)
+            statusText += ` (${assignedUser.name})`
           } catch (error) {
             logger.warn(error, `No assigned user details found for ${categorisation.assignedUserId}`)
           }
         } else {
-          statusText += ` (${properCaseName(user.firstName)} ${properCaseName(user.lastName)})`
+          statusText += ` (${user.name})`
         }
       }
       return {

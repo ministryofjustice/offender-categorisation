@@ -118,7 +118,7 @@ describe('Security Input', () => {
         })
 
         cy.task('stubSubmitSecurityReview', { bookingId })
-        cy.task('stubGetStaffDetailsByUsernameList', {
+        cy.task('stubGetUsersByUsername', {
           usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
         })
         cy.task('stubGetOffenderDetailsByOffenderNoList', { offenderNumbers: ['B2345YZ'] })
@@ -178,7 +178,7 @@ describe('Security Input', () => {
 
         it('should allow a security user to complete their assessment', () => {
           cy.task('stubSubmitSecurityReview', { bookingId })
-          cy.task('stubGetStaffDetailsByUsernameList', {
+          cy.task('stubGetUsersByUsername', {
             usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
           })
           cy.task('stubGetOffenderDetailsByOffenderNoList', { offenderNumbers: ['B2345YZ'] })
@@ -221,7 +221,7 @@ describe('Security Input', () => {
 
           it('should display security input to recategoriser', () => {
             cy.task('stubSubmitSecurityReview', { bookingId })
-            cy.task('stubGetStaffDetailsByUsernameList', {
+            cy.task('stubGetUsersByUsername', {
               usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
             })
             cy.task('stubGetOffenderDetailsByOffenderNoList', { offenderNumbers: ['B2345YZ'] })

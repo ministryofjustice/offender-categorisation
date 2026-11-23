@@ -740,7 +740,7 @@ describe('Open conditions', () => {
     supervisorReviewOutcomePage.finishButton().click()
 
     const supervisorHomePage1 = Page.verifyOnPage(SupervisorHomePage)
-    cy.task('stubGetStaffDetailsByUsernameList', {
+    cy.task('stubGetUsersByUsername', {
       usernames: [CATEGORISER_USER.username, SUPERVISOR_USER.username],
     })
     cy.task('stubCategorised', { bookingIds: [12] })
@@ -924,7 +924,7 @@ describe('Open conditions', () => {
 
     const supHomePage1 = Page.verifyOnPage(SupervisorHomePage)
     cy.task('stubCategorised', { bookingIds: [12] })
-    cy.task('stubGetStaffDetailsByUsernameList', {
+    cy.task('stubGetUsersByUsername', {
       usernames: [RECATEGORISER_USER.username, SUPERVISOR_USER.username],
     })
     supHomePage1.doneTabLink().click()

@@ -78,6 +78,7 @@ const DEFAULTS = {
   ADJUDICATIONS_ENDPOINT_URL: 'http://localhost:8091/',
   PRISON_REGISTER_API_ENDPOINT_URL: 'http://localhost:8092/',
   INCIDENT_REPORTING_API_ENDPOINT_URL: 'http://localhost:8098/',
+  MANAGE_USERS_API_ENDPOINT_URL: 'http://localhost:8099/',
   COMPONENT_API_URL: 'http://localhost:8085/components',
   COMPONENT_API_TIMEOUT_RESPONSE: 20000,
   COMPONENT_API_TIMEOUT_DEADLINE: 20000,
@@ -525,6 +526,33 @@ export const config = {
         deadline: Number(
           get({
             name: 'INCIDENT_REPORTING_API_TIMEOUT_DEADLINE',
+            fallback: DEFAULT_TIMEOUTS.deadline,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+      },
+      agent: DEFAULT_HTTP_AGENT,
+    },
+    manageUsersApi: {
+      url: get({
+        name: 'MANAGE_USERS_API_ENDPOINT_URL',
+        fallback: DEFAULTS.MANAGE_USERS_API_ENDPOINT_URL,
+        log: true,
+        requireInProduction: false,
+      }),
+      timeout: {
+        response: Number(
+          get({
+            name: 'MANAGE_USERS_API_TIMEOUT_RESPONSE',
+            fallback: DEFAULT_TIMEOUTS.response,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+        deadline: Number(
+          get({
+            name: 'MANAGE_USERS_API_TIMEOUT_DEADLINE',
             fallback: DEFAULT_TIMEOUTS.deadline,
             log: true,
             requireInProduction: false,

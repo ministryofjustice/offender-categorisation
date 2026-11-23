@@ -684,7 +684,7 @@ describe('Open Conditions', () => {
     cy.task('stubCategorised', {
       bookingIds: [12],
     })
-    cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+    cy.task('stubGetUsersByUsername', { usernames: [SUPERVISOR_USER.username] })
 
     Page.verifyOnPage(SupervisorHomePage)
     supervisorHomePage.doneTabLink().click()
@@ -1007,7 +1007,7 @@ describe('Open Conditions', () => {
     cy.task('stubCategorised', {
       bookingIds: [12],
     })
-    cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+    cy.task('stubGetUsersByUsername', { usernames: [SUPERVISOR_USER.username] })
 
     Page.verifyOnPage(SupervisorHomePage)
     supervisorHomePage.doneTabLink().click()
@@ -1481,7 +1481,7 @@ describe('Open Conditions', () => {
     cy.task('stubCategorised', {
       bookingIds: [12],
     })
-    cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+    cy.task('stubGetUsersByUsername', { usernames: [SUPERVISOR_USER.username] })
 
     supervisorHomePage.doneTabLink().click()
 

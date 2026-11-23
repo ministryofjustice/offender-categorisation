@@ -55,14 +55,13 @@ describe('Categoriser Done page', () => {
         bookingIds: [11, 12],
         startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
       })
-
-      cy.task('stubGetStaffDetailsByUsernameList', { usernames: [CATEGORISER_USER.username, SUPERVISOR_USER.username] })
     })
 
     beforeEach(() => {
       cy.stubLogin({
         user: CATEGORISER_USER,
       })
+      cy.task('stubGetUsersByUsername', { usernames: [CATEGORISER_USER.username, SUPERVISOR_USER.username] })
       cy.signIn()
     })
 
@@ -108,8 +107,8 @@ describe('Categoriser Done page', () => {
         {
           columnName: 'Approved by',
           expectedValues: [
-            'Lastname_supervisor_user, Firstname_supervisor_user',
-            'Lastname_supervisor_user, Firstname_supervisor_user',
+            'lastName_SUPERVISOR_USER, firstName_SUPERVISOR_USER',
+            'lastName_SUPERVISOR_USER, firstName_SUPERVISOR_USER',
           ],
         },
         { columnName: 'Category', expectedValues: ['C', 'C'] },

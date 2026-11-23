@@ -72,8 +72,9 @@ Cypress.Commands.add('stubLogin', ({ user }: { user: UserAccount }) => {
   cy.task('stubUserRoles', { user })
   cy.task('stubDpsComponentsSuccess')
   cy.task('manageDetails')
-  cy.task('stubGetMyDetails', { user, caseloadId: user.workingCaseload.id })
-  cy.task('stubGetMyCaseloads', { caseloads: user.caseloads })
+  cy.task('stubGetUser', { user, caseloadId: user.workingCaseload.id })
+  cy.task('stubGetUserCaseload', { user, caseloads: user.caseloads })
+  cy.task('stubGetUsersByUsername')
   cy.task('stubGetPomByOffenderNo')
 })
 

@@ -230,9 +230,6 @@ describe('Security Input', () => {
 
         it('should allow a security user to complete their assessment', () => {
           cy.task('stubSubmitSecurityReview', { bookingId })
-          cy.task('stubGetStaffDetailsByUsernameList', {
-            usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
-          })
           cy.task('stubGetOffenderDetailsByOffenderNoList', { offenderNumbers: ['B2345YZ'] })
 
           taskListPage.signOut().click()
@@ -240,6 +237,9 @@ describe('Security Input', () => {
 
           cy.stubLogin({
             user: SECURITY_USER,
+          })
+          cy.task('stubGetUsersByUsername', {
+            usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
           })
           cy.signIn()
 
@@ -251,7 +251,7 @@ describe('Security Input', () => {
             },
             {
               columnName: 'Referred by',
-              expectedValues: ['Firstname_categoriser_user Lastname_categoriser_user'],
+              expectedValues: ['lastName_CATEGORISER_USER, firstName_CATEGORISER_USER'],
             },
           ])
           securityHomePage.getStartButton({ bookingId }).click()
@@ -280,15 +280,15 @@ describe('Security Input', () => {
 
           beforeEach(() => {
             cy.task('stubSubmitSecurityReview', { bookingId })
-            cy.task('stubGetStaffDetailsByUsernameList', {
-              usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
-            })
             cy.task('stubGetOffenderDetailsByOffenderNoList', { offenderNumbers: ['B2345YZ'] })
 
             taskListPage.signOut().click()
 
             cy.stubLogin({
               user: SECURITY_USER,
+            })
+            cy.task('stubGetUsersByUsername', {
+              usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
             })
             cy.signIn()
 

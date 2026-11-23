@@ -130,13 +130,13 @@ describe('Security Landing', () => {
       },
     )
 
-    cy.task('stubGetStaffDetailsByUsernameList', {
-      usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
-    })
     cy.task('stubGetOffenderDetailsByOffenderNoList', { offenderNumbers: [testOffenderNumber] })
 
     cy.stubLogin({
       user: SECURITY_USER,
+    })
+    cy.task('stubGetUsersByUsername', {
+      usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
     })
     cy.signIn()
 
@@ -148,7 +148,7 @@ describe('Security Landing', () => {
       },
       {
         columnName: 'Referred by',
-        expectedValues: ['Firstname_security_user Lastname_security_user'],
+        expectedValues: ['lastName_SECURITY_USER, firstName_SECURITY_USER'],
       },
     ])
     securityHomePage.getStartButton({ bookingId: testBookingId }).click()

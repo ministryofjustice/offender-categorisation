@@ -52,7 +52,7 @@ describe('Approved view', () => {
     cy.task('stubUncategorisedAwaitingApproval')
     cy.task('stubCategorised', { bookingIds: [12] })
     cy.task('stubGetPrison', { prisonId: 'LEI' })
-    cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+    cy.task('stubGetUsersByUsername', { usernames: [SUPERVISOR_USER.username] })
 
     cy.stubLogin({
       user: SUPERVISOR_USER,

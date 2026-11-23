@@ -154,7 +154,7 @@ describe('Recat tasklist DB sequencing and cancellation behaviour', () => {
       approvalDate: null,
       approvedBy: null,
     })
-    cy.task('stubGetUserDetails', {
+    cy.task('stubGetUserByUsername', {
       user: CATEGORISER_USER,
       caseloadId: 'LEI',
     })
