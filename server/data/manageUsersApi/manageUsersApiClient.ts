@@ -49,8 +49,16 @@ export const manageUsersApiClientBuilder: ManageUsersApiClientBuilder = (token: 
       return apiGet({ path })
     },
     async getUsersByUsername(usernames: string[]): Promise<UserDto[]> {
+      if (usernames.length <= 0) {
+        return []
+      }
+      // Manage Users returns a 500 if the list contains null/empty entries
+      const validUsernames = usernames.filter(Boolean)
+      if (!validUsernames.length) {
+        return []
+      }
       const path = `${apiUrl}prisonusers/find-by-usernames`
-      return apiPost({ path, body: usernames })
+      return apiPost({ path, body: validUsernames })
     },
   }
 }
