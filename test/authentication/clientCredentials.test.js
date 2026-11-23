@@ -1,7 +1,12 @@
 const nock = require('nock')
 const redis = require('redis')
 
-const redisFunctions = { on: jest.fn(), get: jest.fn(), set: jest.fn() }
+const redisFunctions = {
+  on: jest.fn(),
+  connect: jest.fn().mockResolvedValue(undefined),
+  get: jest.fn(),
+  set: jest.fn(),
+}
 redis.createClient = jest.fn().mockReturnValue(redisFunctions)
 
 const { config } = require('../../server/config')
@@ -33,52 +38,50 @@ describe('generateAuthClientToken', () => {
 
 describe('getApiClientToken', () => {
   it('cache hit', async () => {
-    redisFunctions.get.mockImplementation((key, callback) => callback(null, 'redis-token'))
+    redisFunctions.get.mockResolvedValue('redis-token')
 
     const token = await getApiClientToken('user1')
 
     expect(token).toEqual({ body: { access_token: 'redis-token' } })
-    expect(redisFunctions.get.mock.calls[0][0]).toEqual('user1')
+    expect(redisFunctions.get.mock.calls[0][0]).toEqual('clientToken:user1')
     expect(redisFunctions.set).not.toBeCalled()
   })
 
   it('cache miss', async () => {
-    redisFunctions.get.mockImplementation((key, callback) => callback(null, null))
-    redisFunctions.set.mockImplementation((key, value, command, ttl, callback) => callback(null, null))
+    redisFunctions.get.mockResolvedValue(null)
+    redisFunctions.set.mockResolvedValue('OK')
     fakeOauthServer.post('/oauth/token', 'grant_type=client_credentials&username=user1').reply(200, clientToken)
 
     const token = await getApiClientToken('user1')
 
     expect(token.body).toEqual({ access_token: 'client-token', expires_in: 300 })
-    expect(redisFunctions.get.mock.calls[0][0]).toEqual('user1')
-    expect(redisFunctions.set.mock.calls[0][0]).toEqual('user1')
+    expect(redisFunctions.get.mock.calls[0][0]).toEqual('clientToken:user1')
+    expect(redisFunctions.set.mock.calls[0][0]).toEqual('clientToken:user1')
     expect(redisFunctions.set.mock.calls[0][1]).toEqual('client-token')
-    expect(redisFunctions.set.mock.calls[0][2]).toEqual('EX')
-    expect(redisFunctions.set.mock.calls[0][3]).toEqual(240)
+    expect(redisFunctions.set.mock.calls[0][2]).toEqual({ EX: 240 })
   })
 
   it('cache hit anon', async () => {
-    redisFunctions.get.mockImplementation((key, callback) => callback(null, 'redis-token'))
+    redisFunctions.get.mockResolvedValue('redis-token')
 
     const token = await getApiClientToken()
 
     expect(token).toEqual({ body: { access_token: 'redis-token' } })
-    expect(redisFunctions.get.mock.calls[0][0]).toEqual('%ANONYMOUS%')
+    expect(redisFunctions.get.mock.calls[0][0]).toEqual('clientToken:%ANONYMOUS%')
     expect(redisFunctions.set).not.toBeCalled()
   })
 
   it('cache miss anon', async () => {
-    redisFunctions.get.mockImplementation((key, callback) => callback(null, null))
-    redisFunctions.set.mockImplementation((key, value, command, ttl, callback) => callback(null, null))
+    redisFunctions.get.mockResolvedValue(null)
+    redisFunctions.set.mockResolvedValue('OK')
     fakeOauthServer.post('/oauth/token', 'grant_type=client_credentials').reply(200, clientToken)
 
     const token = await getApiClientToken()
 
     expect(token.body).toEqual({ access_token: 'client-token', expires_in: 300 })
-    expect(redisFunctions.get.mock.calls[0][0]).toEqual('%ANONYMOUS%')
-    expect(redisFunctions.set.mock.calls[0][0]).toEqual('%ANONYMOUS%')
+    expect(redisFunctions.get.mock.calls[0][0]).toEqual('clientToken:%ANONYMOUS%')
+    expect(redisFunctions.set.mock.calls[0][0]).toEqual('clientToken:%ANONYMOUS%')
     expect(redisFunctions.set.mock.calls[0][1]).toEqual('client-token')
-    expect(redisFunctions.set.mock.calls[0][2]).toEqual('EX')
-    expect(redisFunctions.set.mock.calls[0][3]).toEqual(240)
+    expect(redisFunctions.set.mock.calls[0][2]).toEqual({ EX: 240 })
   })
 })

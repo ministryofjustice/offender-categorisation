@@ -8,7 +8,8 @@ const passport = require('passport')
 const cookieParser = require('cookie-parser')
 const redis = require('redis')
 const session = require('express-session')
-const RedisStore = require('connect-redis')(session)
+const RedisStore = require('connect-redis').default
+const { telemetryMiddleware } = require('@ministryofjustice/hmpps-azure-telemetry')
 require('./catToolSerialisers') // do not remove, logging requires it!
 const auth = require('./authentication/auth').default
 const healthFactory = require('./services/healthCheck')
@@ -18,13 +19,13 @@ const createTasklistRouter = require('./routes/tasklist')
 const createTasklistRecatRouter = require('./routes/tasklistRecat')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 const setUpCurrentUser = require('./middleware/setUpCurrentUser').default
-const { captureRequestSpan, addUserMetadataToRequestSpan } = require('./middleware/userTelemetry')
 const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
 const setUpCsrf = require('./middleware/setUpCsrf').default
 const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
 const setUpWebSecurity = require('./utils/setUpWebSecurity')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 const { config } = require('./config')
+const logger = require('../log')
 const createOpenConditionsRouter = require('./routes/openConditions')
 const createRecatRouter = require('./routes/recat')
 const createNextReviewDateRouter = require('./routes/nextReviewDate')
@@ -70,7 +71,6 @@ module.exports = function createApp({
 
   setUpEnvironmentName(app)
   nunjucksSetup(app, path)
-  app.use(captureRequestSpan())
   app.use(setUpWebSecurity())
 
   app.use((req, res, next) => {
@@ -86,16 +86,23 @@ module.exports = function createApp({
 
   // should be moved to setUpWebSession middleware
   const client = redis.createClient({
-    port: config.redis.port,
     password: config.redis.auth_token,
-    host: config.redis.host,
-    tls: config.redis.tls_enabled === 'true' ? {} : false,
+    socket: {
+      host: config.redis.host,
+      port: Number(config.redis.port),
+      tls: config.redis.tls_enabled === 'true',
+    },
   })
+
+  client.on('error', error => {
+    logger.error(error, `Redis error`)
+  })
+  client.connect().catch(error => logger.error(error, `Error connecting to Redis`))
 
   app.use(
     session({
       name: 'session',
-      store: new RedisStore({ client }),
+      store: new RedisStore({ client, prefix: 'sess:' }),
       cookie: { secure: config.https, sameSite: 'lax', maxAge: config.expiryMinutes * 60 * 1000 },
       secret: config.session.secret,
       resave: false, // redis implements touch so shouldn't need this
@@ -185,7 +192,7 @@ module.exports = function createApp({
 
   app.use(addTemplateVariables)
   app.use(setUpCurrentUser())
-  app.use(addUserMetadataToRequestSpan())
+  app.use(telemetryMiddleware.addUserMetadataToTelemetry())
 
   // Don't cache dynamic resources
   app.use(noCache())
