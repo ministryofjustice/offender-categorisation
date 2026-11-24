@@ -336,9 +336,7 @@ module.exports = function createOffendersService(
             // For the approver, preferably use the username stored in PG, and fallback
             // to the unreliable Nomis modify_username for early cats before the approved_by column was created
             const approver = o.dbRecord.approvedBy
-              ? userDetailFromElite.find(record => record.username === o.dbRecord.approvedBy)?.name ||
-                approverNameFromNomis ||
-                o.dbRecord.approvedBy
+              ? userDetailFromElite[o.dbRecord.approvedBy]?.name || approverNameFromNomis || o.dbRecord.approvedBy
               : approverNameFromNomis
 
             return {
@@ -395,7 +393,7 @@ module.exports = function createOffendersService(
 
             let securityReferredBy
             if (o.securityReferredBy) {
-              const referrer = userDetailFromElite.find(record => record.username === o.securityReferredBy)
+              const referrer = userDetailFromElite[o.securityReferredBy]
               securityReferredBy = referrer ? referrer.name : o.securityReferredBy
             }
 
@@ -465,7 +463,7 @@ module.exports = function createOffendersService(
 
             let securityReferredBy
             if (o.userId) {
-              const referrer = userDetailFromElite.find(record => record.username === o.userId)
+              const referrer = userDetailFromElite[o.userId]
               securityReferredBy = referrer ? referrer.name : o.userId
             }
 
@@ -557,7 +555,7 @@ module.exports = function createOffendersService(
         const decoratedResults = securityReviewedFromDB.map(o => {
           const reviewedMoment = moment(o.securityReviewedDate, 'YYYY-MM-DD')
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
-          const userDetail = userDetailFromElite.find(record => record.username === o.securityReviewedBy)
+          const userDetail = userDetailFromElite[o.securityReviewedBy]
           return {
             ...o,
             offenderNo: offenderDetail.offenderNo,
@@ -705,7 +703,7 @@ module.exports = function createOffendersService(
         .map(o => {
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
           const assessedDate = moment(o.createdDate).format('DD/MM/YYYY')
-          const assessor = userDetailFromElite.find(record => record.username === o.assessedBy)
+          const assessor = userDetailFromElite[o.assessedBy]
           const categoriserDisplayName = assessor ? assessor.name : o.assessedBy
 
           if (!offenderDetail) {

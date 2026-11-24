@@ -5,7 +5,6 @@ import logger from '../../../log'
 import { getSanitisedError } from '../../getSanitisedError'
 import { UserDto } from './user.dto'
 import { UserCaseloadDto } from './userCaseload.dto'
-import { getApiClientToken } from '../../authentication/clientCredentials'
 
 export type ManageUsersApiClientBuilder = (token: string) => ManageUsersApiClient
 
@@ -49,9 +48,6 @@ export const manageUsersApiClientBuilder: ManageUsersApiClientBuilder = (token: 
       return apiGet({ path })
     },
     async getUsersByUsername(usernames: string[]): Promise<UserDto[]> {
-      if (usernames.length <= 0) {
-        return []
-      }
       // Manage Users returns a 500 if the list contains null/empty entries
       const validUsernames = usernames.filter(Boolean)
       if (!validUsernames.length) {
@@ -89,16 +85,14 @@ function manageUsersApiGetBuilder(token: string) {
   }
 }
 
-function manageUsersApiPostBuilder(username: string) {
+function manageUsersApiPostBuilder(token: string) {
   return async ({ path, body = {}, headers = {}, responseType = '' }) => {
     try {
-      const clientToken = await getApiClientToken(username)
-
       const result = await superagent
         .post(path)
         .agent(keepaliveAgent)
         .send(body)
-        .set('Authorization', `Bearer ${clientToken.body.access_token}`)
+        .auth(token, { type: 'bearer' })
         .set(headers)
         .responseType(responseType)
         .timeout(timeoutSpec)
