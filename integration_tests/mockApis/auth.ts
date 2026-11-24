@@ -113,6 +113,7 @@ const stubUser = ({ user }: { user: UserAccount }) =>
         username: user.username,
         active: true,
         name: `${user.staffMember.firstName} ${user.staffMember.lastName}`,
+        activeCaseLoadId: user.workingCaseload.id,
       },
     },
   })

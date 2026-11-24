@@ -11,9 +11,29 @@ const formService = {
   getCategorisationRecord: jest.fn(),
 }
 
+const allocationClientBuilder = jest.fn()
+const prisonerSearchClientBuilder = jest.fn()
+const risksAndNeedsClientBuilder = jest.fn()
+const probationOffenderSearchClientBuilder = jest.fn()
+const adjudicationsApiClientBuilder = jest.fn()
+const incidentReportingApiClientBuilder = jest.fn()
+const prisonRegisterApiClientBuilder = jest.fn()
+const manageUsersApiClientBuilder = jest.fn()
+
 const nomisClientBuilder = () => nomisClient
 
-const service = serviceCreator(nomisClientBuilder, formService)
+const service = serviceCreator(
+  nomisClientBuilder,
+  allocationClientBuilder,
+  formService,
+  prisonerSearchClientBuilder,
+  risksAndNeedsClientBuilder,
+  probationOffenderSearchClientBuilder,
+  adjudicationsApiClientBuilder,
+  incidentReportingApiClientBuilder,
+  prisonRegisterApiClientBuilder,
+  manageUsersApiClientBuilder,
+)
 
 afterEach(() => {
   jest.resetAllMocks()

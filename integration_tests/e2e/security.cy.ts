@@ -92,19 +92,20 @@ context('Security', () => {
 
     cy.task('stubUncategorisedAwaitingApproval')
     cy.task('stubUncategorised')
-    cy.task('stubGetMyDetails', { user: SECURITY_USER, caseloadId: 'LEI' })
-    cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.LEI] })
-    cy.task('stubGetUserDetails', { user: SECURITY_USER, caseloadId: 'LEI' })
+    cy.task('stubGetUser', { user: SECURITY_USER, caseloadId: 'LEI' })
+    cy.task('stubGetUserCaseload', { caseloads: [CASELOAD.LEI] })
+    cy.task('stubGetUserByUsername', { user: SECURITY_USER, caseloadId: 'LEI' })
 
     cy.task('stubCategorised', { bookingIds: [11, 12] })
     cy.task('stubGetOffenderDetailsByOffenderNoList', { offenderNumbers: ['B2345XY', 'B2345YZ'] })
-    cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SECURITY_USER.username] })
+    cy.task('stubGetUsersByUsername', { usernames: [SECURITY_USER.username] })
   })
 
   beforeEach(() => {
     cy.stubLogin({
       user: SECURITY_USER,
     })
+    cy.task('stubGetUsersByUsername', { usernames: [SECURITY_USER.username] })
   })
 
   describe(`'To do' Page`, () => {
@@ -160,8 +161,8 @@ context('Security', () => {
         {
           columnName: 'Reviewed by',
           expectedValues: [
-            'Lastname_security_user, Firstname_security_user',
-            'Lastname_security_user, Firstname_security_user',
+            'lastName_SECURITY_USER, firstName_SECURITY_USER',
+            'lastName_SECURITY_USER, firstName_SECURITY_USER',
           ],
         },
         { columnName: 'Type', expectedValues: ['Initial', 'Recat'] },
@@ -258,8 +259,8 @@ context('Security', () => {
         {
           columnName: 'Referred by',
           expectedValues: [
-            'Lastname_security_user, Firstname_security_user',
-            'Lastname_security_user, Firstname_security_user',
+            'lastName_SECURITY_USER, firstName_SECURITY_USER',
+            'lastName_SECURITY_USER, firstName_SECURITY_USER',
           ],
         },
       ].forEach(cy.checkTableColumnTextValues)

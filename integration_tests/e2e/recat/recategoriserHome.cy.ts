@@ -45,8 +45,8 @@ describe('Recategoriser Home page', () => {
     beforeEach(() => {
       cy.task('stubCategorisedMultiple')
 
-      cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.LEI] })
-      cy.task('stubGetStaffDetailsByUsernameList', {
+      cy.task('stubGetUserCaseload', { caseloads: [CASELOAD.LEI] })
+      cy.task('stubGetUsersByUsername', {
         usernames: [RECATEGORISER_USER.username, SUPERVISOR_USER.username],
       })
     })
@@ -248,7 +248,7 @@ describe('Recategoriser Home page', () => {
     })
 
     function runRecategoriserHomePage(nextReviewDateDaysToAdd) {
-      cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.PNI] })
+      cy.task('stubGetUserCaseload', { caseloads: [CASELOAD.PNI] })
 
       const recat = {
         offenderNo: 'G6707GT',
@@ -303,7 +303,7 @@ describe('Recategoriser Home page', () => {
     }
 
     function setUpRecatData() {
-      cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.PNI] })
+      cy.task('stubGetUserCaseload', { caseloads: [CASELOAD.PNI] })
 
       const recat1 = {
         offenderNo: 'G6707GG',

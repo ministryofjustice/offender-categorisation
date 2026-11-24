@@ -131,13 +131,13 @@ describe("Women's estate recategorisation", () => {
     taskListPage.validateSecurityReferralDate(new Date())
 
     cy.task('stubSubmitSecurityReview', { bookingId: testBookingId })
-    cy.task('stubGetStaffDetailsByUsernameList', {
-      usernames: [FEMALE_RECAT_USER.username, FEMALE_SECURITY_USER.username],
-    })
     cy.task('stubGetOffenderDetailsByOffenderNoList', { offenderNumbers: [testOffenderNumber] })
 
     cy.stubLogin({
       user: FEMALE_SECURITY_USER,
+    })
+    cy.task('stubGetUsersByUsername', {
+      usernames: [FEMALE_RECAT_USER.username, FEMALE_SECURITY_USER.username],
     })
     cy.signIn()
 
@@ -149,7 +149,7 @@ describe("Women's estate recategorisation", () => {
       },
       {
         columnName: 'Referred by',
-        expectedValues: ['Firstname_female_recat_user Lastname_female_recat_user'],
+        expectedValues: ['lastName_FEMALE_RECAT_USER, firstName_FEMALE_RECAT_USER'],
       },
       {
         columnName: 'Type',

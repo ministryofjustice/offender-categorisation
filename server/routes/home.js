@@ -351,7 +351,7 @@ module.exports = function Index({
     } else if (scope === 'all' && !res.locals.user.activeCaseLoad.female) {
       prisonId = StatsType.MALE
     } else {
-      prisonId = res.locals.user.activeCaseLoadId
+      prisonId = res.locals.user.activeCaseLoad?.caseLoadId || res.locals.user.activeCaseLoadId
     }
     return { start, end, prisonId }
   }

@@ -22,10 +22,8 @@ const context = {
 const nomisClient = {
   getUncategorisedOffenders: jest.fn(),
   getRecategoriseOffenders: jest.fn(),
-  getUserByUserId: jest.fn(),
   getOffenderDetails: jest.fn(),
   getOffenderDetailList: jest.fn(),
-  getUserDetailList: jest.fn(),
   getSentenceDetails: jest.fn(),
   getSentenceTerms: jest.fn(),
   getMainOffence: jest.fn(),
@@ -77,6 +75,11 @@ const prisonRegisterApiClient = {
   getPrison: jest.fn(),
 }
 
+const manageUsersApiClient = {
+  getUserByUsername: jest.fn(),
+  getUsersByUsername: jest.fn(),
+}
+
 const formService = {
   getCategorisationRecord: jest.fn(),
   getSecurityReferredOffenders: jest.fn(),
@@ -107,9 +110,11 @@ const probationOffenderSearchClientBuilder = () => probationOffenderSearchApiCli
 const adjudicationsApiClientBuilder = () => adjudicationsApiClientClient
 const incidentReportingApiClientBuilder = () => incidentReportingApiClient
 const prisonRegisterApiClientBuilder = () => prisonRegisterApiClient
+const manageUsersApiClientBuilder = jest.fn(() => manageUsersApiClient)
 let service
 
 beforeEach(() => {
+  manageUsersApiClientBuilder.mockImplementation(() => manageUsersApiClient)
   service = serviceCreator(
     nomisClientBuilder,
     allocationClientBuilder,
@@ -120,21 +125,22 @@ beforeEach(() => {
     adjudicationsApiClientBuilder,
     incidentReportingApiClientBuilder,
     prisonRegisterApiClientBuilder,
+    manageUsersApiClientBuilder,
   )
   formService.getCategorisationRecord.mockReturnValue({})
   formService.getLiteCategorisation.mockReturnValue({})
   formService.getSecurityReferrals.mockResolvedValue([])
   allocationClient.getPomByOffenderNo.mockResolvedValue({ primary_pom: { name: 'RENDELL, STEVE' } })
+  manageUsersApiClient.getUserByUsername.mockResolvedValue({ name: 'Firstname Lastname' })
+  manageUsersApiClient.getUsersByUsername.mockResolvedValue([])
 })
 
 afterEach(() => {
   nomisClient.getUncategorisedOffenders.mockReset()
   nomisClient.getRecategoriseOffenders.mockReset()
   prisonerSearchClient.getPrisonersByBookingIds.mockReset()
-  nomisClient.getUserByUserId.mockReset()
   nomisClient.getOffenderDetails.mockReset()
   nomisClient.getOffenderDetailList.mockReset()
-  nomisClient.getUserDetailList.mockReset()
   nomisClient.getSentenceDetails.mockReset()
   nomisClient.getSentenceTerms.mockReset()
   nomisClient.getMainOffence.mockReset()
@@ -164,6 +170,9 @@ afterEach(() => {
   incidentReportingApiClient.getIncidentIds.mockReset()
   incidentReportingApiClient.getDetailedIncidentReport.mockReset()
   prisonRegisterApiClient.getPrison.mockReset()
+  manageUsersApiClient.getUserByUsername.mockReset()
+  manageUsersApiClient.getUsersByUsername.mockReset()
+  manageUsersApiClientBuilder.mockClear()
 })
 
 moment.now = jest.fn()
@@ -1472,18 +1481,20 @@ describe('Lite', () => {
       },
     ])
 
-    nomisClient.getUserDetailList.mockResolvedValue([
-      {
+    manageUsersApiClient.getUsersByUsername.mockResolvedValue({
+      JSMITH: {
         username: 'JSMITH',
+        name: 'John Smith',
         firstName: 'John',
         lastName: 'Smith',
       },
-      {
+      BMAY: {
         username: 'BMAY',
+        name: 'Brian May',
         firstName: 'Brian',
         lastName: 'May',
       },
-    ])
+    })
 
     const sentenceDates = [
       { bookingId: 111, status: 'ACTIVE IN' },
@@ -1590,18 +1601,20 @@ describe('getReferredOffenders', () => {
       status: Status.UNCATEGORISED.name,
     },
   ]
-  const userDetailsList = [
-    {
+  const userDetailsList = {
+    JSMITH: {
       username: 'JSMITH',
+      name: 'John Smith',
       firstName: 'John',
       lastName: 'Smith',
     },
-    {
+    BMAY: {
       username: 'BMAY',
+      name: 'Brian May',
       firstName: 'Brian',
       lastName: 'May',
     },
-  ]
+  }
 
   const securityReferredOffenders = [
     {
@@ -1659,7 +1672,7 @@ describe('getReferredOffenders', () => {
     ]
 
     nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
-    nomisClient.getUserDetailList.mockResolvedValue(userDetailsList)
+    manageUsersApiClient.getUsersByUsername.mockResolvedValue(userDetailsList)
     nomisClient.getLatestActiveCategorisationForOffenders.mockResolvedValue([
       { bookingId: 135, nextReviewDate: '2020-09-20' },
       { bookingId: 137, nextReviewDate: '2020-09-30' },
@@ -1724,7 +1737,7 @@ describe('getReferredOffenders', () => {
     ]
 
     nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
-    nomisClient.getUserDetailList.mockResolvedValue(userDetailsList)
+    manageUsersApiClient.getUsersByUsername.mockResolvedValue(userDetailsList)
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
 
     formService.getSecurityReferredOffenders.mockResolvedValue([
@@ -1789,7 +1802,7 @@ describe('getReferredOffenders', () => {
 
   test('it should use latest active categorisations for recat security referrals', async () => {
     nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
-    nomisClient.getUserDetailList.mockResolvedValue(userDetailsList)
+    manageUsersApiClient.getUsersByUsername.mockResolvedValue(userDetailsList)
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([])
 
     formService.getSecurityReferredOffenders.mockResolvedValue([
@@ -3515,6 +3528,7 @@ describe('getDueRecats', () => {
       null,
       null,
       null,
+      null,
       {},
       true,
     )
@@ -4172,10 +4186,14 @@ describe('decorateWithCategorisationData', () => {
 
   beforeEach(() => {
     mockOffender = { bookingId: 12345, status: 'status' }
-    mockUser = { username: 'username', firstName: 'firstname', lastName: 'lastname' }
-    mockNomisClient = {
-      getUserByUserId: jest.fn(() => Promise.resolve({ firstName: 'firstname', lastName: 'lastname' })),
+    mockUser = {
+      username: 'username',
+      token: 'token',
+      name: 'Firstname Lastname',
+      firstName: 'firstname',
+      lastName: 'lastname',
     }
+    mockNomisClient = {}
   })
 
   afterEach(() => {
@@ -4183,7 +4201,13 @@ describe('decorateWithCategorisationData', () => {
   })
 
   it(`returns an object with displayStatus: '' when categorisation.status is undefined`, async () => {
-    const result = await service.decorateWithCategorisationData(mockOffender, mockUser, mockNomisClient, {})
+    const result = await service.decorateWithCategorisationData(
+      mockOffender,
+      mockUser,
+      mockNomisClient,
+      {},
+      mockUser.token,
+    )
     expect(result).toEqual({ displayStatus: '' })
   })
 
@@ -4194,9 +4218,11 @@ describe('decorateWithCategorisationData', () => {
       mockUser,
       mockNomisClient,
       mockCategorisation,
+      mockUser.token,
     )
     const expectedStatusText = `${service.statusTextDisplay(mockCategorisation.status)} (Firstname Lastname)`
-    expect(mockNomisClient.getUserByUserId).toHaveBeenCalledWith(mockCategorisation.assignedUserId)
+    expect(manageUsersApiClientBuilder).toHaveBeenCalledWith(mockUser.token)
+    expect(manageUsersApiClient.getUserByUsername).toHaveBeenCalledWith(mockCategorisation.assignedUserId)
     expect(result).toEqual({
       dbRecordExists: true,
       dbStatus: mockCategorisation.status,
@@ -4212,9 +4238,10 @@ describe('decorateWithCategorisationData', () => {
       mockUser,
       mockNomisClient,
       mockCategorisation,
+      mockUser.token,
     )
     const expectedStatusText = `${service.statusTextDisplay(mockCategorisation.status)} (Firstname Lastname)`
-    expect(mockNomisClient.getUserByUserId).not.toHaveBeenCalled()
+    expect(manageUsersApiClient.getUserByUsername).not.toHaveBeenCalled()
     expect(result).toEqual({
       dbRecordExists: true,
       dbStatus: mockCategorisation.status,
@@ -4230,6 +4257,7 @@ describe('decorateWithCategorisationData', () => {
       mockUser,
       mockNomisClient,
       mockCategorisation,
+      mockUser.token,
     )
     const expectedStatusText = service.statusTextDisplay(mockCategorisation.status)
     expect(result).toEqual({
