@@ -1481,20 +1481,20 @@ describe('Lite', () => {
       },
     ])
 
-    manageUsersApiClient.getUsersByUsername.mockResolvedValue([
-      {
+    manageUsersApiClient.getUsersByUsername.mockResolvedValue({
+      JSMITH: {
         username: 'JSMITH',
         name: 'John Smith',
         firstName: 'John',
         lastName: 'Smith',
       },
-      {
+      BMAY: {
         username: 'BMAY',
         name: 'Brian May',
         firstName: 'Brian',
         lastName: 'May',
       },
-    ])
+    })
 
     const sentenceDates = [
       { bookingId: 111, status: 'ACTIVE IN' },

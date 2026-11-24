@@ -5,7 +5,6 @@ import logger from '../../../log'
 import { getSanitisedError } from '../../getSanitisedError'
 import { UserDto } from './user.dto'
 import { UserCaseloadDto } from './userCaseload.dto'
-import { getApiClientToken } from '../../authentication/clientCredentials'
 
 export type ManageUsersApiClientBuilder = (token: string) => ManageUsersApiClient
 
