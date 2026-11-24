@@ -4,7 +4,6 @@ const flash = require('connect-flash')
 const baseJoi = require('joi')
 const dateExtend = require('@joi/date')
 const {
-  properCaseName,
   calculateNextReviewDate,
   sanitisePrisonName,
   removeLeadingZerosFromDate,

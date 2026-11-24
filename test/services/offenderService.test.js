@@ -4200,7 +4200,13 @@ describe('decorateWithCategorisationData', () => {
   })
 
   it(`returns an object with displayStatus: '' when categorisation.status is undefined`, async () => {
-    const result = await service.decorateWithCategorisationData(mockOffender, mockUser, mockNomisClient, {}, mockUser.token)
+    const result = await service.decorateWithCategorisationData(
+      mockOffender,
+      mockUser,
+      mockNomisClient,
+      {},
+      mockUser.token,
+    )
     expect(result).toEqual({ displayStatus: '' })
   })
 
