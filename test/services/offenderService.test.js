@@ -3528,6 +3528,7 @@ describe('getDueRecats', () => {
       null,
       null,
       null,
+      null,
       {},
       true,
     )
