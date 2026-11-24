@@ -1601,20 +1601,20 @@ describe('getReferredOffenders', () => {
       status: Status.UNCATEGORISED.name,
     },
   ]
-  const userDetailsList = [
-    {
+  const userDetailsList = {
+    JSMITH: {
       username: 'JSMITH',
       name: 'John Smith',
       firstName: 'John',
       lastName: 'Smith',
     },
-    {
+    BMAY: {
       username: 'BMAY',
       name: 'Brian May',
       firstName: 'Brian',
       lastName: 'May',
     },
-  ]
+  }
 
   const securityReferredOffenders = [
     {

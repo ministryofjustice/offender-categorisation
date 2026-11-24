@@ -84,13 +84,18 @@ const stubGetUsersByUsername = ({ usernames } = { usernames: [] }): SuperAgentRe
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(
-        usernames.map(username => ({
-          staffId: 123,
-          username,
-          name: `lastName_${username}, firstName_${username}`,
-          email: 'itaguser@syscon.net',
-          activeCaseLoadId: 'LEI',
-        })),
+        Object.fromEntries(
+          usernames.map(username => [
+            username,
+            {
+              staffId: 123,
+              username,
+              name: `lastName_${username}, firstName_${username}`,
+              email: 'itaguser@syscon.net',
+              activeCaseLoadId: 'LEI',
+            },
+          ]),
+        ),
       ),
     },
   })
