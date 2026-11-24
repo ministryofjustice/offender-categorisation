@@ -4,4 +4,5 @@ export interface UserDto {
   name: string
   authSource: string
   userId: string
+  staffId: number
 }

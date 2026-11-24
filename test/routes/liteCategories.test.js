@@ -161,7 +161,7 @@ describe('approve', () => {
       placementPrisonId: 'SYI',
       assessmentComment: 'comment text comment text',
     })
-    userService.getUserByUserId.mockResolvedValue({ firstName: 'FRED', lastName: 'PERRY' })
+    userService.getUserByUserId.mockResolvedValue({ name: 'Fred Perry' })
 
     return request(app)
       .get(`/approve/12`)

@@ -258,7 +258,7 @@ module.exports = function createOffendersService(
             ...nomisRecord,
             displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
             ...buildSentenceData(sentence && sentence.sentenceDate, assessmentData),
-            ...(await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)),
+            ...(await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord, context.user.token)),
             pnomis,
             pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
           }
@@ -341,7 +341,7 @@ module.exports = function createOffendersService(
 
             return {
               ...o,
-              ...(await decorateWithCategorisationData(o, user, nomisClient, o.dbRecord)),
+              ...(await decorateWithCategorisationData(o, user, nomisClient, o.dbRecord, context.user.token)),
               displayName: o.lastName && `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
               displayApprovalDate: dateConverter(o.approvalDate),
               displayCategoriserName:
@@ -754,6 +754,7 @@ module.exports = function createOffendersService(
     risksAndNeedsClient,
     probationOffenderSearchClient,
     adjudicationsApiClient,
+    token,
     filters = {},
     withSi1481Changes = false,
   ) {
@@ -871,7 +872,7 @@ module.exports = function createOffendersService(
           )
         }
 
-        const decorated = await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)
+        const decorated = await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord, token)
         const buttonText = calculateButtonStatus(dbRecord, nomisRecord.assessStatus)
         // if this review hasn't been started the reason is always 'Review Due', for started reviews, use the persisted reason
         const reason =
@@ -989,6 +990,7 @@ module.exports = function createOffendersService(
     risksAndNeedsClient,
     probationOffenderSearchClient,
     adjudicationsApiClient,
+    token,
     filters = {},
   ) {
     const u21From = moment()
@@ -1037,7 +1039,7 @@ module.exports = function createOffendersService(
           return null
         }
         const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
-        const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
+        const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord, token)
 
         const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus, liteInProgress)
 
@@ -1106,6 +1108,7 @@ module.exports = function createOffendersService(
           risksAndNeedsClient,
           probationOffenderSearchClient,
           adjudicationsApiClient,
+          context.user.token,
           filters,
           withSi1481Changes,
         ),
@@ -1118,6 +1121,7 @@ module.exports = function createOffendersService(
           risksAndNeedsClient,
           probationOffenderSearchClient,
           adjudicationsApiClient,
+          context.user.token,
           filters,
         ),
         formService.getSecurityReferrals(agencyId),
@@ -1214,7 +1218,7 @@ module.exports = function createOffendersService(
     return diffInDays > 1 ? `${diffInDays} days` : diffInDays === 1 ? '1 day' : ''
   }
 
-  async function decorateWithCategorisationData(offender, user, nomisClient, categorisation) {
+  async function decorateWithCategorisationData(offender, user, nomisClient, categorisation, token) {
     let statusText
     if (categorisation?.status) {
       statusText = statusTextDisplay(categorisation.status)
@@ -1223,7 +1227,7 @@ module.exports = function createOffendersService(
         if (categorisation.assignedUserId !== user.username) {
           // need to retrieve name details for non-current user
           try {
-            const manageUsersApiClient = manageUsersApiClientBuilder(user.token)
+            const manageUsersApiClient = manageUsersApiClientBuilder(token)
             const assignedUser = await manageUsersApiClient.getUserByUsername(categorisation.assignedUserId)
             statusText += ` (${assignedUser.name})`
           } catch (error) {

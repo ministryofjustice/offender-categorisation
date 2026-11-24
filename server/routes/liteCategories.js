@@ -221,9 +221,7 @@ module.exports = function Index({
         committee && committee.value !== '' ? committee.text : rawAssessmentData.assessmentCommittee
 
       const assessedBy = await userService.getUserByUserId(res.locals, rawAssessmentData.assessedBy)
-      const assessedByDisplay = assessedBy
-        ? `${properCaseName(assessedBy.firstName)} ${properCaseName(assessedBy.lastName)}`
-        : rawAssessmentData.assessedBy
+      const assessedByDisplay = assessedBy ? assessedBy.name : rawAssessmentData.assessedBy
 
       const prisonList = getPrisonList(prisonListFromApi, isInWomensEstate, rawAssessmentData.placementPrisonId)
       const prison = prisonList.find(p => p.value === rawAssessmentData.placementPrisonId)
@@ -438,9 +436,7 @@ module.exports = function Index({
           committee && committee.value !== '' ? committee.text : assessmentData.assessmentCommittee
 
         const assessedBy = await userService.getUserByUserId(res.locals, assessmentData.assessedBy)
-        const assessedByDisplay = assessedBy
-          ? `${properCaseName(assessedBy.firstName)} ${properCaseName(assessedBy.lastName)}`
-          : assessmentData.assessedBy
+        const assessedByDisplay = assessedBy ? assessedBy.firstName.name : assessmentData.assessedBy
 
         const prison = prisonList.find(p => p.value === assessmentData.placementPrisonId)
         const placementPrisonIdDisplay = prison && prison.value !== '' ? prison.text : assessmentData.placementPrisonId

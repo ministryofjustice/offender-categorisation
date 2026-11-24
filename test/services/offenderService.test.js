@@ -4200,7 +4200,7 @@ describe('decorateWithCategorisationData', () => {
   })
 
   it(`returns an object with displayStatus: '' when categorisation.status is undefined`, async () => {
-    const result = await service.decorateWithCategorisationData(mockOffender, mockUser, mockNomisClient, {})
+    const result = await service.decorateWithCategorisationData(mockOffender, mockUser, mockNomisClient, {}, mockUser.token)
     expect(result).toEqual({ displayStatus: '' })
   })
 
@@ -4211,6 +4211,7 @@ describe('decorateWithCategorisationData', () => {
       mockUser,
       mockNomisClient,
       mockCategorisation,
+      mockUser.token,
     )
     const expectedStatusText = `${service.statusTextDisplay(mockCategorisation.status)} (Firstname Lastname)`
     expect(manageUsersApiClientBuilder).toHaveBeenCalledWith(mockUser.token)
@@ -4230,6 +4231,7 @@ describe('decorateWithCategorisationData', () => {
       mockUser,
       mockNomisClient,
       mockCategorisation,
+      mockUser.token,
     )
     const expectedStatusText = `${service.statusTextDisplay(mockCategorisation.status)} (Firstname Lastname)`
     expect(manageUsersApiClient.getUserByUsername).not.toHaveBeenCalled()
@@ -4248,6 +4250,7 @@ describe('decorateWithCategorisationData', () => {
       mockUser,
       mockNomisClient,
       mockCategorisation,
+      mockUser.token,
     )
     const expectedStatusText = service.statusTextDisplay(mockCategorisation.status)
     expect(result).toEqual({

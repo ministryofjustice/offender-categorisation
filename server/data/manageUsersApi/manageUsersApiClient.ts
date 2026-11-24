@@ -12,7 +12,7 @@ export interface ManageUsersApiClient {
   getUser: () => Promise<UserDto>
   getUserByUsername: (username: string) => Promise<UserDto>
   getUserCaseload: () => Promise<UserCaseloadDto>
-  getUsersByUsername: (usernames: string[]) => Promise<UserDto[]>
+  getUsersByUsername: (usernames: string[]) => Promise<Record<string, UserDto>>
 }
 
 const timeoutSpec = {
@@ -47,11 +47,11 @@ export const manageUsersApiClientBuilder: ManageUsersApiClientBuilder = (token: 
       const path = `${apiUrl}users/me/caseloads`
       return apiGet({ path })
     },
-    async getUsersByUsername(usernames: string[]): Promise<UserDto[]> {
+    async getUsersByUsername(usernames: string[]): Promise<Record<string, UserDto>> {
       // Manage Users returns a 500 if the list contains null/empty entries
       const validUsernames = usernames.filter(Boolean)
       if (!validUsernames.length) {
-        return []
+        return {}
       }
       const path = `${apiUrl}prisonusers/find-by-usernames`
       return apiPost({ path, body: validUsernames })
